@@ -10,60 +10,87 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Futuristic Styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .glow-blue {
+            box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.25);
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%);
+        }
+        /* Floating Chat Animation */
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-bounce-subtle {
+            animation: bounce-subtle 3s infinite ease-in-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen">
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
 
-    <!-- ==================== LAYAR LOGIN (Tampil jika belum login) ==================== -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 space-y-6">
-            <div class="text-center space-y-2">
-                <div class="inline-flex p-3 bg-emerald-50 rounded-2xl mb-2 border border-emerald-100">
-                    <!-- Custom Logo -->
-                    <img src="./RAJ-LOGO-BERSIH.png" alt="Amanah Capital Logo" class="w-12 h-12 object-contain">
+    <!-- ==================== LAYAR LOGIN ==================== -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center gradient-header px-4">
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-700/30">
+            <div class="text-center space-y-3">
+                <div class="inline-flex p-3 bg-blue-50/80 rounded-2xl mb-1 border border-blue-100">
+                    <img src="./RAJ-LOGO-BERSIH.png" alt="Amanah Capital Logo" class="w-16 h-16 object-contain">
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Amanah Capital</h2>
-                <p class="text-sm text-gray-500">Silakan masuk untuk mengakses dashboard keuangan</p>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Amanah Capital</h2>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Financial Portal System</p>
             </div>
 
-            <div id="login-error" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg text-center font-medium"></div>
+            <div id="login-error" class="hidden p-3 text-sm text-red-700 bg-red-100/80 rounded-lg text-center font-medium border border-red-200"></div>
 
             <form id="login-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Email</label>
                     <input type="email" id="login-email" required placeholder="admin@amanahcapital.com" 
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password</label>
                     <input type="password" id="login-password" required placeholder="••••••••" 
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                           class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50">
                 </div>
                 <button type="submit" id="login-btn" 
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30">
                     <i data-lucide="log-in" class="w-4 h-4"></i> Masuk Ke System
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- ==================== UTAMA DASHBOARD (Tampil setelah login) ==================== -->
+    <!-- ==================== UTAMA DASHBOARD ==================== -->
     <div id="dashboard-screen" class="hidden">
         <!-- Header Navigation -->
-        <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+        <header class="gradient-header text-white shadow-xl sticky top-0 z-40 border-b border-slate-700/50">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <!-- Custom Logo -->
-                    <img src="./RAJ-LOGO-BERSIH.png" alt="Amanah Capital Logo" class="w-9 h-9 object-contain bg-white rounded-lg p-1">
-                    <h1 class="text-2xl font-bold tracking-wide">Amanah Capital</h1>
+                    <img src="./RAJ-LOGO-BERSIH.png" alt="Amanah Capital Logo" class="w-10 h-10 object-contain">
+                    <div>
+                        <h1 class="text-xl font-bold tracking-wide leading-tight">Amanah Capital</h1>
+                        <p class="text-[10px] text-blue-300 uppercase tracking-widest">Enterprise Financial Hub</p>
+                    </div>
                 </div>
                 
-                <div class="flex items-center space-x-4">
-                    <div class="hidden sm:flex items-center space-x-2 text-xs bg-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-600">
-                        <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-                        <span id="status-text">Menghubungkan Database...</span>
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-400/30 transition">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan Aplikasi
+                    </button>
+
+                    <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm">
+                        <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                        <span id="status-text" class="text-slate-300">Menghubungkan Database...</span>
                     </div>
 
-                    <button id="logout-btn" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs px-3 py-1.5 rounded-lg transition border border-emerald-600 flex items-center gap-1">
+                    <button id="logout-btn" class="bg-blue-600/30 hover:bg-red-600/80 text-white text-xs px-3.5 py-1.5 rounded-lg transition border border-blue-400/30 hover:border-red-400 flex items-center gap-1.5">
                         <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Keluar
                     </button>
                 </div>
@@ -71,107 +98,254 @@
         </header>
 
         <!-- Main Content Container -->
-        <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
 
             <!-- Metrics Overview Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-600">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Penjualan</p>
-                    <h3 id="card-penjualan" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-emerald-500">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Penjualan</p>
+                        <i data-lucide="arrow-up-right" class="w-5 h-5 text-emerald-500"></i>
+                    </div>
+                    <h3 id="card-penjualan" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-600">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total HPP Pembelian</p>
-                    <h3 id="card-pembelian" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-blue-600">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total HPP Pembelian</p>
+                        <i data-lucide="shopping-cart" class="w-5 h-5 text-blue-600"></i>
+                    </div>
+                    <h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-amber-600">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Laba Bersih (Nett)</p>
-                    <h3 id="card-laba" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-cyan-500">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Laba Bersih (Nett)</p>
+                        <i data-lucide="wallet" class="w-5 h-5 text-cyan-500"></i>
+                    </div>
+                    <h3 id="card-laba" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-purple-600">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Bagi Hasil Investor</p>
-                    <h3 id="card-bagi-hasil" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-indigo-600">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Bagi Hasil Investor</p>
+                        <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i>
+                    </div>
+                    <h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
             </div>
 
-            <!-- Section: Charts & Input Forms -->
+            <!-- Section: Charts & Fast Entry -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <!-- Financial Performance Chart -->
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
-                        Performa Keuangan Proyek
-                    </h2>
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="activity" class="w-5 h-5 text-blue-600"></i>
+                            Performa Keuangan Proyek
+                        </h2>
+                        <span class="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md font-semibold">Live Real-time</span>
+                    </div>
                     <div class="relative h-64">
                         <canvas id="financialChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Fast Entry Form -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></i>
+                <div class="glass-card p-6 rounded-2xl shadow-sm">
+                    <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i>
                         Input Transaksi Baru
                     </h2>
                     <form id="transactionForm" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
-                            <select id="formTarget" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Jenis Transaksi</label>
+                            <select id="formTarget" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white">
                                 <option value="PEMBELIAN">Pembelian Material / HPP</option>
                                 <option value="PENJUALAN">Penjualan Offtaker</option>
                                 <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Material</label>
-                            <input type="text" id="formDesc" placeholder="Contoh: Plastik PET / Bensin" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Deskripsi / Material</label>
+                            <input type="text" id="formDesc" placeholder="Contoh: Plastik PET / Bensin" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none" required>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah (Kg/Unit)</label>
-                                <input type="number" id="formQty" placeholder="100" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Jumlah (Kg/Unit)</label>
+                                <input type="number" id="formQty" placeholder="100" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label>
-                                <input type="number" id="formPrice" placeholder="5000" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan (Rp)</label>
+                                <input type="number" id="formPrice" placeholder="5000" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                             </div>
                         </div>
-                        <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2">
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition duration-150 flex items-center justify-center gap-2 shadow-md shadow-blue-600/20">
                             <i data-lucide="save" class="w-4 h-4"></i> Simpan Ke Sheets
                         </button>
                     </form>
                 </div>
             </div>
 
-            <!-- Section: Data Tables -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="border-b border-gray-200 bg-gray-50/50 px-6 py-4 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-gray-800">Daftar Transaksi Terbaru</h2>
-                    <button onclick="loadDashboardData()" class="text-sm bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i> Refresh Data
-                    </button>
+            <!-- Section: Data Tables & Live Comments -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Table Transactions (2 Cols) -->
+                <div class="lg:col-span-2 glass-card rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-between items-center">
+                            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="list-filter" class="w-5 h-5 text-blue-600"></i>
+                                Daftar Transaksi Terbaru
+                            </h2>
+                            <button onclick="loadDashboardData()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-1.5 font-medium transition">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-600"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-slate-600">
+                                <thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70 tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-3">ID Transaksi</th>
+                                        <th class="px-6 py-3">Tanggal</th>
+                                        <th class="px-6 py-3">Kategori / Item</th>
+                                        <th class="px-6 py-3">Jumlah</th>
+                                        <th class="px-6 py-3">Total (Rp)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-transactions-body">
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Memuat data dari Google Sheets...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-600">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                            <tr>
-                                <th class="px-6 py-3">ID Transaksi</th>
-                                <th class="px-6 py-3">Tanggal</th>
-                                <th class="px-6 py-3">Kategori / Item</th>
-                                <th class="px-6 py-3">Jumlah</th>
-                                <th class="px-6 py-3">Total (Rp)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-transactions-body">
-                            <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">Memuat data dari Google Sheets...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <!-- Live Discussion / Question Board (1 Col) -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm flex flex-col h-[480px]">
+                    <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="message-square-plus" class="w-5 h-5 text-blue-600"></i>
+                            Forum Diskusi & Pertanyaan
+                        </h2>
+                    </div>
+
+                    <div id="comments-container" class="flex-1 overflow-y-auto space-y-3 pr-2 text-xs">
+                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-100">
+                            <div class="flex justify-between font-bold text-blue-900 mb-1">
+                                <span>Admin System</span>
+                                <span class="text-[10px] text-slate-400 font-normal">Sistem</span>
+                            </div>
+                            <p class="text-slate-600">Silakan gunakan kolom ini untuk memberikan pertanyaan atau catatan transaksi.</p>
+                        </div>
+                    </div>
+
+                    <form id="comment-form" class="mt-4 pt-3 border-t border-slate-100 flex gap-2">
+                        <input type="text" id="comment-input" required placeholder="Tulis pertanyaan / komentar..." 
+                               class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs transition flex items-center gap-1 font-medium">
+                            <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim
+                        </button>
+                    </form>
                 </div>
+
             </div>
 
         </main>
+    </div>
+
+    <!-- ==================== MODAL TUTORIAL / PANDUAN APLIKASI ==================== -->
+    <div id="tutorial-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative border border-slate-100">
+            <button onclick="toggleTutorialModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-blue-100 text-blue-600 rounded-xl">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Panduan Singkat Aplikasi</h3>
+                    <p class="text-xs text-slate-500">Petunjuk penggunaan Dashboard Amanah Capital</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-600"></i> 1. Monitoring Real-time</p>
+                    <p>Ringkasan total Penjualan, HPP Pembelian, Laba Bersih, dan Bagi Hasil terhubung langsung secara otomatis dengan Google Sheets.</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i> 2. Input Transaksi Baru</p>
+                    <p>Gunakan formulir "Input Transaksi Baru" untuk menambahkan catatan Pembelian, Penjualan, atau Biaya Operasional langsung ke database.</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="message-square" class="w-4 h-4 text-cyan-600"></i> 3. Forum & Chatbot "Ami"</p>
+                    <p>Gunakan kolom komentar untuk berdiskusi dengan tim/investor, atau klik ikon **Ami** di pojok kanan bawah untuk bantuan instant & tanya jawab seru!</p>
+                </div>
+            </div>
+
+            <button onclick="toggleTutorialModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-medium text-xs transition">
+                Paham, Tutup Panduan
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== FLOATING INTERACTIVE CHATBOT (AMI) ==================== -->
+    <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+        
+        <!-- Window Chat Floating -->
+        <div id="bot-chat-window" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[420px] transition-all">
+            <!-- Header Chatbot -->
+            <div class="gradient-header p-3.5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/30 border border-blue-300 flex items-center justify-center font-bold text-sm">
+                        🤖
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xs">Ami - Asisten Amanah</h4>
+                        <p class="text-[10px] text-blue-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Aktif & Siap Bantu!</p>
+                    </div>
+                </div>
+                <button onclick="toggleBotChat()" class="text-slate-300 hover:text-white p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Area Pesan Chat -->
+            <div id="bot-messages" class="flex-1 p-3.5 space-y-2.5 overflow-y-auto bg-slate-50 text-xs">
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0">🤖</div>
+                    <div class="bg-white p-2.5 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700">
+                        Halo! Aku **Ami** 🤖, asisten pintar Amanah Capital! Ada yang bisa Ami bantu tentang laporan keuangan, cara pakai aplikasi, atau rumus bagi hasil? 😁
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Chips -->
+            <div class="px-3 py-1.5 bg-slate-100 flex gap-1.5 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200">
+                <button onclick="sendQuickQuestion('Bagaimana cara input transaksi?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">💡 Cara Input</button>
+                <button onclick="sendQuickQuestion('Bagaimana rumus bagi hasil?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">📈 Bagi Hasil</button>
+                <button onclick="sendQuickQuestion('Siapa kamu?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">🤖 Tentang Ami</button>
+            </div>
+
+            <!-- Form Input Chat -->
+            <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-1.5">
+                <input type="text" id="bot-input" placeholder="Tanyakan sesuatu ke Ami..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Button Floating Icon -->
+        <button onclick="toggleBotChat()" class="relative group bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center animate-bounce-subtle border-2 border-white">
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white"></span>
+            <i data-lucide="bot" class="w-6 h-6"></i>
+        </button>
     </div>
 
     <!-- Firebase Modular SDK -->
@@ -179,7 +353,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyB3FBodo6yI5Xdj9HjoYBTwQPqoKzOwwkg",
             authDomain: "amanahcapital.firebaseapp.com",
@@ -190,7 +363,6 @@
             measurementId: "G-FGW0412DMM"
         };
 
-        // Inisialisasi Firebase & Auth
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
@@ -200,9 +372,11 @@
         const loginError = document.getElementById('login-error');
         const logoutBtn = document.getElementById('logout-btn');
 
-        // Monitoring Status Login
+        window.currentUserEmail = "";
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                window.currentUserEmail = user.email;
                 loginScreen.classList.add('hidden');
                 dashboardScreen.classList.remove('hidden');
                 initChart();
@@ -213,7 +387,6 @@
             }
         });
 
-        // Event Listener Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -236,20 +409,25 @@
             }
         });
 
-        // Event Listener Logout
         logoutBtn.addEventListener('click', () => {
             signOut(auth);
         });
     </script>
 
-    <!-- App Logic Script -->
+    <!-- App Logic & Interactive Features Script -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         let financialChart;
 
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
+            loadLocalComments();
         });
+
+        function toggleTutorialModal() {
+            const modal = document.getElementById('tutorial-modal');
+            modal.classList.toggle('hidden');
+        }
 
         function formatIDR(val) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
@@ -265,8 +443,8 @@
                     datasets: [{
                         label: 'Nominal (Rp)',
                         data: [0, 0, 0],
-                        backgroundColor: ['#10b981', '#2563eb', '#d97706'],
-                        borderRadius: 8
+                        backgroundColor: ['#10b981', '#2563eb', '#06b6d4'],
+                        borderRadius: 10
                     }]
                 },
                 options: {
@@ -282,7 +460,7 @@
             const statusIndicator = document.getElementById('status-indicator');
             const statusText = document.getElementById('status-text');
 
-            statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse";
+            statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
             statusText.innerText = "Memuat Data...";
 
             try {
@@ -293,7 +471,7 @@
 
                 if (resDash.status === "success" && resTx.status === "success") {
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
-                    statusText.innerText = "Terhubung ke Google Sheets";
+                    statusText.innerText = "Terhubung";
 
                     let totalPenjualan = resTx.penjualan.reduce((acc, curr) => acc + (Number(curr.Total_Penjualan) || 0), 0);
                     let totalPembelian = resTx.pembelian.reduce((acc, curr) => acc + (Number(curr.Total_Harga_HPP) || 0), 0);
@@ -324,21 +502,22 @@
         function renderTransactionsTable(list) {
             const tbody = document.getElementById('table-transactions-body');
             if (!list || list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-400">Belum ada transaksi.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-slate-400">Belum ada transaksi.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = list.map(item => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">${item.ID_Penjualan || item.ID_Pembelian || '-'}</td>
-                    <td class="px-6 py-4">${item.Tanggal ? new Date(item.Tanggal).toLocaleDateString('id-ID') : '-'}</td>
-                    <td class="px-6 py-4">${item.Nama_Barang_Material || '-'}</td>
-                    <td class="px-6 py-4">${item.Jumlah_Kg_Unit || 0} Kg/Unit</td>
-                    <td class="px-6 py-4 font-semibold text-gray-800">${formatIDR(item.Total_Penjualan || item.Total_Harga_HPP || 0)}</td>
+                <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
+                    <td class="px-6 py-3.5 font-medium text-slate-900">${item.ID_Penjualan || item.ID_Pembelian || '-'}</td>
+                    <td class="px-6 py-3.5 text-xs text-slate-500">${item.Tanggal ? new Date(item.Tanggal).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="px-6 py-3.5 font-medium">${item.Nama_Barang_Material || '-'}</td>
+                    <td class="px-6 py-3.5 text-xs">${item.Jumlah_Kg_Unit || 0} Kg/Unit</td>
+                    <td class="px-6 py-3.5 font-semibold text-slate-800">${formatIDR(item.Total_Penjualan || item.Total_Harga_HPP || 0)}</td>
                 </tr>
             `).join('');
         }
 
+        // Form Submit Input Transaksi Baru
         document.getElementById('transactionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -354,7 +533,7 @@
 
             let rowData = [];
             if (targetSheet === "PEMBELIAN") {
-                rowData = [`BUY-${Date.now()}`, today, 'Material', desc, qty, price, total, 'Vendor A', 'Input Web'];
+                rowData = [`BUY-${Date.now()}`, today, 'Material', desc, qty, price, total, 'Vendor Utama', 'Input Web'];
             } else if (targetSheet === "PENJUALAN") {
                 rowData = [`SEL-${Date.now()}`, today, 'Buyer Utama', desc, qty, price, total, 'Lunas'];
             } else if (targetSheet === "OPERASIONAL_BIAYA") {
@@ -379,6 +558,121 @@
                 btn.innerText = "Simpan Ke Sheets";
             }
         });
+
+        // Interactive Forum/Comment Section
+        const commentForm = document.getElementById('comment-form');
+        const commentInput = document.getElementById('comment-input');
+        const commentsContainer = document.getElementById('comments-container');
+
+        commentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = commentInput.value.trim();
+            if(!text) return;
+
+            const user = window.currentUserEmail || 'User';
+            const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const newComment = { user, text, time };
+            saveAndRenderComment(newComment);
+            commentInput.value = '';
+        });
+
+        function saveAndRenderComment(comment) {
+            let comments = JSON.parse(localStorage.getItem('amanah_comments') || '[]');
+            comments.push(comment);
+            localStorage.setItem('amanah_comments', JSON.stringify(comments));
+            renderComments();
+        }
+
+        function loadLocalComments() {
+            renderComments();
+        }
+
+        function renderComments() {
+            let comments = JSON.parse(localStorage.getItem('amanah_comments') || '[]');
+            if(comments.length === 0) return;
+
+            const html = comments.map(c => `
+                <div class="p-3 bg-white rounded-xl border border-slate-200/80 shadow-sm space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-800 text-[11px] truncate max-w-[150px]">${c.user}</span>
+                        <span class="text-[9px] text-slate-400">${c.time}</span>
+                    </div>
+                    <p class="text-slate-600 text-xs">${c.text}</p>
+                </div>
+            `).join('');
+
+            commentsContainer.innerHTML = html;
+            commentsContainer.scrollTop = commentsContainer.scrollHeight;
+        }
+
+        // Chatbot "Ami" Interactive Logic
+        function toggleBotChat() {
+            const chatWin = document.getElementById('bot-chat-window');
+            chatWin.classList.toggle('hidden');
+        }
+
+        const botForm = document.getElementById('bot-form');
+        const botInput = document.getElementById('bot-input');
+        const botMessages = document.getElementById('bot-messages');
+
+        botForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = botInput.value.trim();
+            if(!text) return;
+
+            appendBotUserMessage(text);
+            botInput.value = '';
+            
+            setTimeout(() => {
+                replyBotMessage(text);
+            }, 600);
+        });
+
+        function sendQuickQuestion(question) {
+            appendBotUserMessage(question);
+            setTimeout(() => {
+                replyBotMessage(question);
+            }, 500);
+        }
+
+        function appendBotUserMessage(msg) {
+            botMessages.innerHTML += `
+                <div class="flex gap-2 justify-end">
+                    <div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs">
+                        ${msg}
+                    </div>
+                </div>
+            `;
+            botMessages.scrollTop = botMessages.scrollHeight;
+        }
+
+        function replyBotMessage(userMsg) {
+            let reply = "Ami kurang mengerti nih 😅 Tapi Ami siap bantu terkait input transaksi, laporan bagi hasil, atau info aplikasi!";
+            const q = userMsg.toLowerCase();
+
+            if (q.includes('halo') || q.includes('hai') || q.includes('pagi') || q.includes('siang')) {
+                reply = "Halo juga! Ami di sini 😁 Semangat pantau performa bisnis hari ini ya!";
+            } else if (q.includes('input') || q.includes('tambah') || q.includes('transaksi')) {
+                reply = "Untuk input data baru, gunakan form **'Input Transaksi Baru'** di sebelah tengah dashboard. Pilih jenis transaksi, lalu klik **Simpan Ke Sheets** ✨";
+            } else if (q.includes('bagi hasil') || q.includes('investor') || q.includes('rumus')) {
+                reply = "Bagi hasil dihitung dari **(Total Penjualan - HPP Pembelian - Operasional)** dikali persentase porsi investor yang disepakati 📊";
+            } else if (q.includes('siapa') || q.includes('ami')) {
+                reply = "Aku **Ami**, robot asisten favoritmu di Amanah Capital! Siap menemani pantau cuan tiap hari! 🚀";
+            } else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('ok')) {
+                reply = "Sama-sama! Semoga sukses dan berkah selalu usahanya ya! 🌟";
+            }
+
+            botMessages.innerHTML += `
+                <div class="flex gap-2">
+                    <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0">🤖</div>
+                    <div class="bg-white p-2.5 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700">
+                        ${reply}
+                    </div>
+                </div>
+            `;
+            botMessages.scrollTop = botMessages.scrollHeight;
+        }
     </script>
 </body>
 </html>
