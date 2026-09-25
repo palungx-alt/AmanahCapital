@@ -13,7 +13,7 @@
     
     <style>
         /* Styling Dashboard */
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%); }
         
         /* Animations */
@@ -27,25 +27,40 @@
         @keyframes equalizer { 0%, 100% { height: 5px; } 50% { height: 15px; } }
         .paused .music-bar { animation: none; height: 5px; }
 
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* ========================================= */
         /* PROFESSIONAL PRINT STYLES                 */
         /* ========================================= */
         @media print {
-            body * { visibility: hidden; }
+            body * { visibility: hidden !important; }
             #print-area, #print-area * { visibility: visible !important; }
             #print-area {
                 position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0;
-                background: white; z-index: 9999;
+                background: white; z-index: 9999; overflow: visible;
             }
             .no-print { display: none !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .shadow-sm, .rounded-xl, .rounded-2xl { box-shadow: none !important; border-radius: 0 !important; }
+            
+            /* Force page break settings */
+            tr, td, th { page-break-inside: avoid; }
+            thead { display: table-header-group; }
         }
 
         /* Preview Modal Overlay */
         .print-overlay {
-            background-color: #52525b;
-            background-image: radial-gradient(#71717a 1px, transparent 1px);
+            background-color: #3f3f46;
+            background-image: radial-gradient(#52525b 1px, transparent 1px);
             background-size: 20px 20px;
         }
     </style>
@@ -59,8 +74,10 @@
     <div id="login-screen" class="min-h-screen flex items-center justify-center gradient-header px-4">
         <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-700/30">
             <div class="text-center space-y-3">
-                <div class="inline-flex p-3 bg-blue-50/80 rounded-2xl mb-1 border border-blue-100">
-                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">AC</div>
+                <div class="inline-flex p-3 bg-blue-50/80 rounded-2xl mb-1 border border-blue-100 mx-auto">
+                    <!-- Logo Placeholder jika gambar gagal load -->
+                    <img src="./assets/logo.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Logo" class="w-16 h-16 object-contain hidden">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl" style="display:none">AC</div>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Amanah Capital</h2>
                 <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Financial Portal System</p>
@@ -87,7 +104,8 @@
         <header class="gradient-header text-white shadow-xl sticky top-0 z-40 border-b border-slate-700/50">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-900 font-bold">AC</div>
+                    <img src="./assets/logo.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" class="w-10 h-10 object-contain rounded-full bg-white p-1">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-900 font-bold hidden">AC</div>
                     <div>
                         <h1 class="text-xl font-bold tracking-wide leading-tight">Amanah Capital</h1>
                         <p class="text-[10px] text-blue-300 uppercase tracking-widest">Enterprise Financial Hub</p>
@@ -111,38 +129,47 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
-            <!-- Filter Periode -->
+            
+            <!-- Filter Periode Tanggal (Date Range) -->
             <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-wrap items-center gap-4">
-                <div class="flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i><label class="text-sm font-semibold text-slate-700">Filter:</label></div>
-                <select id="filter-month" onchange="loadDashboardData()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none bg-white">
-                    <option value="all">Semua Bulan</option>
-                    <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option>
-                    <option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option>
-                    <option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option>
-                    <option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
-                </select>
-                <select id="filter-year" onchange="loadDashboardData()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none bg-white"></select>
+                <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i><label class="text-sm font-semibold text-slate-700">Periode Transaksi:</label></div>
+                <div class="flex items-center gap-2">
+                    <input type="date" id="filter-start-date" class="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none bg-white">
+                    <span class="text-slate-400">s/d</span>
+                    <input type="date" id="filter-end-date" class="border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none bg-white">
+                </div>
+                <button onclick="loadDashboardData()" class="ml-auto text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i> Terapkan Filter
+                </button>
+                <button onclick="resetFilter()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset
+                </button>
             </div>
 
             <!-- Metrics Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-emerald-500 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="trending-up" class="w-16 h-16"></i></div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase">Total Penjualan</p>
                     <h3 id="card-penjualan" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-blue-600">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-blue-600 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="shopping-cart" class="w-16 h-16"></i></div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase">HPP Pembelian</p>
                     <h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-amber-500">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-amber-500 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="wallet" class="w-16 h-16"></i></div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase">Biaya Operasional</p>
                     <h3 id="card-operasional" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-purple-500">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-purple-500 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="users" class="w-16 h-16"></i></div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase">Bagi Hasil (10%)</p>
                     <h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
-                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-indigo-600">
+                <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-indigo-600 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="pie-chart" class="w-16 h-16"></i></div>
                     <p class="text-[11px] font-bold text-slate-400 uppercase">Laba Bersih</p>
                     <h3 id="card-laba" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
@@ -153,6 +180,7 @@
                 <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2>
+                        <div id="chart-loader" class="loader hidden"></div>
                     </div>
                     <div class="relative h-64"><canvas id="financialChart"></canvas></div>
                 </div>
@@ -166,6 +194,10 @@
                             <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
                         </select>
                         <input type="text" id="formDesc" placeholder="Deskripsi Item" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none" required>
+                        
+                        <!-- Tambahan Field Vendor/Buyer -->
+                        <input type="text" id="formVendor" placeholder="Nama Vendor / Buyer (Penting untuk grouping)" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required>
+                        
                         <div class="grid grid-cols-2 gap-3">
                             <input type="number" id="formQty" placeholder="Qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
                             <input type="number" id="formPrice" placeholder="Harga Satuan" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
@@ -185,8 +217,10 @@
                 <!-- Tab Transaksi -->
                 <div id="content-transactions" class="p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-base font-bold text-slate-800">Daftar Transaksi</h2>
-                        <button onclick="loadDashboardData()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
+                        <h2 class="text-base font-bold text-slate-800">Daftar Transaksi Detail</h2>
+                        <div class="flex items-center gap-2">
+                            <span id="data-status" class="text-xs text-slate-500 flex items-center gap-1"><div class="loader w-3 h-3 border-2"></div> Memuat...</span>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left text-slate-600">
@@ -194,14 +228,14 @@
                                 <tr>
                                     <th class="px-6 py-3">ID</th>
                                     <th class="px-6 py-3">Tanggal</th>
-                                    <th class="px-6 py-3">Kategori</th>
+                                    <th class="px-6 py-3">Vendor / Buyer</th>
                                     <th class="px-6 py-3">Item</th>
                                     <th class="px-6 py-3">Total</th>
                                     <th class="px-6 py-3">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="table-transactions-body">
-                                <tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">Memuat data...</td></tr>
+                                <tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">Menunggu filter periode...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -234,40 +268,36 @@
     </div>
 
     <!-- ==================== MODAL PREVIEW CETAK (PROFESSIONAL) ==================== -->
-    <div id="print-modal" class="fixed inset-0 z-50 hidden print-overlay overflow-y-auto flex items-center justify-center p-4">
-        <div class="relative w-full max-w-4xl my-8">
+    <div id="print-modal" class="fixed inset-0 z-50 hidden print-overlay overflow-y-auto flex flex-col items-center justify-start p-4 pt-20">
+        
+        <!-- Toolbar Floating STICKY (Selalu terlihat) -->
+        <div class="no-print sticky top-4 z-50 flex gap-3 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-2xl border border-slate-200 mb-6">
+            <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2">
+                <i data-lucide="x" class="w-4 h-4"></i> Kembali
+            </button>
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-blue-600/30">
+                <i data-lucide="printer" class="w-4 h-4"></i> Cetak / Save PDF
+            </button>
+        </div>
+
+        <!-- Kertas A4 Virtual -->
+        <div id="print-area" class="bg-white shadow-2xl mx-auto w-[210mm] min-h-[297mm] p-[15mm] relative text-slate-900 mb-20">
             
-            <!-- Toolbar Floating (Tidak ikut terprint) -->
-            <div class="no-print absolute -top-12 right-0 flex gap-2">
-                <button onclick="closePrintModal()" class="bg-white text-slate-700 px-4 py-2 rounded-lg shadow-lg font-medium text-sm hover:bg-slate-50">Tutup</button>
-                <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg font-medium text-sm hover:bg-blue-700 flex items-center gap-2">
-                    <i data-lucide="printer" class="w-4 h-4"></i> Cetak / Save PDF
-                </button>
+            <!-- AREA KOP SURAT -->
+            <div id="kop-surat-container" class="mb-8 border-b-2 border-slate-800 pb-4">
+                <img id="kop-img" src="" alt="Kop Surat" class="w-full h-auto object-contain max-h-[150px] hidden">
+                <div id="kop-fallback" class="text-center py-4 hidden">
+                    <h1 class="text-3xl font-bold text-slate-900 tracking-wider">CV. REZEKI AMANAH JAYA</h1>
+                    <p class="text-sm text-slate-600 mt-1">Jl. Raya Bisnis No. 88, Jakarta Selatan | Telp: (021) 555-0123</p>
+                </div>
             </div>
 
-            <!-- Kertas A4 Virtual -->
-            <div id="print-area" class="bg-white shadow-2xl mx-auto w-[210mm] min-h-[297mm] p-[15mm] relative text-slate-900">
-                
-                <!-- AREA KOP SURAT -->
-                <div id="kop-surat-container" class="mb-8 border-b-2 border-slate-800 pb-4">
-                    <img id="kop-img" src="" alt="Kop Surat" class="w-full h-auto object-contain max-h-[150px] hidden">
-                    <div id="kop-fallback" class="text-center py-4">
-                        <h1 class="text-3xl font-bold text-slate-900 tracking-wider">CV. REZEKI AMANAH JAYA</h1>
-                        <p class="text-sm text-slate-600 mt-1">Jl. Raya Bisnis No. 88, Jakarta Selatan | Telp: (021) 555-0123</p>
-                        <p class="text-xs text-slate-500 mt-1">Email: admin@amanahcapital.com | Web: www.amanahcapital.com</p>
-                    </div>
-                </div>
+            <!-- KONTEN DINAMIS -->
+            <div id="document-content" class="min-h-[500px]"></div>
 
-                <!-- KONTEN DINAMIS (Nota/Kwitansi/Invoice) -->
-                <div id="document-content" class="min-h-[500px]">
-                    <!-- Diisi oleh JavaScript -->
-                </div>
-
-                <!-- FOOTER DOKUMEN -->
-                <div class="absolute bottom-[15mm] left-[15mm] right-[15mm] pt-4 border-t border-slate-200 text-[9px] text-slate-400 text-center">
-                    <p>Dokumen ini sah dan dibuat secara elektronik oleh Sistem Amanah Capital.</p>
-                    <p>Valid without wet signature if accompanied by digital verification code.</p>
-                </div>
+            <!-- FOOTER DOKUMEN -->
+            <div class="absolute bottom-[15mm] left-[15mm] right-[15mm] pt-4 border-t border-slate-200 text-[9px] text-slate-400 text-center">
+                <p>Dokumen ini sah dan dibuat secara elektronik oleh Sistem Amanah Capital.</p>
             </div>
         </div>
     </div>
@@ -294,7 +324,14 @@
             if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
-                initYearFilter();
+                
+                // Set default date range to current month
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                document.getElementById('filter-start-date').value = firstDay.toISOString().split('T')[0];
+                document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
+                document.getElementById('formDate').value = today.toISOString().split('T')[0];
+
                 initChart();
                 loadDashboardData();
                 playMusic();
@@ -318,13 +355,10 @@
 
     <script>
         // ==========================================
-        // KONFIGURASI GAMBAR & TTD (PENTING!)
+        // KONFIGURASI GAMBAR & TTD
         // ==========================================
         const CONFIG = {
-            // Path relatif terhadap index.html (untuk Cloudflare Pages)
             KOP_SURAT_URL: './assets/kop-surat.png', 
-            
-            // Nama file tanda tangan sesuai permintaan
             TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' 
         };
 
@@ -349,22 +383,10 @@
         // --- INITIALIZATION ---
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
-            document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
-            
-            // Preload images to avoid delay when printing
+            // Preload images aggressively
             const img1 = new Image(); img1.src = CONFIG.KOP_SURAT_URL;
             const img2 = new Image(); img2.src = CONFIG.TTD_DIRUT_URL;
         });
-
-        function initYearFilter() {
-            const select = document.getElementById('filter-year');
-            const year = new Date().getFullYear();
-            for(let i=0; i<5; i++) {
-                const opt = document.createElement('option');
-                opt.value = year-i; opt.text = year-i;
-                select.appendChild(opt);
-            }
-        }
 
         function formatIDR(val) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0); }
 
@@ -382,42 +404,84 @@
 
         // --- DATA LOADING & FILTERING ---
         async function loadDashboardData() {
-            const month = document.getElementById('filter-month').value;
-            const year = document.getElementById('filter-year').value;
+            const startDate = document.getElementById('filter-start-date').value;
+            const endDate = document.getElementById('filter-end-date').value;
+            const statusEl = document.getElementById('data-status');
+            const chartLoader = document.getElementById('chart-loader');
+
+            if(!startDate || !endDate) {
+                alert("Mohon pilih periode tanggal terlebih dahulu.");
+                return;
+            }
+
+            statusEl.innerHTML = `<div class="loader w-3 h-3 border-2"></div> Mengambil Data...`;
+            chartLoader.classList.remove('hidden');
 
             try {
+                // Fetch with timeout handling simulation for better UX
                 const resTx = await fetch(`${API_URL}?action=getTransactions`).then(r => r.json());
                 
                 if (resTx.status === "success") {
                     let rawList = [];
                     
-                    // Flatten Data
-                    if(resTx.penjualan) resTx.penjualan.forEach(i => rawList.push({...i, kategori:'Penjualan', total:i.Total_Penjualan, type:'income'}));
-                    if(resTx.pembelian) resTx.pembelian.forEach(i => rawList.push({...i, kategori:'Pembelian', total:i.Total_Harga_HPP, type:'expense'}));
-                    if(resTx.operasional) resTx.operasional.forEach(i => rawList.push({...i, kategori:'Operasional', total:i.Jumlah_Nominal, type:'expense'}));
+                    // Flatten Data & Normalize Keys
+                    if(resTx.penjualan) resTx.penjualan.forEach(i => rawList.push({
+                        ...i, kategori:'Penjualan', total:i.Total_Penjualan, type:'income', 
+                        vendor: i.Nama_Buyer || i.Vendor || 'Umum' // Fallback vendor
+                    }));
+                    
+                    if(resTx.pembelian) resTx.pembelian.forEach(i => rawList.push({
+                        ...i, kategori:'Pembelian', total:i.Total_Harga_HPP, type:'expense',
+                        vendor: i.Nama_Vendor || i.Vendor || 'Umum'
+                    }));
+                    
+                    if(resTx.operasional) resTx.operasional.forEach(i => rawList.push({
+                        ...i, kategori:'Operasional', total:i.Jumlah_Nominal, type:'expense',
+                        vendor: 'Internal'
+                    }));
 
                     // Sort Date Descending
                     rawList.sort((a,b) => new Date(b.Tanggal) - new Date(a.Tanggal));
                     allTransactionsData = rawList;
 
-                    // Filter Logic
+                    // Filter Logic by Date Range
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    // Reset time to ensure full day coverage
+                    start.setHours(0,0,0,0);
+                    end.setHours(23,59,59,999);
+
                     currentFilteredData = rawList.filter(item => {
                         if(!item.Tanggal) return false;
                         const d = new Date(item.Tanggal);
-                        const matchMonth = month === 'all' || d.getMonth() == month;
-                        const matchYear = d.getFullYear() == year;
-                        return matchMonth && matchYear;
+                        return d >= start && d <= end;
                     });
 
                     updateMetrics();
                     renderTable();
                     renderLedger();
+                    
+                    statusEl.innerHTML = `<span class="text-emerald-600 flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> Data Terupdate</span>`;
+                    lucide.createIcons();
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error(e); 
+                statusEl.innerHTML = `<span class="text-red-600">Gagal memuat data</span>`;
+            } finally {
+                chartLoader.classList.add('hidden');
+            }
+        }
+
+        function resetFilter() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('filter-start-date').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
+            loadDashboardData();
         }
 
         function updateMetrics() {
-            const sum = (key, type) => currentFilteredData.filter(i => i.kategori === key).reduce((a,b) => a + (Number(b.total)||0), 0);
+            const sum = (key) => currentFilteredData.filter(i => i.kategori === key).reduce((a,b) => a + (Number(b.total)||0), 0);
             
             const penjualan = sum('Penjualan');
             const pembelian = sum('Pembelian');
@@ -441,7 +505,7 @@
         function renderTable() {
             const tbody = document.getElementById('table-transactions-body');
             if(currentFilteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada transaksi di periode ini.</td></tr>`;
                 return;
             }
 
@@ -449,7 +513,6 @@
                 const badgeColor = item.kategori === 'Penjualan' ? 'bg-emerald-100 text-emerald-700' : 
                                    item.kategori === 'Pembelian' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
                 
-                // Tombol Print hanya untuk Jual/Beli
                 let actionBtns = `<button onclick="openEditModal('${item.ID_Penjualan || item.ID_Pembelian || item.ID_Operasional}')" class="text-slate-400 hover:text-amber-600 p-1"><i data-lucide="edit" class="w-4 h-4"></i></button>`;
                 
                 if(item.kategori === 'Penjualan' || item.kategori === 'Pembelian') {
@@ -467,8 +530,8 @@
                 <tr class="border-b border-slate-100 hover:bg-slate-50">
                     <td class="px-6 py-3 font-mono text-xs">${item.ID_Penjualan || item.ID_Pembelian || item.ID_Operasional || '-'}</td>
                     <td class="px-6 py-3 text-xs">${new Date(item.Tanggal).toLocaleDateString('id-ID')}</td>
-                    <td class="px-6 py-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold ${badgeColor}">${item.kategori}</span></td>
-                    <td class="px-6 py-3 font-medium">${item.Nama_Barang_Material || item.Deskripsi || '-'}</td>
+                    <td class="px-6 py-3 font-medium text-slate-700">${item.vendor || '-'}</td>
+                    <td class="px-6 py-3">${item.Nama_Barang_Material || item.Deskripsi || '-'}</td>
                     <td class="px-6 py-3 font-bold ${item.type==='income'?'text-emerald-600':'text-red-600'}">${formatIDR(item.total)}</td>
                     <td class="px-6 py-3 flex items-center">${actionBtns}</td>
                 </tr>`;
@@ -506,10 +569,9 @@
         }
 
         // ==========================================
-        // SISTEM PRINT MULTI-ITEM PROFESIONAL
+        // SISTEM PRINT MULTI-ITEM & VENDOR GROUPING
         // ==========================================
         function openPrintModal(id, type) {
-            // Cari transaksi utama berdasarkan ID
             const mainItem = allTransactionsData.find(t => (t.ID_Penjualan || t.ID_Pembelian) === id);
             if(!mainItem) return;
 
@@ -518,30 +580,32 @@
             const kopImg = document.getElementById('kop-img');
             const kopFallback = document.getElementById('kop-fallback');
 
-            // Setup Kop Surat
-            kopImg.onload = () => { kopImg.classList.remove('hidden'); kopFallback.classList.add('hidden'); };
-            kopImg.onerror = () => { kopImg.classList.add('hidden'); kopFallback.classList.remove('hidden'); };
-            kopImg.src = CONFIG.KOP_SURAT_URL;
+            // Handle Kop Surat Loading
+            kopImg.classList.add('hidden');
+            kopFallback.classList.add('hidden');
+            kopImg.onload = () => { kopImg.classList.remove('hidden'); };
+            kopImg.onerror = () => { kopFallback.classList.remove('hidden'); };
+            kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime(); // Cache busting
 
             const dateObj = new Date(mainItem.Tanggal);
             const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-            // LOGIKA PENGGABUNGAN MULTI-ITEM
-            // Kita cari semua transaksi lain yang memiliki Tanggal DAN Kategori yang SAMA
-            // Ini asumsinya jika beli/jual di hari yang sama ke vendor/buyer yang sama, itu satu group
+            // LOGIKA PENGGABUNGAN BERDASARKAN VENDOR/BUYER & TANGGAL
+            // Mencari semua transaksi dengan Tanggal sama DAN Vendor/Buyer sama
             const relatedItems = allTransactionsData.filter(t => 
                 t.Tanggal === mainItem.Tanggal && 
-                t.kategori === mainItem.kategori
+                t.kategori === mainItem.kategori &&
+                (t.vendor || '').toLowerCase() === (mainItem.vendor || '').toLowerCase()
             );
 
-            // Hitung Grand Total dari semua item yang digabung
             const grandTotal = relatedItems.reduce((sum, item) => sum + (Number(item.total) || 0), 0);
+            const entityName = mainItem.vendor || 'Customer / Vendor Umum';
 
-            // Template Tanda Tangan (Reusable)
+            // Template Tanda Tangan
             const ttdSection = `
                 <div class="mt-16 flex justify-between items-end page-break-inside-avoid">
                     <div class="text-center w-1/3">
-                        <p class="text-sm mb-16">Penerima / Pembeli</p>
+                        <p class="text-sm mb-16">${type === 'kwitansi' ? 'Yang Menyetorkan' : 'Penerima / Pembeli'}</p>
                         <div class="border-t border-slate-400 w-32 mx-auto"></div>
                     </div>
                     <div class="text-center w-1/3">
@@ -556,8 +620,6 @@
                 </div>
             `;
 
-            let html = '';
-
             // Generate Rows Tabel Multi-Item
             const tableRows = relatedItems.map(item => `
                 <tr>
@@ -567,6 +629,8 @@
                     <td class="border border-slate-300 p-3 text-right font-bold">${formatIDR(item.total)}</td>
                 </tr>
             `).join('');
+
+            let html = '';
 
             if (type === 'nota') {
                 html = `
@@ -578,7 +642,7 @@
                     <div class="flex justify-between text-sm mb-8">
                         <div>
                             <p class="font-bold text-slate-700">Kepada Yth:</p>
-                            <p class="text-slate-600">Customer / Pembeli</p>
+                            <p class="text-slate-600 font-medium text-lg">${entityName}</p>
                         </div>
                         <div class="text-right">
                             <p class="font-bold text-slate-700">Tanggal:</p>
@@ -616,7 +680,7 @@
                         <div class="space-y-4 text-sm mb-10">
                             <div class="flex items-start">
                                 <span class="w-40 font-bold shrink-0">Sudah Terima Dari</span>
-                                <span class="border-b border-dotted border-slate-400 flex-1 px-2 pb-1">Customer / Pembeli</span>
+                                <span class="border-b border-dotted border-slate-400 flex-1 px-2 pb-1 font-medium">${entityName}</span>
                             </div>
                             <div class="flex items-start">
                                 <span class="w-40 font-bold shrink-0">Uang Sejumlah</span>
@@ -659,9 +723,8 @@
 
                     <div class="mb-10 bg-slate-50 p-4 rounded-lg border border-slate-100">
                         <p class="text-xs font-bold text-slate-400 uppercase mb-1">Ditagihkan Kepada:</p>
-                        <p class="font-bold text-slate-800 text-lg">Nama Perusahaan / Klien</p>
-                        <p class="text-sm text-slate-600">Alamat Lengkap Klien Disini</p>
-                        <p class="text-sm text-slate-600">Kota, Kode Pos</p>
+                        <p class="font-bold text-slate-800 text-lg">${entityName}</p>
+                        <p class="text-sm text-slate-600">Alamat Lengkap Klien/Vendor Disini</p>
                     </div>
 
                     <table class="w-full text-sm border-collapse border border-slate-200 mb-8">
@@ -697,6 +760,7 @@
 
             contentDiv.innerHTML = html;
             modal.classList.remove('hidden');
+            lucide.createIcons();
         }
 
         function closePrintModal() {
