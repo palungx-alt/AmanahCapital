@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amanah Capital - Financial Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <!-- Header Navigation -->
+    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="sprout" class="w-8 h-8 text-emerald-300"></i>
+                <h1 class="text-2xl font-bold tracking-wide">Amanah Capital</h1>
+            </div>
+            <div class="flex items-center space-x-2 text-sm bg-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-600">
+                <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                <span id="status-text">Menghubungkan Database...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Metrics Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-600">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Penjualan</p>
+                <h3 id="card-penjualan" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-600">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total HPP Pembelian</p>
+                <h3 id="card-pembelian" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-amber-600">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Laba Bersih (Nett)</p>
+                <h3 id="card-laba" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-purple-600">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Bagi Hasil Investor</p>
+                <h3 id="card-bagi-hasil" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+            </div>
+        </div>
+
+        <!-- Section: Charts & Input Forms -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Financial Performance Chart -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
+                    Performa Keuangan Proyek
+                </h2>
+                <div class="relative h-64">
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Fast Entry Form -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></i>
+                    Input Transaksi Baru
+                </h2>
+                <form id="transactionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                        <select id="formTarget" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option value="PEMBELIAN">Pembelian Material / HPP</option>
+                            <option value="PENJUALAN">Penjualan Offtaker</option>
+                            <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Material</label>
+                        <input type="text" id="formDesc" placeholder="Contoh: Plastik PET / Bensin" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah (Kg/Unit)</label>
+                            <input type="number" id="formQty" placeholder="100" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label>
+                            <input type="number" id="formPrice" placeholder="5000" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i> Simpan Ke Sheets
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Section: Data Tables -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="border-b border-gray-200 bg-gray-50/50 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-800">Daftar Transaksi Terbaru</h2>
+                <button onclick="loadDashboardData()" class="text-sm bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i> Refresh Data
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3">ID Transaksi</th>
+                            <th class="px-6 py-3">Tanggal</th>
+                            <th class="px-6 py-3">Kategori / Item</th>
+                            <th class="px-6 py-3">Jumlah</th>
+                            <th class="px-6 py-3">Total (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-transactions-body">
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-400">Memuat data dari Google Sheets...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+
+        let financialChart;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            initChart();
+            loadDashboardData();
+        });
+
+        function formatIDR(val) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            financialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Penjualan', 'HPP Pembelian', 'Laba Bersih'],
+                    datasets: [{
+                        label: 'Nominal (Rp)',
+                        data: [0, 0, 0],
+                        backgroundColor: ['#10b981', '#2563eb', '#d97706'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        async function loadDashboardData() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+
+            statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse";
+            statusText.innerText = "Memuat Data...";
+
+            try {
+                const [resDash, resTx] = await Promise.all([
+                    fetch(`${API_URL}?action=getDashboard`).then(r => r.json()),
+                    fetch(`${API_URL}?action=getTransactions`).then(r => r.json())
+                ]);
+
+                if (resDash.status === "success" && resTx.status === "success") {
+                    // Update Status Indicator
+                    statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+                    statusText.innerText = "Terhubung ke Google Sheets";
+
+                    // Calculate Totals
+                    let totalPenjualan = resTx.penjualan.reduce((acc, curr) => acc + (Number(curr.Total_Penjualan) || 0), 0);
+                    let totalPembelian = resTx.pembelian.reduce((acc, curr) => acc + (Number(curr.Total_Harga_HPP) || 0), 0);
+                    let totalOperasional = resTx.operasional.reduce((acc, curr) => acc + (Number(curr.Jumlah_Nominal) || 0), 0);
+                    let labaBersih = totalPenjualan - totalPembelian - totalOperasional;
+
+                    let totalBagiHasil = resDash.bagiHasil.reduce((acc, curr) => acc + (Number(curr.Hak_Bagi_Hasil_Investor) || 0), 0);
+
+                    // Update Card Display
+                    document.getElementById('card-penjualan').innerText = formatIDR(totalPenjualan);
+                    document.getElementById('card-pembelian').innerText = formatIDR(totalPembelian);
+                    document.getElementById('card-laba').innerText = formatIDR(labaBersih);
+                    document.getElementById('card-bagi-hasil').innerText = formatIDR(totalBagiHasil);
+
+                    // Update Chart Data
+                    financialChart.data.datasets[0].data = [totalPenjualan, totalPembelian, labaBersih];
+                    financialChart.update();
+
+                    // Render Table Transactions
+                    renderTransactionsTable([...resTx.penjualan, ...resTx.pembelian]);
+                }
+            } catch (err) {
+                console.error(err);
+                statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                statusText.innerText = "Gagal Memuat Data";
+            }
+        }
+
+        function renderTransactionsTable(list) {
+            const tbody = document.getElementById('table-transactions-body');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-400">Belum ada transaksi.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = list.map(item => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900">${item.ID_Penjualan || item.ID_Pembelian || '-'}</td>
+                    <td class="px-6 py-4">${item.Tanggal ? new Date(item.Tanggal).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="px-6 py-4">${item.Nama_Barang_Material || '-'}</td>
+                    <td class="px-6 py-4">${item.Jumlah_Kg_Unit || 0} Kg/Unit</td>
+                    <td class="px-6 py-4 font-semibold text-gray-800">${formatIDR(item.Total_Penjualan || item.Total_Harga_HPP || 0)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Handle Form Input Submission
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Menyimpan...";
+
+            const targetSheet = document.getElementById('formTarget').value;
+            const desc = document.getElementById('formDesc').value;
+            const qty = Number(document.getElementById('formQty').value) || 0;
+            const price = Number(document.getElementById('formPrice').value) || 0;
+            const total = qty * price;
+            const today = new Date().toISOString().split('T')[0];
+
+            let rowData = [];
+            if (targetSheet === "PEMBELIAN") {
+                rowData = [`BUY-${Date.now()}`, today, 'Material', desc, qty, price, total, 'Vendor A', 'Input Web'];
+            } else if (targetSheet === "PENJUALAN") {
+                rowData = [`SEL-${Date.now()}`, today, 'Buyer Utama', desc, qty, price, total, 'Lunas'];
+            } else if (targetSheet === "OPERASIONAL_BIAYA") {
+                rowData = [`EXP-${Date.now()}`, today, 'Operasional', desc, price, 'Admin Web'];
+            }
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetSheet: targetSheet, rowData: rowData })
+                });
+
+                alert("Data berhasil tersimpan!");
+                document.getElementById('transactionForm').reset();
+                setTimeout(() => loadDashboardData(), 1500);
+            } catch (err) {
+                alert("Gagal menyimpan data.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Simpan Ke Sheets";
+            }
+        });
+    </script>
+</body>
+</html>
