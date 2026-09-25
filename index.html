@@ -39,9 +39,35 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+        /* Audio Visualizer Animation */
+        .music-bar {
+            width: 3px;
+            background-color: #60a5fa;
+            animation: equalizer 1s infinite ease-in-out;
+        }
+        .music-bar:nth-child(2) { animation-delay: 0.2s; }
+        .music-bar:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes equalizer {
+            0%, 100% { height: 5px; }
+            50% { height: 15px; }
+        }
+        .paused .music-bar {
+            animation: none;
+            height: 5px;
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
+
+    <!-- ==================== AUDIO PLAYER (HIDDEN) ==================== -->
+    <!-- Menggunakan link sample. Ganti src dengan file MP3 lokal Anda jika ada -->
+    <audio id="bg-music" loop>
+        <!-- Link ini adalah contoh placeholder. Untuk hasil terbaik, download lagu Fourtwnty - Filosofi Kopi 
+             dan letakkan di folder project, lalu ubah src menjadi "./filosofi-kopi.mp3" -->
+        <source src="https://docs.google.com/uc?export=download&id=1XkJzFqQ_yY_zZ_xX_wW_vV_uU_tT_sS_rR" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
 
     <!-- ==================== LAYAR LOGIN ==================== -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center gradient-header px-4">
@@ -72,6 +98,10 @@
                     <i data-lucide="log-in" class="w-4 h-4"></i> Masuk Ke System
                 </button>
             </form>
+            
+            <p class="text-[10px] text-center text-slate-400 mt-4">
+                🎵 Tips: Pastikan volume perangkat Anda menyala untuk pengalaman terbaik.
+            </p>
         </div>
     </div>
 
@@ -88,7 +118,20 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-4">
+                    <!-- Music Control -->
+                    <div class="hidden sm:flex items-center gap-3 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm">
+                        <div id="music-visualizer" class="flex items-end gap-1 h-4 paused">
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                            <div class="music-bar"></div>
+                        </div>
+                        <button id="music-toggle-btn" onclick="toggleMusic()" class="text-blue-300 hover:text-white transition flex items-center gap-2 text-xs font-medium">
+                            <i data-lucide="play" class="w-4 h-4" id="music-icon"></i> 
+                            <span id="music-text">Play Music</span>
+                        </button>
+                    </div>
+
                     <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-400/30 transition">
                         <i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan
                     </button>
@@ -512,9 +555,13 @@
                 initYearFilter();
                 initChart();
                 loadDashboardData();
+                
+                // Auto Play Music after Login Success
+                playMusic();
             } else {
                 dashboardScreen.classList.add('hidden');
                 loginScreen.classList.remove('hidden');
+                pauseMusic();
             }
         });
 
@@ -551,6 +598,51 @@
         let financialChart;
         let allTransactionsData = []; // Store all transactions for filtering
         let currentFilteredData = [];
+
+        // Music Logic
+        const bgMusic = document.getElementById('bg-music');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+        const musicVisualizer = document.getElementById('music-visualizer');
+        let isPlaying = false;
+
+        function playMusic() {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                updateMusicUI();
+            }).catch(error => {
+                console.log("Autoplay blocked by browser. User interaction needed.");
+                isPlaying = false;
+                updateMusicUI();
+            });
+        }
+
+        function pauseMusic() {
+            bgMusic.pause();
+            isPlaying = false;
+            updateMusicUI();
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        }
+
+        function updateMusicUI() {
+            if (isPlaying) {
+                musicIcon.setAttribute('data-lucide', 'pause');
+                musicText.innerText = "Pause Music";
+                musicVisualizer.classList.remove('paused');
+            } else {
+                musicIcon.setAttribute('data-lucide', 'play');
+                musicText.innerText = "Play Music";
+                musicVisualizer.classList.add('paused');
+            }
+            lucide.createIcons();
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
@@ -1131,6 +1223,8 @@
                 reply = "Aku **Ami**, robot asisten favoritmu di Amanah Capital! Siap menemani pantau cuan tiap hari! 🚀";
             } else if (q.includes('buku besar') || q.includes('ledger')) {
                 reply = "Buku Besar adalah catatan semua transaksi dalam format debit-kredit dengan saldo berjalan. Klik tab **'Buku Besar'** untuk melihatnya! 📖";
+            } else if (q.includes('musik') || q.includes('lagu') || q.includes('fourtwnty')) {
+                reply = "Kamu bisa mengontrol musik di pojok kanan atas header! 🎵 Saat ini sedang diputar nuansa santai ala Filosofi Kopi.";
             } else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('ok')) {
                 reply = "Sama-sama! Semoga sukses dan berkah selalu usahanya ya! 🌟";
             }
