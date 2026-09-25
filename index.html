@@ -10,6 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Library untuk Print/PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         /* Custom Futuristic Styling */
         .glass-card {
@@ -39,6 +43,29 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+        
+        /* PRINT STYLES - Agar tampilan cetak rapi */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
         /* Audio Visualizer Animation */
         .music-bar {
             width: 3px;
@@ -61,12 +88,9 @@
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
 
     <!-- ==================== AUDIO PLAYER (HIDDEN) ==================== -->
-    <!-- Menggunakan link sample. Ganti src dengan file MP3 lokal Anda jika ada -->
     <audio id="bg-music" loop>
-        <!-- Link ini adalah contoh placeholder. Untuk hasil terbaik, download lagu Fourtwnty - Filosofi Kopi 
-             dan letakkan di folder project, lalu ubah src menjadi "./filosofi-kopi.mp3" -->
+        <!-- Ganti src ini dengan link lagu Fourtwnty - Filosofi Kopi jika punya file sendiri -->
         <source src="https://docs.google.com/uc?export=download&id=1XkJzFqQ_yY_zZ_xX_wW_vV_uU_tT_sS_rR" type="audio/mpeg">
-        Browser Anda tidak mendukung elemen audio.
     </audio>
 
     <!-- ==================== LAYAR LOGIN ==================== -->
@@ -100,7 +124,7 @@
             </form>
             
             <p class="text-[10px] text-center text-slate-400 mt-4">
-                🎵 Tips: Pastikan volume perangkat Anda menyala untuk pengalaman terbaik.
+                🎵 Tips: Pastikan volume perangkat Anda menyala.
             </p>
         </div>
     </div>
@@ -435,6 +459,53 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL CETAK DOKUMEN (NOTA/KWITANSI/INVOICE) ==================== -->
+    <div id="print-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-0 shadow-2xl relative border border-slate-100 modal-enter my-8">
+            
+            <!-- Toolbar Cetak -->
+            <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center rounded-t-2xl sticky top-0 z-10">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="printer" class="w-5 h-5 text-blue-600"></i>
+                    Preview Dokumen
+                </h3>
+                <div class="flex gap-2">
+                    <button onclick="closePrintModal()" class="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition">Tutup</button>
+                    <button onclick="window.print()" class="px-3 py-1.5 text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition flex items-center gap-1">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print / PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Area Dokumen yang akan dicetak -->
+            <div class="p-8 bg-white" id="print-area">
+                <!-- KOP SURAT DINAMIS -->
+                <div class="mb-6 border-b-2 border-slate-800 pb-4">
+                    <!-- GANTI SRC DI BAWAH INI DENGAN LINK GAMBAR KOP SURAT ANDA DARI GITHUB -->
+                    <img id="kop-surat-img" src="https://via.placeholder.com/800x200?text=KOP+SURAT+RAJIN+REZEKI+AMANAH+JAYA" 
+                         alt="Kop Surat" class="w-full h-auto object-contain max-h-40">
+                    
+                    <!-- Fallback jika gambar gagal load atau user belum upload -->
+                    <div id="kop-text-fallback" class="hidden text-center">
+                        <h1 class="text-2xl font-bold text-slate-900">CV REZEKI AMANAH JAYA</h1>
+                        <p class="text-sm text-slate-600">Jl. Contoh Alamat No. 123, Jakarta | Telp: 021-1234567</p>
+                    </div>
+                </div>
+
+                <!-- Konten Dokumen Dinamis -->
+                <div id="document-content">
+                    <!-- Isi akan diisi oleh JavaScript -->
+                </div>
+
+                <!-- Footer Dokumen -->
+                <div class="mt-12 pt-4 border-t border-slate-200 text-[10px] text-slate-400 text-center">
+                    <p>Dokumen ini dibuat secara otomatis oleh Sistem Amanah Capital.</p>
+                    <p>Valid without signature and stamp for digital reference.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL TUTORIAL ==================== -->
     <div id="tutorial-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative border border-slate-100">
@@ -457,16 +528,12 @@
                     <p>Ringkasan total Penjualan, HPP, Operasional, Bagi Hasil (10%), dan Laba Bersih.</p>
                 </div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
-                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i> 2. Filter Periode</p>
-                    <p>Gunakan filter bulan dan tahun di atas untuk melihat data per periode tertentu.</p>
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="printer" class="w-4 h-4 text-emerald-600"></i> 2. Cetak Dokumen</p>
+                    <p>Klik ikon printer di tabel transaksi untuk mencetak Nota, Kwitansi, atau Invoice dengan Kop Surat resmi.</p>
                 </div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
                     <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="edit" class="w-4 h-4 text-amber-600"></i> 3. Edit Transaksi</p>
                     <p>Klik tombol edit (pensil) di tabel transaksi jika ada kesalahan input data.</p>
-                </div>
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
-                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="book-open" class="w-4 h-4 text-cyan-600"></i> 4. Buku Besar</p>
-                    <p>Lihat semua transaksi dalam format debit-kredit dengan saldo berjalan.</p>
                 </div>
             </div>
 
@@ -502,9 +569,8 @@
             </div>
 
             <div class="px-3 py-1.5 bg-slate-100 flex gap-1.5 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200">
-                <button onclick="sendQuickQuestion('Bagaimana cara input transaksi?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">💡 Cara Input</button>
+                <button onclick="sendQuickQuestion('Bagaimana cara cetak invoice?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">🖨️ Cetak Invoice</button>
                 <button onclick="sendQuickQuestion('Bagaimana rumus bagi hasil?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">📈 Bagi Hasil</button>
-                <button onclick="sendQuickQuestion('Apa itu buku besar?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">📖 Buku Besar</button>
             </div>
 
             <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-1.5">
@@ -596,7 +662,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         let financialChart;
-        let allTransactionsData = []; // Store all transactions for filtering
+        let allTransactionsData = []; 
         let currentFilteredData = [];
 
         // Music Logic
@@ -611,7 +677,7 @@
                 isPlaying = true;
                 updateMusicUI();
             }).catch(error => {
-                console.log("Autoplay blocked by browser. User interaction needed.");
+                console.log("Autoplay blocked. User interaction needed.");
                 isPlaying = false;
                 updateMusicUI();
             });
@@ -648,7 +714,6 @@
             lucide.createIcons();
             loadLocalComments();
             
-            // Set default date to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('formDate').value = today;
         });
@@ -748,7 +813,6 @@
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
                     statusText.innerText = "Terhubung";
 
-                    // Gabungkan semua transaksi
                     let allTransactions = [];
                     
                     if (resTx.penjualan && resTx.penjualan.length > 0) {
@@ -799,17 +863,13 @@
                         });
                     }
                     
-                    // Sort by date descending
                     allTransactions.sort((a, b) => {
                         return new Date(b.tanggal) - new Date(a.tanggal);
                     });
 
                     allTransactionsData = allTransactions;
-                    
-                    // Apply month filter
                     currentFilteredData = filterByMonth(allTransactions);
 
-                    // Calculate totals from filtered data
                     let totalPenjualan = currentFilteredData
                         .filter(t => t.kategori === 'Penjualan')
                         .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
@@ -823,7 +883,7 @@
                         .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
                     
                     let labaSebelumBagiHasil = totalPenjualan - totalPembelian - totalOperasional;
-                    let bagiHasilInvestor = labaSebelumBagiHasil * 0.10; // 10% untuk investor
+                    let bagiHasilInvestor = labaSebelumBagiHasil * 0.10; 
                     let labaBersih = labaSebelumBagiHasil - bagiHasilInvestor;
 
                     document.getElementById('card-penjualan').innerText = formatIDR(totalPenjualan);
@@ -862,6 +922,25 @@
                         ? 'bg-blue-100 text-blue-700' 
                         : 'bg-amber-100 text-amber-700';
                 
+                // Tombol Cetak hanya muncul untuk Penjualan dan Pembelian
+                let printButton = '';
+                if (item.kategori === 'Penjualan' || item.kategori === 'Pembelian') {
+                    printButton = `
+                        <div class="flex gap-1">
+                            <button onclick="openPrintModal('${item.id}', 'nota')" class="text-blue-600 hover:text-blue-700 p-1.5 hover:bg-blue-50 rounded-lg transition" title="Cetak Nota">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="openPrintModal('${item.id}', 'kwitansi')" class="text-emerald-600 hover:text-emerald-700 p-1.5 hover:bg-emerald-50 rounded-lg transition" title="Cetak Kwitansi">
+                                <i data-lucide="receipt" class="w-4 h-4"></i>
+                            </button>
+                            ${item.kategori === 'Penjualan' ? `
+                            <button onclick="openPrintModal('${item.id}', 'invoice')" class="text-purple-600 hover:text-purple-700 p-1.5 hover:bg-purple-50 rounded-lg transition" title="Cetak Invoice">
+                                <i data-lucide="file-check" class="w-4 h-4"></i>
+                            </button>` : ''}
+                        </div>
+                    `;
+                }
+                
                 return `
                 <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
                     <td class="px-6 py-3.5 font-medium text-slate-900 text-xs">${item.id}</td>
@@ -873,10 +952,11 @@
                     </td>
                     <td class="px-6 py-3.5 font-medium">${item.item}</td>
                     <td class="px-6 py-3.5 font-semibold ${colorClass}">${formatIDR(item.total)}</td>
-                    <td class="px-6 py-3.5">
+                    <td class="px-6 py-3.5 flex items-center gap-2">
                         <button onclick="openEditModal('${item.id}', '${item.kategori.toLowerCase()}')" class="text-amber-600 hover:text-amber-700 p-1.5 hover:bg-amber-50 rounded-lg transition" title="Edit Transaksi">
                             <i data-lucide="edit" class="w-4 h-4"></i>
                         </button>
+                        ${printButton}
                     </td>
                 </tr>
             `}).join('');
@@ -891,7 +971,6 @@
                 return;
             }
 
-            // Sort by date ascending for ledger
             let sortedList = [...list].sort((a, b) => {
                 return new Date(a.tanggal) - new Date(b.tanggal);
             });
@@ -902,10 +981,6 @@
             sortedList.forEach(item => {
                 let debit = 0;
                 let kredit = 0;
-
-                // Dalam akuntansi sederhana:
-                // Penjualan = Kredit (menambah pendapatan)
-                // Pembelian & Operasional = Debit (menambah beban)
                 
                 if (item.kategori === 'Penjualan') {
                     kredit = item.total;
@@ -931,7 +1006,6 @@
                 `);
             });
 
-            // Add summary row
             const totalDebit = sortedList.filter(t => t.kategori !== 'Penjualan').reduce((acc, t) => acc + t.total, 0);
             const totalKredit = sortedList.filter(t => t.kategori === 'Penjualan').reduce((acc, t) => acc + t.total, 0);
             const finalBalance = totalKredit - totalDebit;
@@ -949,17 +1023,14 @@
         }
 
         function switchTab(tabName) {
-            // Hide all content
             document.getElementById('content-transactions').classList.add('hidden');
             document.getElementById('content-ledger').classList.add('hidden');
             
-            // Reset all buttons
             document.getElementById('tab-transactions').classList.remove('bg-blue-600', 'text-white');
             document.getElementById('tab-transactions').classList.add('text-slate-600');
             document.getElementById('tab-ledger').classList.remove('bg-blue-600', 'text-white');
             document.getElementById('tab-ledger').classList.add('text-slate-600');
             
-            // Show selected content
             document.getElementById(`content-${tabName}`).classList.remove('hidden');
             document.getElementById(`tab-${tabName}`).classList.remove('text-slate-600');
             document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white');
@@ -988,7 +1059,6 @@
             document.getElementById('edit-modal').classList.add('hidden');
         }
 
-        // Update total when qty or price changes in edit form
         document.getElementById('edit-qty').addEventListener('input', updateEditTotal);
         document.getElementById('edit-price').addEventListener('input', updateEditTotal);
 
@@ -1010,7 +1080,6 @@
             const total = qty * price;
             const originalType = document.getElementById('edit-original-type').value;
 
-            // Determine target sheet based on original type
             let targetSheet = '';
             if (originalType === 'penjualan') targetSheet = 'PENJUALAN';
             else if (originalType === 'pembelian') targetSheet = 'PEMBELIAN';
@@ -1213,19 +1282,13 @@
             let reply = "Ami kurang mengerti nih 😅 Tapi Ami siap bantu terkait input transaksi, laporan bagi hasil, atau info aplikasi!";
             const q = userMsg.toLowerCase();
 
-            if (q.includes('halo') || q.includes('hai') || q.includes('pagi') || q.includes('siang')) {
+            if (q.includes('halo') || q.includes('hai')) {
                 reply = "Halo juga! Ami di sini 😁 Semangat pantau performa bisnis hari ini ya!";
-            } else if (q.includes('input') || q.includes('tambah') || q.includes('transaksi')) {
-                reply = "Untuk input data baru, gunakan form **'Input Transaksi Baru'** di sebelah tengah dashboard. Pilih jenis transaksi, lalu klik **Simpan Ke Sheets** ✨";
-            } else if (q.includes('bagi hasil') || q.includes('investor') || q.includes('rumus')) {
+            } else if (q.includes('cetak') || q.includes('nota') || q.includes('invoice')) {
+                reply = "Untuk mencetak dokumen, klik ikon **Printer/File** di sebelah kanan baris transaksi pada tabel. Kamu bisa pilih Nota, Kwitansi, atau Invoice! 🖨️";
+            } else if (q.includes('bagi hasil')) {
                 reply = "Bagi hasil dihitung dari **(Total Penjualan - HPP Pembelian - Operasional)** dikali **10%** untuk investor 📊";
-            } else if (q.includes('siapa') || q.includes('ami')) {
-                reply = "Aku **Ami**, robot asisten favoritmu di Amanah Capital! Siap menemani pantau cuan tiap hari! 🚀";
-            } else if (q.includes('buku besar') || q.includes('ledger')) {
-                reply = "Buku Besar adalah catatan semua transaksi dalam format debit-kredit dengan saldo berjalan. Klik tab **'Buku Besar'** untuk melihatnya! 📖";
-            } else if (q.includes('musik') || q.includes('lagu') || q.includes('fourtwnty')) {
-                reply = "Kamu bisa mengontrol musik di pojok kanan atas header! 🎵 Saat ini sedang diputar nuansa santai ala Filosofi Kopi.";
-            } else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('ok')) {
+            } else if (q.includes('terima kasih')) {
                 reply = "Sama-sama! Semoga sukses dan berkah selalu usahanya ya! 🌟";
             }
 
@@ -1238,6 +1301,184 @@
                 </div>
             `;
             botMessages.scrollTop = botMessages.scrollHeight;
+        }
+
+        // ==================== FITUR CETAK DOKUMEN (PRINTING SYSTEM) ====================
+        
+        // URL Kop Surat (GANTI INI DENGAN LINK RAW GITHUB ANDA)
+        // Contoh: https://raw.githubusercontent.com/username/repo/main/kop-surat.png
+        const KOP_SURAT_URL = "https://via.placeholder.com/800x200?text=KOP+SURAT+RAJIN+REZEKI+AMANAH+JAYA"; 
+
+        function openPrintModal(id, type) {
+            const transaction = allTransactionsData.find(t => t.id === id);
+            if (!transaction) return;
+
+            const printArea = document.getElementById('document-content');
+            const kopImg = document.getElementById('kop-surat-img');
+            
+            // Set Kop Surat
+            kopImg.src = KOP_SURAT_URL;
+            kopImg.onerror = function() {
+                this.style.display = 'none';
+                document.getElementById('kop-text-fallback').classList.remove('hidden');
+            };
+
+            let content = '';
+            const dateStr = new Date(transaction.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            if (type === 'nota') {
+                content = `
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-slate-800">NOTA PENJUALAN</h2>
+                        <p class="text-sm text-slate-500">No: ${transaction.id}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                        <div>
+                            <p class="font-bold text-slate-700">Kepada Yth:</p>
+                            <p class="text-slate-600">Pembeli / Customer</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-slate-700">Tanggal:</p>
+                            <p class="text-slate-600">${dateStr}</p>
+                        </div>
+                    </div>
+                    <table class="w-full text-sm border-collapse border border-slate-300 mb-6">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="border border-slate-300 p-2 text-left">Deskripsi</th>
+                                <th class="border border-slate-300 p-2 text-center">Qty</th>
+                                <th class="border border-slate-300 p-2 text-right">Harga Satuan</th>
+                                <th class="border border-slate-300 p-2 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-slate-300 p-2">${transaction.item}</td>
+                                <td class="border border-slate-300 p-2 text-center">${transaction.qty}</td>
+                                <td class="border border-slate-300 p-2 text-right">${formatIDR(transaction.price)}</td>
+                                <td class="border border-slate-300 p-2 text-right">${formatIDR(transaction.total)}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 font-bold">
+                                <td colspan="3" class="border border-slate-300 p-2 text-right">TOTAL PEMBAYARAN</td>
+                                <td class="border border-slate-300 p-2 text-right text-emerald-700">${formatIDR(transaction.total)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="mt-8 flex justify-between text-sm">
+                        <div class="text-center">
+                            <p class="mb-12">Pembeli</p>
+                            <p class="border-t border-slate-400 inline-block px-8 pt-1">( Tanda Tangan )</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-12">Hormat Kami,</p>
+                            <p class="font-bold text-slate-800">Sidik Dwi Kuncahyo</p>
+                            <p class="text-xs text-slate-500">Direktur Utama</p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'kwitansi') {
+                content = `
+                    <div class="border-2 border-slate-800 p-6 relative">
+                        <div class="absolute top-0 right-0 bg-slate-800 text-white px-3 py-1 text-xs font-bold">KWITANSI</div>
+                        <h2 class="text-xl font-bold text-center mb-4 uppercase">Bukti Penerimaan Uang</h2>
+                        <p class="text-sm mb-4">No: ${transaction.id}</p>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex">
+                                <span class="w-32 font-bold">Sudah Terima Dari:</span>
+                                <span class="border-b border-dotted border-slate-400 flex-1 px-2">Pembeli / Customer</span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-bold">Uang Sejumlah:</span>
+                                <span class="border-b border-dotted border-slate-400 flex-1 px-2 font-bold italic">${formatIDR(transaction.total)}</span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-bold">Untuk Pembayaran:</span>
+                                <span class="border-b border-dotted border-slate-400 flex-1 px-2">Pembelian ${transaction.item}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-end text-sm">
+                            <div class="text-center w-48">
+                                <p>Jakarta, ${dateStr}</p>
+                                <p class="mb-12">Yang Menerima,</p>
+                                <p class="font-bold text-slate-800">Sidik Dwi Kuncahyo</p>
+                                <p class="text-xs text-slate-500">Direktur Utama</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'invoice') {
+                content = `
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-800">INVOICE</h2>
+                            <p class="text-sm text-slate-500">Tagihan Resmi</p>
+                        </div>
+                        <div class="text-right text-sm">
+                            <p class="font-bold">No. Invoice:</p>
+                            <p class="text-slate-600">${transaction.id}</p>
+                            <p class="font-bold mt-2">Tanggal:</p>
+                            <p class="text-slate-600">${dateStr}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 text-sm">
+                        <p class="font-bold text-slate-700">Ditagihkan Kepada:</p>
+                        <p class="text-slate-600">Nama Perusahaan / Pembeli</p>
+                        <p class="text-slate-500">Alamat Lengkap Pembeli</p>
+                    </div>
+
+                    <table class="w-full text-sm border-collapse border border-slate-300 mb-6">
+                        <thead class="bg-slate-800 text-white">
+                            <tr>
+                                <th class="border border-slate-700 p-3 text-left">Deskripsi Item</th>
+                                <th class="border border-slate-700 p-3 text-center">Volume</th>
+                                <th class="border border-slate-700 p-3 text-right">Harga Satuan</th>
+                                <th class="border border-slate-700 p-3 text-right">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-slate-300 p-3">${transaction.item}</td>
+                                <td class="border border-slate-300 p-3 text-center">${transaction.qty}</td>
+                                <td class="border border-slate-300 p-3 text-right">${formatIDR(transaction.price)}</td>
+                                <td class="border border-slate-300 p-3 text-right">${formatIDR(transaction.total)}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-100 font-bold text-lg">
+                                <td colspan="3" class="border border-slate-300 p-3 text-right">TOTAL TAGIHAN</td>
+                                <td class="border border-slate-300 p-3 text-right text-blue-800">${formatIDR(transaction.total)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="mt-8 text-sm text-slate-600">
+                        <p class="font-bold">Informasi Pembayaran:</p>
+                        <p>Bank: BCA</p>
+                        <p>No. Rek: 1234567890 a.n CV Rezeki Amanah Jaya</p>
+                    </div>
+
+                    <div class="mt-12 flex justify-end text-sm">
+                        <div class="text-center w-48">
+                            <p>Jakarta, ${dateStr}</p>
+                            <p class="mb-12">Hormat Kami,</p>
+                            <p class="font-bold text-slate-800 text-lg">Sidik Dwi Kuncahyo</p>
+                            <p class="text-xs text-slate-500">Direktur Utama</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            printArea.innerHTML = content;
+            document.getElementById('print-modal').classList.remove('hidden');
+        }
+
+        function closePrintModal() {
+            document.getElementById('print-modal').classList.add('hidden');
         }
     </script>
 </body>
