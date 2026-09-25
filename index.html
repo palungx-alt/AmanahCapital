@@ -171,15 +171,29 @@
         // Inisialisasi Icon Lucide
         lucide.createIcons();
 
-        // KONFIGURASI GOOGLE APPS SCRIPT URL
-        // Ganti URL berikut dengan Deployment Web App Google Apps Script milik Anda
+        // Tempelkan URL Web App dari Google Apps Script Anda di bawah ini
         const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
 
         document.addEventListener('DOMContentLoaded', () => {
             // Set tanggal hari ini pada form secara otomatis
             document.getElementById('tx-date').valueAsDate = new Date();
             loadLocalComments();
+            fetchInitialData();
         });
+
+        // Mengambil data awal dari Google Apps Script (Metode GET)
+        async function fetchInitialData() {
+            if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') return;
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getDashboard`);
+                const result = await res.json();
+                if (result.status === 'success') {
+                    console.log('Data Dashboard:', result);
+                }
+            } catch (err) {
+                console.error('Gagal mengambil data dari Google Sheets:', err);
+            }
+        }
 
         // ==================== FORM INPUT TRANSAKSI ====================
         document.getElementById('transactionForm').addEventListener('submit', async (e) => {
@@ -195,10 +209,10 @@
             const amount = parseFloat(document.getElementById('tx-amount').value);
             const note = document.getElementById('tx-note').value;
 
-            // Mapping Target Sheet berdasarkan jenis transaksi
-            let targetSheet = 'Penjualan';
-            if (type === 'pembelian') targetSheet = 'Pembelian';
-            if (type === 'biaya') targetSheet = 'Biaya';
+            // Mapping Target Sheet Sesuai Struktur Google Apps Script Anda
+            let targetSheet = 'PENJUALAN';
+            if (type === 'pembelian') targetSheet = 'PEMBELIAN';
+            if (type === 'biaya') targetSheet = 'OPERASIONAL_BIAYA';
 
             const rowData = [date, category, amount, note];
 
@@ -214,7 +228,7 @@
                         })
                     });
                 } else {
-                    console.warn('URL Apps Script belum diisi, mensimulasikan pengiriman data...');
+                    console.warn('URL Apps Script belum diisi pada variabel SCRIPT_URL');
                 }
 
                 alert('Transaksi berhasil disimpan!');
@@ -339,7 +353,7 @@
             if (q.includes('input') || q.includes('cara')) {
                 return 'Untuk menginput transaksi baru, isi formulir **Input Transaksi Baru** di bagian kiri, pilih jenis transaksi (Pembelian/Penjualan/Biaya), lalu klik **Simpan Ke Sheets**! 📝';
             } else if (q.includes('bagi hasil') || q.includes('rumus')) {
-                return 'Bagi hasil dihitung berdasarkan proporsi persentase investasi modal yang terdaftar pada sheet Investor dikalikan dengan Laba Bersih operasional proyek! 📈';
+                return 'Bagi hasil dihitung berdasarkan proporsi persentase investasi modal yang terdaftar pada sheet `MASTER_INVESTOR` dikalikan dengan Laba Bersih! 📈';
             } else if (q.includes('siapa') || q.includes('ami') || q.includes('tentang')) {
                 return 'Aku **Ami** 🤖, Asisten Virtual pintar Amanah Capital yang siap membantu navigasi dashboard dan menjawab pertanyaan seputar sistem ini!';
             } else if (q.includes('laba') || q.includes('untung')) {
