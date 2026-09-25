@@ -11,135 +11,244 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-50 font-sans text-gray-800 antialiased min-h-screen">
 
-    <!-- Header Navigation -->
-    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i data-lucide="sprout" class="w-8 h-8 text-emerald-300"></i>
-                <h1 class="text-2xl font-bold tracking-wide">Amanah Capital</h1>
+    <!-- ==================== LAYAR LOGIN (Tampil jika belum login) ==================== -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-emerald-50 rounded-2xl mb-2 border border-emerald-100">
+                    <!-- Custom Logo -->
+                    <img src="./logo.png" alt="Amanah Capital Logo" class="w-12 h-12 object-contain">
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Amanah Capital</h2>
+                <p class="text-sm text-gray-500">Silakan masuk untuk mengakses dashboard keuangan</p>
             </div>
-            <div class="flex items-center space-x-2 text-sm bg-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-600">
-                <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-                <span id="status-text">Menghubungkan Database...</span>
-            </div>
+
+            <div id="login-error" class="hidden p-3 text-sm text-red-700 bg-red-100 rounded-lg text-center font-medium"></div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="login-email" required placeholder="admin@amanahcapital.com" 
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" 
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                </div>
+                <button type="submit" id="login-btn" 
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Masuk Ke System
+                </button>
+            </form>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <!-- ==================== UTAMA DASHBOARD (Tampil setelah login) ==================== -->
+    <div id="dashboard-screen" class="hidden">
+        <!-- Header Navigation -->
+        <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <!-- Custom Logo -->
+                    <img src="./logo.png" alt="Amanah Capital Logo" class="w-9 h-9 object-contain bg-white rounded-lg p-1">
+                    <h1 class="text-2xl font-bold tracking-wide">Amanah Capital</h1>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2 text-xs bg-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-600">
+                        <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                        <span id="status-text">Menghubungkan Database...</span>
+                    </div>
 
-        <!-- Metrics Overview Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-600">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Penjualan</p>
-                <h3 id="card-penjualan" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+                    <button id="logout-btn" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs px-3 py-1.5 rounded-lg transition border border-emerald-600 flex items-center gap-1">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Keluar
+                    </button>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-600">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total HPP Pembelian</p>
-                <h3 id="card-pembelian" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-amber-600">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Laba Bersih (Nett)</p>
-                <h3 id="card-laba" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-purple-600">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Bagi Hasil Investor</p>
-                <h3 id="card-bagi-hasil" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
-            </div>
-        </div>
+        </header>
 
-        <!-- Section: Charts & Input Forms -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Financial Performance Chart -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
-                    Performa Keuangan Proyek
-                </h2>
-                <div class="relative h-64">
-                    <canvas id="financialChart"></canvas>
+        <!-- Main Content Container -->
+        <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+            <!-- Metrics Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-emerald-600">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Penjualan</p>
+                    <h3 id="card-penjualan" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-600">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total HPP Pembelian</p>
+                    <h3 id="card-pembelian" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-amber-600">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Laba Bersih (Nett)</p>
+                    <h3 id="card-laba" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-purple-600">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Bagi Hasil Investor</p>
+                    <h3 id="card-bagi-hasil" class="text-2xl font-bold text-gray-800 mt-2">Rp 0</h3>
                 </div>
             </div>
 
-            <!-- Fast Entry Form -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></i>
-                    Input Transaksi Baru
-                </h2>
-                <form id="transactionForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
-                        <select id="formTarget" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                            <option value="PEMBELIAN">Pembelian Material / HPP</option>
-                            <option value="PENJUALAN">Penjualan Offtaker</option>
-                            <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
-                        </select>
+            <!-- Section: Charts & Input Forms -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Financial Performance Chart -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
+                        Performa Keuangan Proyek
+                    </h2>
+                    <div class="relative h-64">
+                        <canvas id="financialChart"></canvas>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Material</label>
-                        <input type="text" id="formDesc" placeholder="Contoh: Plastik PET / Bensin" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
+                </div>
+
+                <!-- Fast Entry Form -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-600"></i>
+                        Input Transaksi Baru
+                    </h2>
+                    <form id="transactionForm" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah (Kg/Unit)</label>
-                            <input type="number" id="formQty" placeholder="100" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transaksi</label>
+                            <select id="formTarget" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="PEMBELIAN">Pembelian Material / HPP</option>
+                                <option value="PENJUALAN">Penjualan Offtaker</option>
+                                <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label>
-                            <input type="number" id="formPrice" placeholder="5000" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Material</label>
+                            <input type="text" id="formDesc" placeholder="Contoh: Plastik PET / Bensin" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" required>
                         </div>
-                    </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-4 h-4"></i> Simpan Ke Sheets
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah (Kg/Unit)</label>
+                                <input type="number" id="formQty" placeholder="100" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Satuan (Rp)</label>
+                                <input type="number" id="formPrice" placeholder="5000" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-150 flex items-center justify-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> Simpan Ke Sheets
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Section: Data Tables -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="border-b border-gray-200 bg-gray-50/50 px-6 py-4 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-gray-800">Daftar Transaksi Terbaru</h2>
+                    <button onclick="loadDashboardData()" class="text-sm bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i> Refresh Data
                     </button>
-                </form>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3">ID Transaksi</th>
+                                <th class="px-6 py-3">Tanggal</th>
+                                <th class="px-6 py-3">Kategori / Item</th>
+                                <th class="px-6 py-3">Jumlah</th>
+                                <th class="px-6 py-3">Total (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-transactions-body">
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">Memuat data dari Google Sheets...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Section: Data Tables -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="border-b border-gray-200 bg-gray-50/50 px-6 py-4 flex justify-between items-center">
-                <h2 class="text-lg font-bold text-gray-800">Daftar Transaksi Terbaru</h2>
-                <button onclick="loadDashboardData()" class="text-sm bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 flex items-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4 h-4 text-gray-600"></i> Refresh Data
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                        <tr>
-                            <th class="px-6 py-3">ID Transaksi</th>
-                            <th class="px-6 py-3">Tanggal</th>
-                            <th class="px-6 py-3">Kategori / Item</th>
-                            <th class="px-6 py-3">Jumlah</th>
-                            <th class="px-6 py-3">Total (Rp)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-transactions-body">
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-400">Memuat data dari Google Sheets...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        </main>
+    </div>
 
-    </main>
+    <!-- Firebase Modular SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    <!-- JavaScript Logic -->
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3FBodo6yI5Xdj9HjoYBTwQPqoKzOwwkg",
+            authDomain: "amanahcapital.firebaseapp.com",
+            projectId: "amanahcapital",
+            storageBucket: "amanahcapital.firebasestorage.app",
+            messagingSenderId: "770926876897",
+            appId: "1:770926876897:web:be1a6674b69b5297f03fa0",
+            measurementId: "G-FGW0412DMM"
+        };
+
+        // Inisialisasi Firebase & Auth
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginScreen = document.getElementById('login-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Monitoring Status Login
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
+                initChart();
+                loadDashboardData();
+            } else {
+                dashboardScreen.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+            }
+        });
+
+        // Event Listener Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+
+            btn.disabled = true;
+            btn.innerText = "Memverifikasi...";
+            loginError.classList.add('hidden');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                loginError.innerText = "Email atau password salah!";
+                loginError.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="log-in" class="w-4 h-4"></i> Masuk Ke System`;
+                lucide.createIcons();
+            }
+        });
+
+        // Event Listener Logout
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+    </script>
+
+    <!-- App Logic Script -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
-
         let financialChart;
 
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
-            initChart();
-            loadDashboardData();
         });
 
         function formatIDR(val) {
@@ -147,6 +256,7 @@
         }
 
         function initChart() {
+            if (financialChart) financialChart.destroy();
             const ctx = document.getElementById('financialChart').getContext('2d');
             financialChart = new Chart(ctx, {
                 type: 'bar',
@@ -182,11 +292,9 @@
                 ]);
 
                 if (resDash.status === "success" && resTx.status === "success") {
-                    // Update Status Indicator
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
                     statusText.innerText = "Terhubung ke Google Sheets";
 
-                    // Calculate Totals
                     let totalPenjualan = resTx.penjualan.reduce((acc, curr) => acc + (Number(curr.Total_Penjualan) || 0), 0);
                     let totalPembelian = resTx.pembelian.reduce((acc, curr) => acc + (Number(curr.Total_Harga_HPP) || 0), 0);
                     let totalOperasional = resTx.operasional.reduce((acc, curr) => acc + (Number(curr.Jumlah_Nominal) || 0), 0);
@@ -194,17 +302,16 @@
 
                     let totalBagiHasil = resDash.bagiHasil.reduce((acc, curr) => acc + (Number(curr.Hak_Bagi_Hasil_Investor) || 0), 0);
 
-                    // Update Card Display
                     document.getElementById('card-penjualan').innerText = formatIDR(totalPenjualan);
                     document.getElementById('card-pembelian').innerText = formatIDR(totalPembelian);
                     document.getElementById('card-laba').innerText = formatIDR(labaBersih);
                     document.getElementById('card-bagi-hasil').innerText = formatIDR(totalBagiHasil);
 
-                    // Update Chart Data
-                    financialChart.data.datasets[0].data = [totalPenjualan, totalPembelian, labaBersih];
-                    financialChart.update();
+                    if (financialChart) {
+                        financialChart.data.datasets[0].data = [totalPenjualan, totalPembelian, labaBersih];
+                        financialChart.update();
+                    }
 
-                    // Render Table Transactions
                     renderTransactionsTable([...resTx.penjualan, ...resTx.pembelian]);
                 }
             } catch (err) {
@@ -232,7 +339,6 @@
             `).join('');
         }
 
-        // Handle Form Input Submission
         document.getElementById('transactionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
