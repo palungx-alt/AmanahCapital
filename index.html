@@ -31,6 +31,14 @@
         .animate-bounce-subtle {
             animation: bounce-subtle 3s infinite ease-in-out;
         }
+        /* Modal Animation */
+        .modal-enter {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
@@ -82,12 +90,12 @@
                 
                 <div class="flex items-center space-x-3">
                     <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-400/30 transition">
-                        <i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan Aplikasi
+                        <i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan
                     </button>
 
                     <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm">
                         <span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                        <span id="status-text" class="text-slate-300">Menghubungkan Database...</span>
+                        <span id="status-text" class="text-slate-300">Menghubungkan...</span>
                     </div>
 
                     <button id="logout-btn" class="bg-blue-600/30 hover:bg-red-600/80 text-white text-xs px-3.5 py-1.5 rounded-lg transition border border-blue-400/30 hover:border-red-400 flex items-center gap-1.5">
@@ -100,8 +108,37 @@
         <!-- Main Content Container -->
         <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
 
+            <!-- Filter Bulan -->
+            <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-wrap items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+                    <label class="text-sm font-semibold text-slate-700">Filter Periode:</label>
+                </div>
+                <select id="filter-month" onchange="applyMonthFilter()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                    <option value="all">Semua Bulan</option>
+                    <option value="0">Januari</option>
+                    <option value="1">Februari</option>
+                    <option value="2">Maret</option>
+                    <option value="3">April</option>
+                    <option value="4">Mei</option>
+                    <option value="5">Juni</option>
+                    <option value="6">Juli</option>
+                    <option value="7">Agustus</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Desember</option>
+                </select>
+                <select id="filter-year" onchange="applyMonthFilter()" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                    <!-- Akan diisi otomatis oleh JavaScript -->
+                </select>
+                <button onclick="resetFilter()" class="ml-auto text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset Filter
+                </button>
+            </div>
+
             <!-- Metrics Overview Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-emerald-500">
                     <div class="flex justify-between items-start">
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Penjualan</p>
@@ -118,13 +155,20 @@
                     <h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
 
-                <!-- KARTU BARU UNTUK BIAYA OPERASIONAL -->
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-amber-500">
                     <div class="flex justify-between items-start">
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Biaya Operasional</p>
                         <i data-lucide="wallet" class="w-5 h-5 text-amber-500"></i>
                     </div>
                     <h3 id="card-operasional" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-purple-500">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Bagi Hasil Investor (10%)</p>
+                        <i data-lucide="users" class="w-5 h-5 text-purple-500"></i>
+                    </div>
+                    <h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3>
                 </div>
 
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-indigo-600">
@@ -161,6 +205,10 @@
                     </h2>
                     <form id="transactionForm" class="space-y-4">
                         <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Tanggal Transaksi</label>
+                            <input type="date" id="formDate" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Jenis Transaksi</label>
                             <select id="formTarget" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white">
                                 <option value="PEMBELIAN">Pembelian Material / HPP</option>
@@ -189,76 +237,162 @@
                 </div>
             </div>
 
-            <!-- Section: Data Tables & Live Comments -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                <!-- Table Transactions (2 Cols) -->
-                <div class="lg:col-span-2 glass-card rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between">
-                    <div>
-                        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex justify-between items-center">
-                            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <i data-lucide="list-filter" class="w-5 h-5 text-blue-600"></i>
-                                Daftar Transaksi Terbaru
-                            </h2>
-                            <button onclick="loadDashboardData()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-1.5 font-medium transition">
-                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-600"></i> Refresh
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70 tracking-wider">
-                                    <tr>
-                                        <th class="px-6 py-3">ID Transaksi</th>
-                                        <th class="px-6 py-3">Tanggal</th>
-                                        <th class="px-6 py-3">Kategori</th>
-                                        <th class="px-6 py-3">Item / Deskripsi</th>
-                                        <th class="px-6 py-3">Total (Rp)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-transactions-body">
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Memuat data dari Google Sheets...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <!-- Section: Navigation Tabs -->
+            <div class="glass-card rounded-2xl shadow-sm overflow-hidden">
+                <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex gap-2">
+                    <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white transition">
+                        <i data-lucide="list" class="w-4 h-4 inline mr-1"></i> Transaksi
+                    </button>
+                    <button onclick="switchTab('ledger')" id="tab-ledger" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i data-lucide="book-open" class="w-4 h-4 inline mr-1"></i> Buku Besar
+                    </button>
                 </div>
 
-                <!-- Live Discussion / Question Board (1 Col) -->
-                <div class="glass-card p-6 rounded-2xl shadow-sm flex flex-col h-[480px]">
-                    <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                <!-- Tab: Transactions -->
+                <div id="content-transactions" class="p-6">
+                    <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="message-square-plus" class="w-5 h-5 text-blue-600"></i>
-                            Forum Diskusi & Pertanyaan
+                            <i data-lucide="list-filter" class="w-5 h-5 text-blue-600"></i>
+                            Daftar Transaksi Terbaru
                         </h2>
-                    </div>
-
-                    <div id="comments-container" class="flex-1 overflow-y-auto space-y-3 pr-2 text-xs">
-                        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-100">
-                            <div class="flex justify-between font-bold text-blue-900 mb-1">
-                                <span>Admin System</span>
-                                <span class="text-[10px] text-slate-400 font-normal">Sistem</span>
-                            </div>
-                            <p class="text-slate-600">Silakan gunakan kolom ini untuk memberikan pertanyaan atau catatan transaksi.</p>
-                        </div>
-                    </div>
-
-                    <form id="comment-form" class="mt-4 pt-3 border-t border-slate-100 flex gap-2">
-                        <input type="text" id="comment-input" required placeholder="Tulis pertanyaan / komentar..." 
-                               class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none bg-white">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs transition flex items-center gap-1 font-medium">
-                            <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim
+                        <button onclick="loadDashboardData()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-1.5 font-medium transition">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-600"></i> Refresh
                         </button>
-                    </form>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70 tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3">ID</th>
+                                    <th class="px-6 py-3">Tanggal</th>
+                                    <th class="px-6 py-3">Kategori</th>
+                                    <th class="px-6 py-3">Item / Deskripsi</th>
+                                    <th class="px-6 py-3">Total (Rp)</th>
+                                    <th class="px-6 py-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-transactions-body">
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-slate-400">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
+                <!-- Tab: Buku Besar -->
+                <div id="content-ledger" class="p-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
+                            Buku Besar (General Ledger)
+                        </h2>
+                        <button onclick="exportLedgerToCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70 tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3">Tanggal</th>
+                                    <th class="px-6 py-3">Keterangan</th>
+                                    <th class="px-6 py-3">Kategori</th>
+                                    <th class="px-6 py-3 text-right">Debit (Rp)</th>
+                                    <th class="px-6 py-3 text-right">Kredit (Rp)</th>
+                                    <th class="px-6 py-3 text-right">Saldo (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-ledger-body">
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-slate-400">Memuat data buku besar...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Discussion / Question Board -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm">
+                <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="message-square-plus" class="w-5 h-5 text-blue-600"></i>
+                        Forum Diskusi & Pertanyaan
+                    </h2>
+                </div>
+
+                <div id="comments-container" class="max-h-64 overflow-y-auto space-y-3 pr-2 text-xs mb-4">
+                    <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-100">
+                        <div class="flex justify-between font-bold text-blue-900 mb-1">
+                            <span>Admin System</span>
+                            <span class="text-[10px] text-slate-400 font-normal">Sistem</span>
+                        </div>
+                        <p class="text-slate-600">Silakan gunakan kolom ini untuk memberikan pertanyaan atau catatan transaksi.</p>
+                    </div>
+                </div>
+
+                <form id="comment-form" class="pt-3 border-t border-slate-100 flex gap-2">
+                    <input type="text" id="comment-input" required placeholder="Tulis pertanyaan / komentar..." 
+                           class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs transition flex items-center gap-1 font-medium">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim
+                    </button>
+                </form>
             </div>
 
         </main>
     </div>
 
-    <!-- ==================== MODAL TUTORIAL / PANDUAN APLIKASI ==================== -->
+    <!-- ==================== MODAL EDIT TRANSAKSI ==================== -->
+    <div id="edit-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative border border-slate-100 modal-enter">
+            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-amber-100 text-amber-600 rounded-xl">
+                    <i data-lucide="edit" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">Edit Transaksi</h3>
+                    <p class="text-xs text-slate-500">Perbaiki data transaksi yang salah input</p>
+                </div>
+            </div>
+
+            <form id="edit-form" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-original-type">
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Tanggal</label>
+                    <input type="date" id="edit-date" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Deskripsi</label>
+                    <input type="text" id="edit-desc" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Jumlah</label>
+                        <input type="number" id="edit-qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan</label>
+                        <input type="number" id="edit-price" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="text-xs text-slate-600">Total: <span id="edit-total" class="font-bold text-slate-800">Rp 0</span></p>
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-medium text-sm transition">
+                    <i data-lucide="save" class="w-4 h-4 inline mr-1"></i> Simpan Perubahan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL TUTORIAL ==================== -->
     <div id="tutorial-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative border border-slate-100">
             <button onclick="toggleTutorialModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
@@ -277,15 +411,19 @@
             <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
                     <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-600"></i> 1. Monitoring Real-time</p>
-                    <p>Ringkasan total Penjualan, HPP Pembelian, Biaya Operasional, dan Laba Bersih terhubung langsung secara otomatis dengan Google Sheets.</p>
+                    <p>Ringkasan total Penjualan, HPP, Operasional, Bagi Hasil (10%), dan Laba Bersih.</p>
                 </div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
-                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i> 2. Input Transaksi Baru</p>
-                    <p>Gunakan formulir "Input Transaksi Baru" untuk menambahkan catatan Pembelian, Penjualan, atau Biaya Operasional langsung ke database.</p>
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i> 2. Filter Periode</p>
+                    <p>Gunakan filter bulan dan tahun di atas untuk melihat data per periode tertentu.</p>
                 </div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
-                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="message-square" class="w-4 h-4 text-cyan-600"></i> 3. Forum & Chatbot "Ami"</p>
-                    <p>Gunakan kolom komentar untuk berdiskusi dengan tim/investor, atau klik ikon **Ami** di pojok kanan bawah untuk bantuan instant & tanya jawab seru!</p>
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="edit" class="w-4 h-4 text-amber-600"></i> 3. Edit Transaksi</p>
+                    <p>Klik tombol edit (pensil) di tabel transaksi jika ada kesalahan input data.</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 space-y-1">
+                    <p class="font-bold text-slate-800 flex items-center gap-1.5"><i data-lucide="book-open" class="w-4 h-4 text-cyan-600"></i> 4. Buku Besar</p>
+                    <p>Lihat semua transaksi dalam format debit-kredit dengan saldo berjalan.</p>
                 </div>
             </div>
 
@@ -295,20 +433,15 @@
         </div>
     </div>
 
-    <!-- ==================== FLOATING INTERACTIVE CHATBOT (AMI) ==================== -->
+    <!-- ==================== FLOATING CHATBOT (AMI) ==================== -->
     <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
-        
-        <!-- Window Chat Floating -->
         <div id="bot-chat-window" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[420px] transition-all">
-            <!-- Header Chatbot -->
             <div class="gradient-header p-3.5 text-white flex justify-between items-center">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-full bg-blue-500/30 border border-blue-300 flex items-center justify-center font-bold text-sm">
-                        🤖
-                    </div>
+                    <div class="w-8 h-8 rounded-full bg-blue-500/30 border border-blue-300 flex items-center justify-center font-bold text-sm">🤖</div>
                     <div>
                         <h4 class="font-bold text-xs">Ami - Asisten Amanah</h4>
-                        <p class="text-[10px] text-blue-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Aktif & Siap Bantu!</p>
+                        <p class="text-[10px] text-blue-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Aktif!</p>
                     </div>
                 </div>
                 <button onclick="toggleBotChat()" class="text-slate-300 hover:text-white p-1">
@@ -316,24 +449,21 @@
                 </button>
             </div>
 
-            <!-- Area Pesan Chat -->
             <div id="bot-messages" class="flex-1 p-3.5 space-y-2.5 overflow-y-auto bg-slate-50 text-xs">
                 <div class="flex gap-2">
                     <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0">🤖</div>
                     <div class="bg-white p-2.5 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700">
-                        Halo! Aku **Ami** 🤖, asisten pintar Amanah Capital! Ada yang bisa Ami bantu tentang laporan keuangan, cara pakai aplikasi, atau rumus bagi hasil? 😁
+                        Halo! Aku **Ami** 🤖, asisten pintar Amanah Capital! Ada yang bisa Ami bantu? 😁
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Action Chips -->
             <div class="px-3 py-1.5 bg-slate-100 flex gap-1.5 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200">
                 <button onclick="sendQuickQuestion('Bagaimana cara input transaksi?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">💡 Cara Input</button>
                 <button onclick="sendQuickQuestion('Bagaimana rumus bagi hasil?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">📈 Bagi Hasil</button>
-                <button onclick="sendQuickQuestion('Siapa kamu?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">🤖 Tentang Ami</button>
+                <button onclick="sendQuickQuestion('Apa itu buku besar?')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-2.5 py-1 rounded-full transition">📖 Buku Besar</button>
             </div>
 
-            <!-- Form Input Chat -->
             <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-1.5">
                 <input type="text" id="bot-input" placeholder="Tanyakan sesuatu ke Ami..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition">
@@ -342,7 +472,6 @@
             </form>
         </div>
 
-        <!-- Button Floating Icon -->
         <button onclick="toggleBotChat()" class="relative group bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center animate-bounce-subtle border-2 border-white">
             <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white"></span>
             <i data-lucide="bot" class="w-6 h-6"></i>
@@ -380,6 +509,7 @@
                 window.currentUserEmail = user.email;
                 loginScreen.classList.add('hidden');
                 dashboardScreen.classList.remove('hidden');
+                initYearFilter();
                 initChart();
                 loadDashboardData();
             } else {
@@ -415,15 +545,33 @@
         });
     </script>
 
-    <!-- App Logic & Interactive Features Script -->
+    <!-- App Logic Script -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         let financialChart;
+        let allTransactionsData = []; // Store all transactions for filtering
+        let currentFilteredData = [];
 
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             loadLocalComments();
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('formDate').value = today;
         });
+
+        function initYearFilter() {
+            const yearSelect = document.getElementById('filter-year');
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= currentYear - 5; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.text = year;
+                if (year === currentYear) option.selected = true;
+                yearSelect.appendChild(option);
+            }
+        }
 
         function toggleTutorialModal() {
             const modal = document.getElementById('tutorial-modal');
@@ -440,11 +588,11 @@
             financialChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Penjualan', 'HPP Pembelian', 'Biaya Operasional', 'Laba Bersih'],
+                    labels: ['Penjualan', 'HPP Pembelian', 'Biaya Operasional', 'Bagi Hasil', 'Laba Bersih'],
                     datasets: [{
                         label: 'Nominal (Rp)',
-                        data: [0, 0, 0, 0],
-                        backgroundColor: ['#10b981', '#2563eb', '#f59e0b', '#06b6d4'],
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#10b981', '#2563eb', '#f59e0b', '#a855f7', '#06b6d4'],
                         borderRadius: 10
                     }]
                 },
@@ -454,6 +602,40 @@
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true } }
                 }
+            });
+        }
+
+        function applyMonthFilter() {
+            loadDashboardData();
+        }
+
+        function resetFilter() {
+            document.getElementById('filter-month').value = 'all';
+            const currentYear = new Date().getFullYear();
+            document.getElementById('filter-year').value = currentYear;
+            loadDashboardData();
+        }
+
+        function getSelectedMonth() {
+            return document.getElementById('filter-month').value;
+        }
+
+        function getSelectedYear() {
+            return document.getElementById('filter-year').value;
+        }
+
+        function filterByMonth(transactions) {
+            const month = getSelectedMonth();
+            const year = getSelectedYear();
+            
+            if (month === 'all') {
+                return transactions;
+            }
+            
+            return transactions.filter(item => {
+                if (!item.tanggal) return false;
+                const date = new Date(item.tanggal);
+                return date.getMonth() == month && date.getFullYear() == year;
             });
         }
 
@@ -474,27 +656,9 @@
                     statusIndicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
                     statusText.innerText = "Terhubung";
 
-                    let totalPenjualan = resTx.penjualan.reduce((acc, curr) => acc + (Number(curr.Total_Penjualan) || 0), 0);
-                    let totalPembelian = resTx.pembelian.reduce((acc, curr) => acc + (Number(curr.Total_Harga_HPP) || 0), 0);
-                    let totalOperasional = resTx.operasional.reduce((acc, curr) => acc + (Number(curr.Jumlah_Nominal) || 0), 0);
-                    let labaBersih = totalPenjualan - totalPembelian - totalOperasional;
-
-                    let totalBagiHasil = resDash.bagiHasil.reduce((acc, curr) => acc + (Number(curr.Hak_Bagi_Hasil_Investor) || 0), 0);
-
-                    document.getElementById('card-penjualan').innerText = formatIDR(totalPenjualan);
-                    document.getElementById('card-pembelian').innerText = formatIDR(totalPembelian);
-                    document.getElementById('card-operasional').innerText = formatIDR(totalOperasional);
-                    document.getElementById('card-laba').innerText = formatIDR(labaBersih);
-
-                    if (financialChart) {
-                        financialChart.data.datasets[0].data = [totalPenjualan, totalPembelian, totalOperasional, labaBersih];
-                        financialChart.update();
-                    }
-
-                    // Gabungkan semua transaksi dan sort berdasarkan tanggal (terbaru dulu)
+                    // Gabungkan semua transaksi
                     let allTransactions = [];
                     
-                    // Tambahkan penjualan
                     if (resTx.penjualan && resTx.penjualan.length > 0) {
                         resTx.penjualan.forEach(item => {
                             allTransactions.push({
@@ -503,12 +667,14 @@
                                 kategori: 'Penjualan',
                                 item: item.Nama_Barang_Material || '-',
                                 total: item.Total_Penjualan || 0,
-                                type: 'income'
+                                type: 'income',
+                                qty: item.Jumlah_Kg_Unit || 0,
+                                price: item.Harga_Satuan || 0,
+                                originalData: item
                             });
                         });
                     }
                     
-                    // Tambahkan pembelian
                     if (resTx.pembelian && resTx.pembelian.length > 0) {
                         resTx.pembelian.forEach(item => {
                             allTransactions.push({
@@ -517,12 +683,14 @@
                                 kategori: 'Pembelian',
                                 item: item.Nama_Barang_Material || '-',
                                 total: item.Total_Harga_HPP || 0,
-                                type: 'expense'
+                                type: 'expense',
+                                qty: item.Jumlah_Kg_Unit || 0,
+                                price: item.Harga_Satuan || 0,
+                                originalData: item
                             });
                         });
                     }
                     
-                    // Tambahkan operasional - INI YANG SEBELUMNYA TIDAK ADA!
                     if (resTx.operasional && resTx.operasional.length > 0) {
                         resTx.operasional.forEach(item => {
                             allTransactions.push({
@@ -531,17 +699,54 @@
                                 kategori: 'Operasional',
                                 item: item.Deskripsi || item.Keterangan || item.Nama_Barang_Material || '-',
                                 total: item.Jumlah_Nominal || item.Total || 0,
-                                type: 'expense'
+                                type: 'expense',
+                                qty: item.Jumlah || 0,
+                                price: item.Harga || 0,
+                                originalData: item
                             });
                         });
                     }
                     
-                    // Sort by date descending (terbaru pertama)
+                    // Sort by date descending
                     allTransactions.sort((a, b) => {
                         return new Date(b.tanggal) - new Date(a.tanggal);
                     });
 
-                    renderTransactionsTable(allTransactions);
+                    allTransactionsData = allTransactions;
+                    
+                    // Apply month filter
+                    currentFilteredData = filterByMonth(allTransactions);
+
+                    // Calculate totals from filtered data
+                    let totalPenjualan = currentFilteredData
+                        .filter(t => t.kategori === 'Penjualan')
+                        .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
+                        
+                    let totalPembelian = currentFilteredData
+                        .filter(t => t.kategori === 'Pembelian')
+                        .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
+                        
+                    let totalOperasional = currentFilteredData
+                        .filter(t => t.kategori === 'Operasional')
+                        .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
+                    
+                    let labaSebelumBagiHasil = totalPenjualan - totalPembelian - totalOperasional;
+                    let bagiHasilInvestor = labaSebelumBagiHasil * 0.10; // 10% untuk investor
+                    let labaBersih = labaSebelumBagiHasil - bagiHasilInvestor;
+
+                    document.getElementById('card-penjualan').innerText = formatIDR(totalPenjualan);
+                    document.getElementById('card-pembelian').innerText = formatIDR(totalPembelian);
+                    document.getElementById('card-operasional').innerText = formatIDR(totalOperasional);
+                    document.getElementById('card-bagi-hasil').innerText = formatIDR(bagiHasilInvestor);
+                    document.getElementById('card-laba').innerText = formatIDR(labaBersih);
+
+                    if (financialChart) {
+                        financialChart.data.datasets[0].data = [totalPenjualan, totalPembelian, totalOperasional, bagiHasilInvestor, labaBersih];
+                        financialChart.update();
+                    }
+
+                    renderTransactionsTable(currentFilteredData);
+                    renderLedgerTable(currentFilteredData);
                 }
             } catch (err) {
                 console.error(err);
@@ -553,7 +758,7 @@
         function renderTransactionsTable(list) {
             const tbody = document.getElementById('table-transactions-body');
             if (!list || list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-slate-400">Belum ada transaksi.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-400">Tidak ada transaksi untuk periode ini.</td></tr>`;
                 return;
             }
 
@@ -567,7 +772,7 @@
                 
                 return `
                 <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
-                    <td class="px-6 py-3.5 font-medium text-slate-900">${item.id}</td>
+                    <td class="px-6 py-3.5 font-medium text-slate-900 text-xs">${item.id}</td>
                     <td class="px-6 py-3.5 text-xs text-slate-500">${item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID') : '-'}</td>
                     <td class="px-6 py-3.5">
                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${badgeClass}">
@@ -576,8 +781,209 @@
                     </td>
                     <td class="px-6 py-3.5 font-medium">${item.item}</td>
                     <td class="px-6 py-3.5 font-semibold ${colorClass}">${formatIDR(item.total)}</td>
+                    <td class="px-6 py-3.5">
+                        <button onclick="openEditModal('${item.id}', '${item.kategori.toLowerCase()}')" class="text-amber-600 hover:text-amber-700 p-1.5 hover:bg-amber-50 rounded-lg transition" title="Edit Transaksi">
+                            <i data-lucide="edit" class="w-4 h-4"></i>
+                        </button>
+                    </td>
                 </tr>
             `}).join('');
+            
+            lucide.createIcons();
+        }
+
+        function renderLedgerTable(list) {
+            const tbody = document.getElementById('table-ledger-body');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-400">Tidak ada data untuk periode ini.</td></tr>`;
+                return;
+            }
+
+            // Sort by date ascending for ledger
+            let sortedList = [...list].sort((a, b) => {
+                return new Date(a.tanggal) - new Date(b.tanggal);
+            });
+
+            let runningBalance = 0;
+            let rows = [];
+
+            sortedList.forEach(item => {
+                let debit = 0;
+                let kredit = 0;
+
+                // Dalam akuntansi sederhana:
+                // Penjualan = Kredit (menambah pendapatan)
+                // Pembelian & Operasional = Debit (menambah beban)
+                
+                if (item.kategori === 'Penjualan') {
+                    kredit = item.total;
+                } else {
+                    debit = item.total;
+                }
+
+                runningBalance += (kredit - debit);
+
+                rows.push(`
+                    <tr class="border-b border-slate-100 hover:bg-slate-50/80 transition">
+                        <td class="px-6 py-3.5 text-xs text-slate-500">${item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID') : '-'}</td>
+                        <td class="px-6 py-3.5 font-medium">${item.item}</td>
+                        <td class="px-6 py-3.5">
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${item.kategori === 'Penjualan' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">
+                                ${item.kategori}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-right font-medium ${debit > 0 ? 'text-red-600' : ''}">${debit > 0 ? formatIDR(debit) : '-'}</td>
+                        <td class="px-6 py-3.5 text-right font-medium ${kredit > 0 ? 'text-emerald-600' : ''}">${kredit > 0 ? formatIDR(kredit) : '-'}</td>
+                        <td class="px-6 py-3.5 text-right font-bold ${runningBalance >= 0 ? 'text-emerald-600' : 'text-red-600'}">${formatIDR(runningBalance)}</td>
+                    </tr>
+                `);
+            });
+
+            // Add summary row
+            const totalDebit = sortedList.filter(t => t.kategori !== 'Penjualan').reduce((acc, t) => acc + t.total, 0);
+            const totalKredit = sortedList.filter(t => t.kategori === 'Penjualan').reduce((acc, t) => acc + t.total, 0);
+            const finalBalance = totalKredit - totalDebit;
+
+            rows.push(`
+                <tr class="bg-slate-100 font-bold">
+                    <td colspan="3" class="px-6 py-3.5 text-right text-slate-700">TOTAL</td>
+                    <td class="px-6 py-3.5 text-right text-red-700">${formatIDR(totalDebit)}</td>
+                    <td class="px-6 py-3.5 text-right text-emerald-700">${formatIDR(totalKredit)}</td>
+                    <td class="px-6 py-3.5 text-right ${finalBalance >= 0 ? 'text-emerald-700' : 'text-red-700'}">${formatIDR(finalBalance)}</td>
+                </tr>
+            `);
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        function switchTab(tabName) {
+            // Hide all content
+            document.getElementById('content-transactions').classList.add('hidden');
+            document.getElementById('content-ledger').classList.add('hidden');
+            
+            // Reset all buttons
+            document.getElementById('tab-transactions').classList.remove('bg-blue-600', 'text-white');
+            document.getElementById('tab-transactions').classList.add('text-slate-600');
+            document.getElementById('tab-ledger').classList.remove('bg-blue-600', 'text-white');
+            document.getElementById('tab-ledger').classList.add('text-slate-600');
+            
+            // Show selected content
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.remove('text-slate-600');
+            document.getElementById(`tab-${tabName}`).classList.add('bg-blue-600', 'text-white');
+        }
+
+        // Edit Transaction Modal
+        function openEditModal(id, type) {
+            const transaction = allTransactionsData.find(t => t.id === id);
+            if (!transaction) {
+                alert('Transaksi tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('edit-id').value = transaction.id;
+            document.getElementById('edit-original-type').value = type;
+            document.getElementById('edit-date').value = transaction.tanggal;
+            document.getElementById('edit-desc').value = transaction.item;
+            document.getElementById('edit-qty').value = transaction.qty || '';
+            document.getElementById('edit-price').value = transaction.price || '';
+            document.getElementById('edit-total').innerText = formatIDR(transaction.total);
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        // Update total when qty or price changes in edit form
+        document.getElementById('edit-qty').addEventListener('input', updateEditTotal);
+        document.getElementById('edit-price').addEventListener('input', updateEditTotal);
+
+        function updateEditTotal() {
+            const qty = Number(document.getElementById('edit-qty').value) || 0;
+            const price = Number(document.getElementById('edit-price').value) || 0;
+            const total = qty * price;
+            document.getElementById('edit-total').innerText = formatIDR(total);
+        }
+
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('edit-id').value;
+            const date = document.getElementById('edit-date').value;
+            const desc = document.getElementById('edit-desc').value;
+            const qty = Number(document.getElementById('edit-qty').value) || 0;
+            const price = Number(document.getElementById('edit-price').value) || 0;
+            const total = qty * price;
+            const originalType = document.getElementById('edit-original-type').value;
+
+            // Determine target sheet based on original type
+            let targetSheet = '';
+            if (originalType === 'penjualan') targetSheet = 'PENJUALAN';
+            else if (originalType === 'pembelian') targetSheet = 'PEMBELIAN';
+            else if (originalType === 'operasional') targetSheet = 'OPERASIONAL_BIAYA';
+
+            const rowData = [id, date, desc, qty, price, total];
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'update',
+                        targetSheet: targetSheet, 
+                        id: id,
+                        rowData: rowData 
+                    })
+                });
+
+                alert('Transaksi berhasil diperbarui!');
+                closeEditModal();
+                setTimeout(() => loadDashboardData(), 1000);
+            } catch (err) {
+                alert('Gagal memperbarui transaksi.');
+                console.error(err);
+            }
+        });
+
+        // Export Ledger to CSV
+        function exportLedgerToCSV() {
+            if (!currentFilteredData || currentFilteredData.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+
+            let csv = 'Tanggal,Keterangan,Kategori,Debit,Kredit,Saldo\n';
+            
+            let sortedList = [...currentFilteredData].sort((a, b) => {
+                return new Date(a.tanggal) - new Date(b.tanggal);
+            });
+
+            let runningBalance = 0;
+            sortedList.forEach(item => {
+                let debit = 0;
+                let kredit = 0;
+
+                if (item.kategori === 'Penjualan') {
+                    kredit = item.total;
+                } else {
+                    debit = item.total;
+                }
+
+                runningBalance += (kredit - debit);
+
+                csv += `${item.tanggal},"${item.item}",${item.kategori},${debit},${kredit},${runningBalance}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Buku_Besar_${getSelectedMonth()}_${getSelectedYear()}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
         }
 
         // Form Submit Input Transaksi Baru
@@ -588,19 +994,19 @@
             btn.innerText = "Menyimpan...";
 
             const targetSheet = document.getElementById('formTarget').value;
+            const date = document.getElementById('formDate').value;
             const desc = document.getElementById('formDesc').value;
             const qty = Number(document.getElementById('formQty').value) || 0;
             const price = Number(document.getElementById('formPrice').value) || 0;
             const total = qty * price;
-            const today = new Date().toISOString().split('T')[0];
 
             let rowData = [];
             if (targetSheet === "PEMBELIAN") {
-                rowData = [`BUY-${Date.now()}`, today, 'Material', desc, qty, price, total, 'Vendor Utama', 'Input Web'];
+                rowData = [`BUY-${Date.now()}`, date, 'Material', desc, qty, price, total, 'Vendor Utama', 'Input Web'];
             } else if (targetSheet === "PENJUALAN") {
-                rowData = [`SEL-${Date.now()}`, today, 'Buyer Utama', desc, qty, price, total, 'Lunas'];
+                rowData = [`SEL-${Date.now()}`, date, 'Buyer Utama', desc, qty, price, total, 'Lunas'];
             } else if (targetSheet === "OPERASIONAL_BIAYA") {
-                rowData = [`EXP-${Date.now()}`, today, 'Operasional', desc, qty, price, total, 'Admin Web'];
+                rowData = [`EXP-${Date.now()}`, date, 'Operasional', desc, qty, price, total, 'Admin Web'];
             }
 
             try {
@@ -613,6 +1019,7 @@
 
                 alert("Data berhasil tersimpan!");
                 document.getElementById('transactionForm').reset();
+                document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
                 setTimeout(() => loadDashboardData(), 1500);
             } catch (err) {
                 alert("Gagal menyimpan data.");
@@ -719,9 +1126,11 @@
             } else if (q.includes('input') || q.includes('tambah') || q.includes('transaksi')) {
                 reply = "Untuk input data baru, gunakan form **'Input Transaksi Baru'** di sebelah tengah dashboard. Pilih jenis transaksi, lalu klik **Simpan Ke Sheets** ✨";
             } else if (q.includes('bagi hasil') || q.includes('investor') || q.includes('rumus')) {
-                reply = "Bagi hasil dihitung dari **(Total Penjualan - HPP Pembelian - Operasional)** dikali persentase porsi investor yang disepakati 📊";
+                reply = "Bagi hasil dihitung dari **(Total Penjualan - HPP Pembelian - Operasional)** dikali **10%** untuk investor 📊";
             } else if (q.includes('siapa') || q.includes('ami')) {
                 reply = "Aku **Ami**, robot asisten favoritmu di Amanah Capital! Siap menemani pantau cuan tiap hari! 🚀";
+            } else if (q.includes('buku besar') || q.includes('ledger')) {
+                reply = "Buku Besar adalah catatan semua transaksi dalam format debit-kredit dengan saldo berjalan. Klik tab **'Buku Besar'** untuk melihatnya! 📖";
             } else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('ok')) {
                 reply = "Sama-sama! Semoga sukses dan berkah selalu usahanya ya! 🌟";
             }
