@@ -132,6 +132,8 @@
                     <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
                     <div class="relative h-64"><canvas id="financialChart"></canvas></div>
                 </div>
+                
+                <!-- FORM INPUT DENGAN PERBAIKAN ID DAN TYPE TEXT -->
                 <div class="glass-card p-6 rounded-2xl shadow-sm">
                     <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Input Transaksi</h2>
                     <form id="transactionForm" class="space-y-4">
@@ -142,7 +144,6 @@
                             <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
                         </select>
                         
-                        <!-- Dropdown Client Dinamis dari Sheets -->
                         <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor <button type="button" onclick="openClientModal()" class="text-blue-600 text-[10px] underline ml-1">+ Tambah Baru</button></label>
                             <select id="formClient" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required>
@@ -152,7 +153,6 @@
 
                         <input type="text" id="formDesc" placeholder="Deskripsi Item" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none" required>
                         
-                        <!-- INPUT QTY DENGAN FORMAT KOMA -->
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Qty (Bisa pakai koma)</label>
@@ -163,7 +163,9 @@
                                 <input type="text" id="formPrice" inputmode="numeric" placeholder="Contoh: 5000" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition">Simpan Data</button>
+                        
+                        <!-- PASTIKAN ID submitBtn ADA DI SINI -->
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition">Simpan Data</button>
                     </form>
                 </div>
             </div>
@@ -181,7 +183,6 @@
                     </div>
                 </div>
                 
-                <!-- TOMBOL EXPORT REKAP KE SHEETS -->
                 <div class="pt-4 border-t border-slate-200">
                     <button onclick="exportToSheets()" id="btn-export-rekap" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
                         <i data-lucide="database" class="w-4 h-4"></i> Export Rekap Pembelian (Berat & Item) ke Sheets
@@ -221,7 +222,6 @@
                 <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <!-- Form Tambah Client -->
             <form id="client-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Nama Perusahaan / Client</label><input type="text" id="client-name" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></div>
                 <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Alamat Lengkap</label><textarea id="client-address" rows="2" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></textarea></div>
@@ -230,7 +230,6 @@
                 <div class="md:col-span-2"><button type="submit" id="btn-save-client" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru</button></div>
             </form>
 
-            <!-- Daftar Client Tersimpan -->
             <div class="flex-1 overflow-y-auto pr-1">
                 <p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan di Database</p>
                 <div id="client-list-container" class="space-y-2">
@@ -263,13 +262,11 @@
     <div id="print-modal" class="fixed inset-0 z-50 hidden print-overlay overflow-y-auto flex flex-col items-center justify-start p-4 pt-20">
         <div class="no-print sticky top-4 z-50 flex gap-3 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-2xl border border-slate-200 mb-6">
             <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2"><i data-lucide="x" class="w-4 h-4"></i> Kembali</button>
-            <!-- Tombol Download PDF Langsung -->
             <button id="btn-download-pdf" onclick="downloadPDFDirectly()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-blue-600/30">
                 <i data-lucide="download" class="w-4 h-4"></i> Download PDF
             </button>
         </div>
 
-        <!-- AREA PRINT DIUBAH MENGGUNAKAN UKURAN PIXEL A4 STANDAR AGAR PRESISI -->
         <div id="print-area" class="bg-white shadow-2xl mx-auto w-[794px] min-h-[1123px] p-[40px] relative text-slate-900 mb-20 box-border">
             <div id="kop-surat-container" class="mb-6 border-b-2 border-slate-800 pb-4">
                 <img id="kop-img" src="" class="w-full h-auto object-contain max-h-[100px] hidden">
@@ -277,7 +274,6 @@
             </div>
             <div id="document-content" class="min-h-[600px]"></div>
             
-            <!-- FOOTER PROFESIONAL BARU -->
             <div class="mt-8 pt-4 border-t border-slate-200 text-center no-print-html">
                 <p class="text-sm font-bold text-slate-800 italic">"Terima kasih atas kepercayaan dan kerja sama yang telah diberikan."</p>
                 <p class="text-[9px] text-slate-500 mt-2">Dokumen ini sah dan dibuat secara elektronik oleh Sistem Amanah Capital | Generated on <span id="gen-date"></span></p>
@@ -322,7 +318,6 @@
                 </div>
             </div>
 
-            <!-- Quick Action Chips (Menu Tutor) -->
             <div class="px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
                 <button onclick="sendQuickQuestion('cara_input')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💡 Cara Input</button>
                 <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">️ Cara Cetak</button>
@@ -331,7 +326,6 @@
                 <button onclick="sendQuickQuestion('siapa_ami')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">😏 Siapa Ami?</button>
             </div>
 
-            <!-- Form Input Chat -->
             <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-2">
                 <input type="text" id="bot-input" placeholder="Tanya Ami sesuatu..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition">
@@ -397,7 +391,6 @@
         // Fungsi untuk parse input koma menjadi angka float untuk database
         function parseInputNumber(val) {
             if (!val) return 0;
-            // Ganti koma dengan titik, lalu parse
             return parseFloat(String(val).replace(',', '.')) || 0;
         }
 
@@ -650,7 +643,7 @@
             else if (originalType === 'pembelian') targetSheet = 'PEMBELIAN';
             else if (originalType === 'operasional') targetSheet = 'OPERASIONAL_BIAYA';
 
-            const rowData = [id, date, desc, qty, price, total]; // Kirim angka murni (titik) ke sheets
+            const rowData = [id, date, desc, qty, price, total]; 
 
             try {
                 await fetch(API_URL, {
@@ -663,9 +656,15 @@
             } catch (err) { alert('Gagal memperbarui transaksi.'); console.error(err); }
         });
 
-        // FORM SUBMIT
+        // FORM SUBMIT (PERBAIKAN ERROR b IS NULL)
         document.getElementById('transactionForm').addEventListener('submit',async(e)=>{
-            e.preventDefault(); const b=document.getElementById('submitBtn'); b.disabled=true; b.innerText='Saving...';
+            e.preventDefault(); 
+            
+            // Pastikan elemen ditemukan sebelum diakses
+            const b = document.getElementById('submitBtn');
+            if(!b) { console.error("Tombol submit tidak ditemukan!"); return; }
+            
+            b.disabled=true; b.innerText='Saving...';
             const ts=document.getElementById('formTarget').value, dt=document.getElementById('formDate').value, ds=document.getElementById('formDesc').value, vn=document.getElementById('formClient').value;
             
             // Parse input koma menjadi angka float
@@ -803,7 +802,7 @@
                 reply = "Ya ampun, segampang itu kok. <br>1. Pilih tanggal.<br>2. Pilih jenis transaksi.<br>3. <b>WAJIB</b> pilih Client/Vendor (kalau nggak ada, tambah dulu di menu Client).<br>4. Isi deskripsi, qty, harga.<br>5. Klik Simpan. <br><br>Gampang kan? Jangan sampe lupa isi Client ya! 🙄";
             } 
             else if (q === 'cara_cetak' || q.includes('cetak') || q.includes('print') || q.includes('invoice')) {
-                reply = "Ada 2 cara, pilih mau yang mana:<br> <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br>🔹 <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ✨";
+                reply = "Ada 2 cara, pilih mau yang mana:<br> <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br> <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ✨";
             } 
             else if (q === 'bagi_hasil' || q.includes('investor')) {
                 reply = "Dengerin baik-baik ya, cuma sekali aku jelasin:<br><br>Rumusnya: <b>(Penjualan - HPP - Operasional) x 10%</b><br><br>Itu hak investor. Sisanya baru jadi Laba Bersih perusahaan. Jangan sampai salah hitung nanti saya yang dimarahin bos! ";
