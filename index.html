@@ -29,19 +29,18 @@
             body { margin: 0; padding: 0; background: white; }
             body * { visibility: hidden !important; }
             #print-area, #print-area * { visibility: visible !important; }
-            #print-area {
-                position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0;
-                background: white; z-index: 9999; overflow: hidden; box-shadow: none !important;
-            }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; z-index: 9999; overflow: hidden; box-shadow: none !important; }
             .no-print { display: none !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .shadow-sm, .rounded-xl, .rounded-2xl, .rounded-lg { box-shadow: none !important; border-radius: 0 !important; }
-            tr, td, th { page-break-inside: avoid; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
+            tr, td, th { page-break-inside: avoid; } thead { display: table-header-group; } tfoot { display: table-footer-group; }
         }
 
         .print-overlay { background-color: #3f3f46; background-image: radial-gradient(#52525b 1px, transparent 1px); background-size: 20px 20px; }
+        
+        /* Chat Bubble Animation */
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .chat-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
@@ -77,7 +76,7 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-400/30 transition"><i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan</button>
-                    <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm"><span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span><span id="status-text" class="text-slate-300">Menghubungkan...</span></div>
+                    <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm"><span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span><span id="status-text" class="text-slate-300">Menghubungkan...</span></div>
                     <button id="logout-btn" class="bg-blue-600/30 hover:bg-red-600/80 text-white text-xs px-3.5 py-1.5 rounded-lg transition border border-blue-400/30 hover:border-red-400 flex items-center gap-1.5"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> Keluar</button>
                 </div>
             </div>
@@ -269,14 +268,51 @@
         </div>
     </div>
 
-    <!-- CHATBOT AMI -->
+    <!-- CHATBOT AMI (NYOLOT & CERDAS) -->
     <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
-        <div id="bot-chat-window" class="hidden mb-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[400px]">
-            <div class="gradient-header p-3 text-white flex justify-between"><span class="font-bold text-xs">Ami Assistant</span><button onclick="toggleBotChat()"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-            <div id="bot-messages" class="flex-1 p-3 space-y-2 overflow-y-auto bg-slate-50 text-xs"></div>
-            <form id="bot-form" class="p-2 border-t flex gap-1"><input type="text" id="bot-input" placeholder="Tanya Ami..." class="flex-1 border rounded-lg px-2 py-1 text-xs outline-none"><button type="submit" class="bg-blue-600 text-white p-1.5 rounded-lg"><i data-lucide="send" class="w-3 h-3"></i></button></form>
+        <div id="bot-chat-window" class="hidden mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px] transition-all">
+            <div class="gradient-header p-3.5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/30 border border-blue-300 flex items-center justify-center font-bold text-sm">🤖</div>
+                    <div>
+                        <h4 class="font-bold text-xs">Ami - Asisten Amanah</h4>
+                        <p class="text-[10px] text-blue-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online & Siap Nyolot!</p>
+                    </div>
+                </div>
+                <button onclick="toggleBotChat()" class="text-slate-300 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+
+            <div id="bot-messages" class="flex-1 p-3.5 space-y-3 overflow-y-auto bg-slate-50 text-xs">
+                <div class="flex gap-2 chat-pop">
+                    <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">🤖</div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">
+                        Halo! Aku <b>Ami</b>. Jangan tanya hal yang sudah ada tombolnya ya, malas aku jawabnya. 😒<br><br>Tapi kalau butuh bantuan serius, klik menu di bawah ini aja 
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Chips (Menu Tutor) -->
+            <div class="px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
+                <button onclick="sendQuickQuestion('cara_input')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💡 Cara Input</button>
+                <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">🖨️ Cara Cetak</button>
+                <button onclick="sendQuickQuestion('bagi_hasil')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💰 Rumus Bagi Hasil</button>
+                <button onclick="sendQuickQuestion('export_rekap')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">📊 Export Rekap</button>
+                <button onclick="sendQuickQuestion('siapa_ami')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">😏 Siapa Ami?</button>
+            </div>
+
+            <!-- Form Input Chat -->
+            <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-2">
+                <input type="text" id="bot-input" placeholder="Tanya Ami sesuatu..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </form>
         </div>
-        <button onclick="toggleBotChat()" class="bg-blue-600 text-white p-3 rounded-full shadow-xl animate-bounce-subtle"><i data-lucide="bot" class="w-6 h-6"></i></button>
+
+        <button onclick="toggleBotChat()" class="relative group bg-blue-600 hover:bg-blue-700 text-white p-3.5 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center animate-bounce-subtle border-2 border-white">
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white animate-ping"></span>
+            <i data-lucide="bot" class="w-6 h-6"></i>
+        </button>
     </div>
 
     <!-- Firebase SDK -->
@@ -285,7 +321,12 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         const firebaseConfig = { apiKey: "AIzaSyB3FBodo6yI5Xdj9HjoYBTwQPqoKzOwwkg", authDomain: "amanahcapital.firebaseapp.com", projectId: "amanahcapital", storageBucket: "amanahcapital.firebasestorage.app", messagingSenderId: "770926876897", appId: "1:770926876897:web:be1a6674b69b5297f03fa0", measurementId: "G-FGW0412DMM" };
         const app = initializeApp(firebaseConfig); const auth = getAuth(app);
+        
+        // Timeout handler for connection status
+        let connectionTimeout;
+
         onAuthStateChanged(auth, (user) => {
+            clearTimeout(connectionTimeout);
             if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
@@ -293,7 +334,21 @@
                 document.getElementById('filter-start-date').value = firstDay.toISOString().split('T')[0];
                 document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
                 document.getElementById('formDate').value = today.toISOString().split('T')[0];
-                initChart(); loadDashboardData(); loadClientsFromSheets();
+                
+                initChart(); 
+                loadDashboardData(); 
+                loadClientsFromSheets();
+
+                // Fallback timeout: jika setelah 8 detik masih loading, anggap error
+                connectionTimeout = setTimeout(() => {
+                    const ind = document.getElementById('status-indicator');
+                    const txt = document.getElementById('status-text');
+                    if(ind.classList.contains('bg-amber-400')) {
+                        ind.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                        txt.innerText = "Gagal Terhubung (Timeout)";
+                    }
+                }, 8000);
+
             } else {
                 document.getElementById('dashboard-screen').classList.add('hidden');
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -316,7 +371,6 @@
             const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
             const dd = String(dateObj.getDate()).padStart(2, '0');
             const randomSeq = Math.floor(1000 + Math.random() * 9000); 
-            
             const prefix = type === 'invoice' ? 'INV' : (type === 'nota' ? 'NOTA' : 'KWIT');
             return `${prefix}-${yyyy}${mm}${dd}-${randomSeq}`;
         }
@@ -329,10 +383,7 @@
                     cachedClients = res.clients;
                     updateClientDropdowns();
                     document.getElementById('card-client-count').innerText = cachedClients.length;
-                    
-                    if(!document.getElementById('client-modal').classList.contains('hidden')) {
-                        renderClientListModal();
-                    }
+                    if(!document.getElementById('client-modal').classList.contains('hidden')) renderClientListModal();
                 }
             } catch(e) { console.error("Gagal load client:", e); }
         }
@@ -346,7 +397,6 @@
         function renderClientListModal() {
             const container = document.getElementById('client-list-container');
             if(cachedClients.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada client tersimpan.</p>'; return; }
-            
             container.innerHTML = cachedClients.map((c, index) => `
                 <div class="flex justify-between items-start p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group">
                     <div class="flex-1">
@@ -365,20 +415,9 @@
             e.preventDefault();
             const btn = document.getElementById('btn-save-client');
             btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
-            
-            const clientData = {
-                name: document.getElementById('client-name').value,
-                address: document.getElementById('client-address').value,
-                npwp: document.getElementById('client-npwp').value,
-                phone: document.getElementById('client-phone').value
-            };
-
+            const clientData = { name: document.getElementById('client-name').value, address: document.getElementById('client-address').value, npwp: document.getElementById('client-npwp').value, phone: document.getElementById('client-phone').value };
             try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ action: 'addClient', clientData: clientData })
-                });
-                
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addClient', clientData: clientData }) });
                 alert('Client berhasil ditambahkan ke Database!');
                 document.getElementById('client-form').reset();
                 await loadClientsFromSheets();
@@ -388,20 +427,11 @@
 
         async function deleteClient(clientId) {
             if(!confirm('Hapus client ini dari database?')) return;
-            try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ action: 'deleteClient', clientId: clientId })
-                });
-                await loadClientsFromSheets();
-            } catch(err) { alert('Gagal menghapus client.'); }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteClient', clientId: clientId }) }); await loadClientsFromSheets(); } 
+            catch(err) { alert('Gagal menghapus client.'); }
         }
 
-        function openClientModal() { 
-            document.getElementById('client-modal').classList.remove('hidden'); 
-            renderClientListModal(); 
-            lucide.createIcons();
-        }
+        function openClientModal() { document.getElementById('client-modal').classList.remove('hidden'); renderClientListModal(); lucide.createIcons(); }
         function closeClientModal() { document.getElementById('client-modal').classList.add('hidden'); }
 
         // ==================== CORE APP LOGIC ====================
@@ -417,6 +447,12 @@
         async function loadDashboardData() {
             const s=document.getElementById('filter-start-date').value, e=document.getElementById('filter-end-date').value;
             if(!s||!e) return alert("Pilih periode tanggal!");
+            
+            const ind = document.getElementById('status-indicator');
+            const txt = document.getElementById('status-text');
+            ind.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
+            txt.innerText = "Menghubungkan...";
+            
             document.getElementById('chart-loader').classList.remove('hidden');
             document.getElementById('data-status').innerHTML='<div class="loader w-3 h-3 border-2"></div> Loading...';
             
@@ -425,7 +461,7 @@
                 if(res.status==="success") {
                     let raw=[];
                     if(res.penjualan) res.penjualan.forEach(i=>raw.push({...i,kategori:'Penjualan',total:i.Total_Penjualan,type:'income',vendor:i.Nama_Buyer||i.Vendor||'Umum'}));
-                    if(res.pembelian) res.pembelian.forEach(i=>raw.push({...i,kategori:'Pembelian',total:i.Total_Harga_HPP,type:'expense',vendor:i.Nama_Vendor||i.Vendor||'Umum'}));
+                    if(res.pembelian) res.pembelian.forEach(i=>raw.push({...i,kategori:'Pembelian',total:i.Total_Harga_HPP,type:'expense',vendor:i.Vendor_Supplier||i.Vendor||'Umum'})); // Fixed mapping
                     if(res.operasional) res.operasional.forEach(i=>raw.push({...i,kategori:'Operasional',total:i.Jumlah_Nominal,type:'expense',vendor:'Internal'}));
                     
                     raw.sort((a,b)=>new Date(b.Tanggal)-new Date(a.Tanggal));
@@ -447,9 +483,21 @@
                     financialChart.data.datasets[0].data=[pj,pb,op,bh,lb-bh]; financialChart.update();
                     
                     renderTable(); renderLedger();
+                    
+                    // SUKSES UPDATE STATUS
+                    ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+                    txt.innerText = "Terhubung";
                     document.getElementById('data-status').innerHTML='<span class="text-emerald-600">Data Updated</span>';
+                } else {
+                    throw new Error("Response status not success");
                 }
-            } catch(e) { console.error(e); document.getElementById('data-status').innerText='Error'; } 
+            } catch(e) { 
+                console.error(e); 
+                // GAGAL UPDATE STATUS
+                ind.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+                txt.innerText = "Gagal Terhubung";
+                document.getElementById('data-status').innerHTML='<span class="text-red-600">Error Loading Data</span>';
+            } 
             finally { document.getElementById('chart-loader').classList.add('hidden'); lucide.createIcons(); }
         }
 
@@ -492,7 +540,6 @@
             e.preventDefault(); const b=document.getElementById('submitBtn'); b.disabled=true; b.innerText='Saving...';
             const ts=document.getElementById('formTarget').value, dt=document.getElementById('formDate').value, ds=document.getElementById('formDesc').value, vn=document.getElementById('formClient').value, q=Number(document.getElementById('formQty').value)||0, p=Number(document.getElementById('formPrice').value)||0, tot=q*p;
             if(!vn) { alert('Pilih Client/Vendor terlebih dahulu!'); b.disabled=false; b.innerText='Simpan Data'; return; }
-            
             let rd=[];
             if(ts==='PEMBELIAN') rd=[`BUY-${Date.now()}`,dt,'Material',ds,q,p,tot,vn,'Web'];
             else if(ts==='PENJUALAN') rd=[`SEL-${Date.now()}`,dt,vn,ds,q,p,tot,'Lunas'];
@@ -507,169 +554,137 @@
             const client = document.getElementById('mass-client-select').value;
             const s = document.getElementById('mass-start-date').value;
             const e = document.getElementById('mass-end-date').value;
-            
             if(!client || !s || !e) return alert("Lengkapi Client dan Periode Tanggal!");
-            
             const btn = document.getElementById('btn-export-rekap');
             const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div> Mengexport...';
-            
+            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div> Mengexport...';
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        action: 'exportClientPurchase',
-                        clientName: client,
-                        startDate: s,
-                        endDate: e
-                    })
-                });
-                
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'exportClientPurchase', clientName: client, startDate: s, endDate: e }) });
                 alert(`✅ Rekap pembelian ${client} berhasil disimpan ke sheet 'Rekap_Client'!`);
-            } catch(err) {
-                alert(' Gagal melakukan export.');
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-                lucide.createIcons();
-            }
+            } catch(err) { alert(' Gagal melakukan export.'); console.error(err); } 
+            finally { btn.disabled = false; btn.innerHTML = originalText; lucide.createIcons(); }
         }
 
         // ==========================================
-        // SISTEM PRINT PROFESSIONAL & MASSAL (FIXED)
+        // SISTEM PRINT PROFESSIONAL & MASSAL
         // ==========================================
-        function getClientDetails(name) {
-            return cachedClients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' };
-        }
+        function getClientDetails(name) { return cachedClients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' }; }
 
         function generateMassPrint(type) {
             const client = document.getElementById('mass-client-select').value;
             const s = document.getElementById('mass-start-date').value;
             const e = document.getElementById('mass-end-date').value;
             if(!client || !s || !e) return alert("Lengkapi Client dan Periode Tanggal!");
-            
             const start = new Date(s); start.setHours(0,0,0,0); const end = new Date(e); end.setHours(23,59,59,999);
             const relatedItems = allTransactionsData.filter(t => (t.vendor||'').toLowerCase() === client.toLowerCase() && t.Tanggal && new Date(t.Tanggal) >= start && new Date(t.Tanggal) <= end && t.kategori !== 'Operasional');
             if(relatedItems.length === 0) return alert("Tidak ada transaksi untuk client & periode tersebut.");
-            
-            // Generate Auto Number untuk Mass Print
             const autoDocNum = generateAutoDocNumber(type, s);
             openPrintModal(autoDocNum, type, relatedItems, client, s, e);
         }
 
-        // FUNGSI PRINT YANG SUDAH DIPERBAIKI AGAR TIDAK ERROR NULL
         function openPrintModal(docNumber, type, customItems=null, customClient=null, startDate=null, endDate=null) {
-            // Handle jika dipanggil dari tabel (customItems mungkin array berisi 1 item)
-            // Handle jika dipanggil dari mass print (customItems adalah array banyak item)
-            
-            let mainItem = null;
-            let itemsToPrint = [];
-            let dateStr = new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
-            let entityName = 'Umum';
-
+            let mainItem = null; let itemsToPrint = []; let dateStr = new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}); let entityName = 'Umum';
             if (customItems && Array.isArray(customItems) && customItems.length > 0) {
-                itemsToPrint = customItems;
-                mainItem = customItems[0];
-                dateStr = new Date(mainItem.Tanggal).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
-                entityName = mainItem.vendor || 'Umum';
-            } else {
-                // Fallback jika tidak ada item (seharusnya tidak terjadi jika logic benar)
-                alert("Tidak ada data transaksi untuk dicetak.");
-                return;
-            }
+                itemsToPrint = customItems; mainItem = customItems[0]; dateStr = new Date(mainItem.Tanggal).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}); entityName = mainItem.vendor || 'Umum';
+            } else { alert("Tidak ada data transaksi untuk dicetak."); return; }
+            if (!docNumber) docNumber = generateAutoDocNumber(type, mainItem.Tanggal);
 
-            // Jika docNumber belum ada (dari klik tabel), generate baru
-            if (!docNumber) {
-                docNumber = generateAutoDocNumber(type, mainItem.Tanggal);
-            }
-
-            const modal = document.getElementById('print-modal');
-            const contentDiv = document.getElementById('document-content');
-            const kopImg = document.getElementById('kop-img');
-            const kopFallback = document.getElementById('kop-fallback');
-
+            const modal = document.getElementById('print-modal'); const contentDiv = document.getElementById('document-content');
+            const kopImg = document.getElementById('kop-img'); const kopFallback = document.getElementById('kop-fallback');
             kopImg.classList.add('hidden'); kopFallback.classList.add('hidden');
-            kopImg.onload = () => kopImg.classList.remove('hidden');
-            kopImg.onerror = () => kopFallback.classList.remove('hidden');
+            kopImg.onload = () => kopImg.classList.remove('hidden'); kopImg.onerror = () => kopFallback.classList.remove('hidden');
             kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime();
 
             const grandTotal = itemsToPrint.reduce((s,i)=>s+(Number(i.total)||0),0);
-            
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
 
-            const ttdSection = `
-                <div class="mt-12 flex justify-between items-end page-break-inside-avoid">
-                    <div class="text-center w-1/3"><p class="text-xs mb-12 text-slate-500">${type==='kwitansi'?'Yang Menyetorkan':'Penerima / Pembeli'}</p><div class="border-t border-slate-300 w-32 mx-auto"></div></div>
-                    <div class="text-center w-1/3">
-                        <p class="text-xs mb-1">Jakarta, ${dateStr}</p><p class="text-xs mb-2 text-slate-500">Hormat Kami,</p>
-                        <div class="h-14 flex items-center justify-center mb-1"><img src="${CONFIG.TTD_DIRUT_URL}" class="h-full object-contain"></div>
-                        <p class="font-bold text-sm text-slate-900 underline decoration-slate-400 underline-offset-2">SIDIK DWI KUNCAHYO</p>
-                        <p class="text-[10px] text-slate-500">Direktur Utama</p>
-                    </div>
-                </div>
-            `;
-
+            const ttdSection = `<div class="mt-12 flex justify-between items-end page-break-inside-avoid"><div class="text-center w-1/3"><p class="text-xs mb-12 text-slate-500">${type==='kwitansi'?'Yang Menyetorkan':'Penerima / Pembeli'}</p><div class="border-t border-slate-300 w-32 mx-auto"></div></div><div class="text-center w-1/3"><p class="text-xs mb-1">Jakarta, ${dateStr}</p><p class="text-xs mb-2 text-slate-500">Hormat Kami,</p><div class="h-14 flex items-center justify-center mb-1"><img src="${CONFIG.TTD_DIRUT_URL}" class="h-full object-contain"></div><p class="font-bold text-sm text-slate-900 underline decoration-slate-400 underline-offset-2">SIDIK DWI KUNCAHYO</p><p class="text-[10px] text-slate-500">Direktur Utama</p></div></div>`;
             const rows = itemsToPrint.map(i=>`<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${i.Jumlah_Kg_Unit||1}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatIDR(i.Harga_Satuan||i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
-
             let html = '';
             const isPurchase = mainItem.kategori === 'Pembelian';
             const docTitle = type==='nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type==='invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
 
             if(type==='nota') {
-                html = `
-                    <div class="text-center mb-6"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div>
-                    <div class="flex justify-between text-xs mb-6">
-                        <div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div>
-                        <div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1]||dateStr}</p></div>
-                    </div>
-                    <table class="w-full text-xs border-collapse border border-slate-300 mb-6"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>
-                    ${ttdSection}
-                `;
+                html = `<div class="text-center mb-6"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div><div class="flex justify-between text-xs mb-6"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div><div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1]||dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-6"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttdSection}`;
             } else if(type==='kwitansi') {
-                html = `
-                    <div class="border-2 border-double border-slate-800 p-6 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div>
-                    <h2 class="text-lg font-bold text-center mb-4 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-4">No: ${docNumber}</p>
-                    <div class="space-y-3 text-xs mb-8">
-                        <div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div>
-                        <div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div>
-                        <div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1]||dateStr})</span></div>
-                    </div>
-                    <div class="flex justify-end"><div class="text-center w-40"><p class="mb-10 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-10 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>
-                `;
+                html = `<div class="border-2 border-double border-slate-800 p-6 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div><h2 class="text-lg font-bold text-center mb-4 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-4">No: ${docNumber}</p><div class="space-y-3 text-xs mb-8"><div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1]||dateStr})</span></div></div><div class="flex justify-end"><div class="text-center w-40"><p class="mb-10 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-10 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>`;
             } else if(type==='invoice') {
-                html = `
-                    <div class="flex justify-between items-start mb-6">
-                        <div><h2 class="text-2xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div>
-                        <div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div>
-                    </div>
-                    <div class="mb-6 bg-slate-50 p-3 border border-slate-100">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p>
-                        <p class="font-bold text-slate-800 text-sm">${clientData.name}</p>
-                        <p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>
-                        ${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}
-                        <p class="text-[10px] text-slate-500 mt-1">${periodText}</p>
-                    </div>
-                    <table class="w-full text-xs border-collapse border border-slate-200 mb-6"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-3 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-3 text-right font-bold text-blue-900 text-sm">${formatIDR(grandTotal)}</td></tr></tfoot></table>
-                    <div class="text-[10px] text-slate-600 mb-8"><p class="font-bold mb-1">Rekening Pembayaran:</p><p>BCA: 123-456-7890 a.n CV Rezeki Amanah Jaya</p></div>
-                    ${ttdSection}
-                `;
+                html = `<div class="flex justify-between items-start mb-6"><div><h2 class="text-2xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div><div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div></div><div class="mb-6 bg-slate-50 p-3 border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p><p class="font-bold text-slate-800 text-sm">${clientData.name}</p><p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}<p class="text-[10px] text-slate-500 mt-1">${periodText}</p></div><table class="w-full text-xs border-collapse border border-slate-200 mb-6"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-3 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-3 text-right font-bold text-blue-900 text-sm">${formatIDR(grandTotal)}</td></tr></tfoot></table><div class="text-[10px] text-slate-600 mb-8"><p class="font-bold mb-1">Rekening Pembayaran:</p><p>BCA: 123-456-7890 a.n CV Rezeki Amanah Jaya</p></div>${ttdSection}`;
             }
-
-            contentDiv.innerHTML = html;
-            modal.classList.remove('hidden');
-            lucide.createIcons();
+            contentDiv.innerHTML = html; modal.classList.remove('hidden'); lucide.createIcons();
         }
 
         function closePrintModal() { document.getElementById('print-modal').classList.add('hidden'); }
         function toggleTutorialModal() { document.getElementById('tutorial-modal').classList.toggle('hidden'); }
         function toggleBotChat() { document.getElementById('bot-chat-window').classList.toggle('hidden'); }
         
-        document.getElementById('bot-form').addEventListener('submit',(e)=>{e.preventDefault();const m=document.getElementById('bot-input').value;if(!m)return;document.getElementById('bot-messages').innerHTML+=`<div class="flex justify-end"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%] text-xs">${m}</div></div>`;document.getElementById('bot-input').value='';setTimeout(()=>{let r="Maaf, Ami belum paham.";if(m.toLowerCase().includes('halo'))r="Halo! Ada yang bisa dibantu?";else if(m.toLowerCase().includes('export'))r="Gunakan tombol 'Export Rekap Pembelian' di menu Cetak Dokumen untuk menyimpan data berat & item ke Sheets.";document.getElementById('bot-messages').innerHTML+=`<div class="flex"><div class="bg-white border p-2 rounded-lg max-w-[80%] text-xs">${r}</div></div>`;document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;},500);});
+        // ==========================================
+        // AMI ASSISTANT LOGIC (NYOLOT & CERDAS)
+        // ==========================================
+        const botForm = document.getElementById('bot-form');
+        const botInput = document.getElementById('bot-input');
+        const botMessages = document.getElementById('bot-messages');
+
+        botForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = botInput.value.trim();
+            if(!text) return;
+            appendBotUserMessage(text);
+            botInput.value = '';
+            setTimeout(() => replyBotMessage(text), 600);
+        });
+
+        function sendQuickQuestion(key) {
+            let questionText = "";
+            if(key === 'cara_input') questionText = "Gimana cara input data transaksi?";
+            else if(key === 'cara_cetak') questionText = "Cara cetak invoice atau nota gimana?";
+            else if(key === 'bagi_hasil') questionText = "Rumus bagi hasil investor berapa %?";
+            else if(key === 'export_rekap') questionText = "Gimana cara export rekap ke sheets?";
+            else if(key === 'siapa_ami') questionText = "Siapa sih kamu ini?";
+            
+            appendBotUserMessage(questionText);
+            setTimeout(() => replyBotMessage(key), 500);
+        }
+
+        function appendBotUserMessage(msg) {
+            botMessages.innerHTML += `<div class="flex gap-2 justify-end chat-pop"><div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs leading-relaxed">${msg}</div></div>`;
+            botMessages.scrollTop = botMessages.scrollHeight;
+        }
+
+        function replyBotMessage(userMsg) {
+            let reply = "";
+            const q = userMsg.toLowerCase();
+
+            // LOGIKA NYOLOT & CERDAS
+            if (q.includes('halo') || q.includes('hai') || q.includes('pagi')) {
+                reply = "Halo juga. Udah login belum? Kalau belum jangan ganggu aku dulu. 😏";
+            } 
+            else if (q === 'cara_input' || q.includes('input')) {
+                reply = "Ya ampun, segampang itu kok. <br>1. Pilih tanggal.<br>2. Pilih jenis transaksi.<br>3. <b>WAJIB</b> pilih Client/Vendor (kalau nggak ada, tambah dulu di menu Client).<br>4. Isi deskripsi, qty, harga.<br>5. Klik Simpan. <br><br>Gampang kan? Jangan sampe lupa isi Client ya! 🙄";
+            } 
+            else if (q === 'cara_cetak' || q.includes('cetak') || q.includes('print') || q.includes('invoice')) {
+                reply = "Ada 2 cara, pilih mau yang mana:<br>🔹 <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br>🔹 <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ✨";
+            } 
+            else if (q === 'bagi_hasil' || q.includes('investor')) {
+                reply = "Dengerin baik-baik ya, cuma sekali aku jelasin:<br><br>Rumusnya: <b>(Penjualan - HPP - Operasional) x 10%</b><br><br>Itu hak investor. Sisanya baru jadi Laba Bersih perusahaan. Jangan sampai salah hitung nanti saya yang dimarahin bos! 💸";
+            } 
+            else if (q === 'export_rekap' || q.includes('export') || q.includes('rekap')) {
+                reply = "Buat yang males ngitung manual, pakai fitur ini:<br>1. Masuk menu 'Cetak Dokumen & Export Rekap'.<br>2. Pilih Client & Tentukan Periode.<br>3. Klik tombol hijau 'Export Rekap Pembelian'.<br><br>Data berat & jumlah item bakal otomatis masuk ke sheet 'Rekap_Client'. Tinggal cek deh! 📊";
+            } 
+            else if (q === 'siapa_ami' || q.includes('siapa')) {
+                reply = "Aku Ami. Asisten virtual paling cerdas (dan sedikit judes) di Amanah Capital. Tugas aku bantu kamu biar nggak bingung pakai aplikasi ini. <br><br>Jadi, ada lagi yang mau ditanyain atau udah paham semua? 😌";
+            } 
+            else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks')) {
+                reply = "Sama-sama. Lain kali baca menu dulu sebelum nanya ya. 😜 Semangat kerjanya!";
+            } 
+            else {
+                reply = "Hmm, pertanyaanmu terlalu abstract buat aku. Coba klik tombol menu di atas keyboard ya, disana udah ada panduan lengkapnya. Jangan bikin aku pusing. 🤯";
+            }
+
+            botMessages.innerHTML += `<div class="flex gap-2 chat-pop"><div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">🤖</div><div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">${reply}</div></div>`;
+            botMessages.scrollTop = botMessages.scrollHeight;
+        }
     </script>
 </body>
 </html>
