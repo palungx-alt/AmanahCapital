@@ -27,7 +27,7 @@
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* PRINT STYLES */
+        /* PRINT STYLES - SUPER STRICT TO PREVENT DUPLICATES */
         @media print {
             body > *:not(#print-modal) { display: none !important; visibility: hidden !important; }
             #print-modal { 
@@ -132,8 +132,6 @@
                     <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
                     <div class="relative h-64"><canvas id="financialChart"></canvas></div>
                 </div>
-                
-                <!-- FORM INPUT DENGAN PERBAIKAN ID DAN TYPE TEXT -->
                 <div class="glass-card p-6 rounded-2xl shadow-sm">
                     <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Input Transaksi</h2>
                     <form id="transactionForm" class="space-y-4">
@@ -144,6 +142,7 @@
                             <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
                         </select>
                         
+                        <!-- Dropdown Client Dinamis dari Sheets -->
                         <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor <button type="button" onclick="openClientModal()" class="text-blue-600 text-[10px] underline ml-1">+ Tambah Baru</button></label>
                             <select id="formClient" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required>
@@ -152,20 +151,11 @@
                         </div>
 
                         <input type="text" id="formDesc" placeholder="Deskripsi Item" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none" required>
-                        
                         <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Qty (Bisa pakai koma)</label>
-                                <input type="text" id="formQty" inputmode="decimal" placeholder="Contoh: 4,5" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan</label>
-                                <input type="text" id="formPrice" inputmode="numeric" placeholder="Contoh: 5000" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
-                            </div>
+                            <input type="number" id="formQty" placeholder="Qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+                            <input type="number" id="formPrice" placeholder="Harga Satuan" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
                         </div>
-                        
-                        <!-- PASTIKAN ID submitBtn ADA DI SINI -->
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition">Simpan Data</button>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition">Simpan Data</button>
                     </form>
                 </div>
             </div>
@@ -183,6 +173,7 @@
                     </div>
                 </div>
                 
+                <!-- TOMBOL EXPORT REKAP KE SHEETS -->
                 <div class="pt-4 border-t border-slate-200">
                     <button onclick="exportToSheets()" id="btn-export-rekap" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
                         <i data-lucide="database" class="w-4 h-4"></i> Export Rekap Pembelian (Berat & Item) ke Sheets
@@ -222,6 +213,7 @@
                 <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
+            <!-- Form Tambah Client -->
             <form id="client-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Nama Perusahaan / Client</label><input type="text" id="client-name" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></div>
                 <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Alamat Lengkap</label><textarea id="client-address" rows="2" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></textarea></div>
@@ -230,6 +222,7 @@
                 <div class="md:col-span-2"><button type="submit" id="btn-save-client" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru</button></div>
             </form>
 
+            <!-- Daftar Client Tersimpan -->
             <div class="flex-1 overflow-y-auto pr-1">
                 <p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan di Database</p>
                 <div id="client-list-container" class="space-y-2">
@@ -248,10 +241,7 @@
                 <input type="hidden" id="edit-id"><input type="hidden" id="edit-original-type">
                 <input type="date" id="edit-date" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
                 <input type="text" id="edit-desc" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="edit-qty" inputmode="decimal" placeholder="Qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                    <input type="text" id="edit-price" inputmode="numeric" placeholder="Harga" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                </div>
+                <div class="grid grid-cols-2 gap-3"><input type="number" id="edit-qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"><input type="number" id="edit-price" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center"><span id="edit-total" class="font-bold text-slate-800">Rp 0</span></div>
                 <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-medium text-sm transition">Simpan Perubahan</button>
             </form>
@@ -262,11 +252,13 @@
     <div id="print-modal" class="fixed inset-0 z-50 hidden print-overlay overflow-y-auto flex flex-col items-center justify-start p-4 pt-20">
         <div class="no-print sticky top-4 z-50 flex gap-3 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-2xl border border-slate-200 mb-6">
             <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2"><i data-lucide="x" class="w-4 h-4"></i> Kembali</button>
+            <!-- Tombol Download PDF Langsung -->
             <button id="btn-download-pdf" onclick="downloadPDFDirectly()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-blue-600/30">
                 <i data-lucide="download" class="w-4 h-4"></i> Download PDF
             </button>
         </div>
 
+        <!-- AREA PRINT DIUBAH MENGGUNAKAN UKURAN PIXEL A4 STANDAR AGAR PRESISI -->
         <div id="print-area" class="bg-white shadow-2xl mx-auto w-[794px] min-h-[1123px] p-[40px] relative text-slate-900 mb-20 box-border">
             <div id="kop-surat-container" class="mb-6 border-b-2 border-slate-800 pb-4">
                 <img id="kop-img" src="" class="w-full h-auto object-contain max-h-[100px] hidden">
@@ -274,6 +266,7 @@
             </div>
             <div id="document-content" class="min-h-[600px]"></div>
             
+            <!-- FOOTER PROFESIONAL BARU -->
             <div class="mt-8 pt-4 border-t border-slate-200 text-center no-print-html">
                 <p class="text-sm font-bold text-slate-800 italic">"Terima kasih atas kepercayaan dan kerja sama yang telah diberikan."</p>
                 <p class="text-[9px] text-slate-500 mt-2">Dokumen ini sah dan dibuat secara elektronik oleh Sistem Amanah Capital | Generated on <span id="gen-date"></span></p>
@@ -318,6 +311,7 @@
                 </div>
             </div>
 
+            <!-- Quick Action Chips (Menu Tutor) -->
             <div class="px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
                 <button onclick="sendQuickQuestion('cara_input')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💡 Cara Input</button>
                 <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">️ Cara Cetak</button>
@@ -326,6 +320,7 @@
                 <button onclick="sendQuickQuestion('siapa_ami')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">😏 Siapa Ami?</button>
             </div>
 
+            <!-- Form Input Chat -->
             <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-2">
                 <input type="text" id="bot-input" placeholder="Tanya Ami sesuatu..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition">
@@ -386,24 +381,7 @@
         let currentDocNumberForPrint = ""; 
         let currentClientNameForFile = ""; 
 
-        // ==================== HELPER FUNCTIONS ====================
-        
-        // Fungsi untuk parse input koma menjadi angka float untuk database
-        function parseInputNumber(val) {
-            if (!val) return 0;
-            return parseFloat(String(val).replace(',', '.')) || 0;
-        }
-
-        // Fungsi format angka tampilan (Indonesia: 1.000,00)
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num || 0);
-        }
-
-        // Fungsi format Rupiah
-        function formatIDR(v) { 
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0); 
-        }
-
+        // ==================== HELPER: AUTO INVOICE NUMBER ====================
         function generateAutoDocNumber(type, dateStr) {
             const dateObj = new Date(dateStr || new Date());
             const yyyy = dateObj.getFullYear();
@@ -414,7 +392,7 @@
             return `${prefix}-${yyyy}${mm}${dd}-${randomSeq}`;
         }
 
-        // ==================== DIRECT PDF DOWNLOAD FUNCTION ====================
+        // ==================== DIRECT PDF DOWNLOAD FUNCTION (FIXED) ====================
         function downloadPDFDirectly() {
             const element = document.getElementById('print-area');
             const btn = document.getElementById('btn-download-pdf');
@@ -428,12 +406,13 @@
 
             document.getElementById('gen-date').innerText = new Date().toLocaleString('id-ID');
 
+            // Konfigurasi html2pdf yang dioptimalkan untuk 1 halaman A4
             const opt = {
-                margin:       0, 
+                margin:       0, // Margin diatur via CSS padding di #print-area
                 filename:     `${currentDocNumberForPrint}-${currentClientNameForFile}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 794 }, 
-                jsPDF:        { unit: 'px', format: [794, 1123], orientation: 'portrait' } 
+                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 794 }, // Scale 2 untuk ketajaman, windowWidth disesuaikan dengan lebar elemen
+                jsPDF:        { unit: 'px', format: [794, 1123], orientation: 'portrait' } // Menggunakan pixel agar presisi dengan ukuran div
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
@@ -510,6 +489,7 @@
 
         // ==================== CORE APP LOGIC ====================
         document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); new Image().src = CONFIG.KOP_SURAT_URL; new Image().src = CONFIG.TTD_DIRUT_URL; });
+        function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
         
         function initChart() {
             financialChart = new Chart(document.getElementById('financialChart'), { type: 'bar', data: { labels: ['Penjualan','HPP','Operasional','Bagi Hasil','Laba'], datasets: [{ data:[0,0,0,0,0], backgroundColor:['#10b981','#2563eb','#f59e0b','#a855f7','#06b6d4'], borderRadius:6 }] }, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}} });
@@ -598,80 +578,16 @@
         }
 
         // EDIT LOGIC
-        function openEditModal(id,type) { 
-            const t=allTransactionsData.find(x=>(x.ID_Penjualan||x.ID_Pembelian)===id); 
-            if(!t)return; 
-            document.getElementById('edit-id').value=id; 
-            document.getElementById('edit-original-type').value=type; 
-            document.getElementById('edit-date').value=t.Tanggal; 
-            document.getElementById('edit-desc').value=t.Nama_Barang_Material||t.Deskripsi; 
-            
-            // Tampilkan format koma saat edit
-            document.getElementById('edit-qty').value = t.Jumlah_Kg_Unit ? String(t.Jumlah_Kg_Unit).replace('.', ',') : ''; 
-            document.getElementById('edit-price').value = t.Harga_Satuan ? String(t.Harga_Satuan).replace('.', ',') : ''; 
-            
-            document.getElementById('edit-total').innerText=formatIDR(t.total); 
-            document.getElementById('edit-modal').classList.remove('hidden'); 
-        }
+        function openEditModal(id,type) { const t=allTransactionsData.find(x=>(x.ID_Penjualan||x.ID_Pembelian)===id); if(!t)return; document.getElementById('edit-id').value=id; document.getElementById('edit-original-type').value=type; document.getElementById('edit-date').value=t.Tanggal; document.getElementById('edit-desc').value=t.Nama_Barang_Material||t.Deskripsi; document.getElementById('edit-qty').value=t.Jumlah_Kg_Unit||''; document.getElementById('edit-price').value=t.Harga_Satuan||''; document.getElementById('edit-total').innerText=formatIDR(t.total); document.getElementById('edit-modal').classList.remove('hidden'); }
         function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
-        
-        document.getElementById('edit-qty').addEventListener('input',()=>{
-            const q = parseInputNumber(document.getElementById('edit-qty').value);
-            const p = parseInputNumber(document.getElementById('edit-price').value);
-            document.getElementById('edit-total').innerText=formatIDR(q * p);
-        });
-        document.getElementById('edit-price').addEventListener('input',()=>{
-            const q = parseInputNumber(document.getElementById('edit-qty').value);
-            const p = parseInputNumber(document.getElementById('edit-price').value);
-            document.getElementById('edit-total').innerText=formatIDR(q * p);
-        });
-        
-        document.getElementById('edit-form').addEventListener('submit',async(e)=>{
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const date = document.getElementById('edit-date').value;
-            const desc = document.getElementById('edit-desc').value;
-            
-            // Konversi kembali koma ke titik untuk database
-            const qty = parseInputNumber(document.getElementById('edit-qty').value);
-            const price = parseInputNumber(document.getElementById('edit-price').value);
-            const total = qty * price;
-            const originalType = document.getElementById('edit-original-type').value;
+        document.getElementById('edit-qty').addEventListener('input',()=>{document.getElementById('edit-total').innerText=formatIDR((Number(document.getElementById('edit-qty').value)||0)*(Number(document.getElementById('edit-price').value)||0));});
+        document.getElementById('edit-price').addEventListener('input',()=>{document.getElementById('edit-total').innerText=formatIDR((Number(document.getElementById('edit-qty').value)||0)*(Number(document.getElementById('edit-price').value)||0));});
+        document.getElementById('edit-form').addEventListener('submit',async(e)=>{e.preventDefault();alert('Fitur update memerlukan backend GAS aktif.');closeEditModal();});
 
-            let targetSheet = '';
-            if (originalType === 'penjualan') targetSheet = 'PENJUALAN';
-            else if (originalType === 'pembelian') targetSheet = 'PEMBELIAN';
-            else if (originalType === 'operasional') targetSheet = 'OPERASIONAL_BIAYA';
-
-            const rowData = [id, date, desc, qty, price, total]; 
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'update', targetSheet: targetSheet, id: id, rowData: rowData })
-                });
-                alert('Transaksi berhasil diperbarui!');
-                closeEditModal();
-                setTimeout(() => loadDashboardData(), 1000);
-            } catch (err) { alert('Gagal memperbarui transaksi.'); console.error(err); }
-        });
-
-        // FORM SUBMIT (PERBAIKAN ERROR b IS NULL)
+        // FORM SUBMIT
         document.getElementById('transactionForm').addEventListener('submit',async(e)=>{
-            e.preventDefault(); 
-            
-            // Pastikan elemen ditemukan sebelum diakses
-            const b = document.getElementById('submitBtn');
-            if(!b) { console.error("Tombol submit tidak ditemukan!"); return; }
-            
-            b.disabled=true; b.innerText='Saving...';
-            const ts=document.getElementById('formTarget').value, dt=document.getElementById('formDate').value, ds=document.getElementById('formDesc').value, vn=document.getElementById('formClient').value;
-            
-            // Parse input koma menjadi angka float
-            const q=parseInputNumber(document.getElementById('formQty').value);
-            const p=parseInputNumber(document.getElementById('formPrice').value);
-            const tot=q*p;
-            
+            e.preventDefault(); const b=document.getElementById('submitBtn'); b.disabled=true; b.innerText='Saving...';
+            const ts=document.getElementById('formTarget').value, dt=document.getElementById('formDate').value, ds=document.getElementById('formDesc').value, vn=document.getElementById('formClient').value, q=Number(document.getElementById('formQty').value)||0, p=Number(document.getElementById('formPrice').value)||0, tot=q*p;
             if(!vn) { alert('Pilih Client/Vendor terlebih dahulu!'); b.disabled=false; b.innerText='Simpan Data'; return; }
             let rd=[];
             if(ts==='PEMBELIAN') rd=[`BUY-${Date.now()}`,dt,'Material',ds,q,p,tot,vn,'Web'];
@@ -735,21 +651,20 @@
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
 
+            // TTD SECTION DIKECILKAN MARGIN-NYA AGAR MUAT 1 HALAMAN
             const ttdSection = `<div class="mt-8 flex justify-between items-end page-break-inside-avoid"><div class="text-center w-1/3"><p class="text-xs mb-8 text-slate-500">${type==='kwitansi'?'Yang Menyetorkan':'Penerima / Pembeli'}</p><div class="border-t border-slate-300 w-32 mx-auto"></div></div><div class="text-center w-1/3"><p class="text-xs mb-1">Jakarta, ${dateStr}</p><p class="text-xs mb-2 text-slate-500">Hormat Kami,</p><div class="h-12 flex items-center justify-center mb-1"><img src="${CONFIG.TTD_DIRUT_URL}" class="h-full object-contain"></div><p class="font-bold text-sm text-slate-900 underline decoration-slate-400 underline-offset-2">SIDIK DWI KUNCAHYO</p><p class="text-[10px] text-slate-500">Direktur Utama</p></div></div>`;
             
-            // Gunakan formatNumber untuk Qty dan Harga di PDF
-            const rows = itemsToPrint.map(i=>`<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${formatNumber(i.Jumlah_Kg_Unit||1)}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatNumber(i.Harga_Satuan||i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
-            
+            const rows = itemsToPrint.map(i=>`<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${i.Jumlah_Kg_Unit||1}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatIDR(i.Harga_Satuan||i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
             let html = '';
             const isPurchase = mainItem.kategori === 'Pembelian';
             const docTitle = type==='nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type==='invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
 
             if(type==='nota') {
-                html = `<div class="text-center mb-4"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div><div class="flex justify-between text-xs mb-4"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div><div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1]||dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-4"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttdSection}`;
+                html = `<div class="text-center mb-6"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div><div class="flex justify-between text-xs mb-6"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div><div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1]||dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-6"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttdSection}`;
             } else if(type==='kwitansi') {
-                html = `<div class="border-2 border-double border-slate-800 p-4 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div><h2 class="text-lg font-bold text-center mb-2 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-2">No: ${docNumber}</p><div class="space-y-2 text-xs mb-4"><div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1]||dateStr})</span></div></div><div class="flex justify-end"><div class="text-center w-40"><p class="mb-6 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-8 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>`;
+                html = `<div class="border-2 border-double border-slate-800 p-6 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div><h2 class="text-lg font-bold text-center mb-4 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-4">No: ${docNumber}</p><div class="space-y-3 text-xs mb-8"><div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1]||dateStr})</span></div></div><div class="flex justify-end"><div class="text-center w-40"><p class="mb-10 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-10 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>`;
             } else if(type==='invoice') {
-                html = `<div class="flex justify-between items-start mb-4"><div><h2 class="text-2xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div><div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div></div><div class="mb-4 bg-slate-50 p-3 border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p><p class="font-bold text-slate-800 text-sm">${clientData.name}</p><p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}<p class="text-[10px] text-slate-500 mt-1">${periodText}</p></div><table class="w-full text-xs border-collapse border border-slate-200 mb-4"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-3 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-3 text-right font-bold text-blue-900 text-sm">${formatIDR(grandTotal)}</td></tr></tfoot></table><div class="text-[10px] text-slate-600 mb-4"><p class="font-bold mb-1">Rekening Pembayaran:</p><p>BCA: 123-456-7890 a.n CV Rezeki Amanah Jaya</p></div>${ttdSection}`;
+                html = `<div class="flex justify-between items-start mb-6"><div><h2 class="text-2xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div><div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div></div><div class="mb-6 bg-slate-50 p-3 border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p><p class="font-bold text-slate-800 text-sm">${clientData.name}</p><p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}<p class="text-[10px] text-slate-500 mt-1">${periodText}</p></div><table class="w-full text-xs border-collapse border border-slate-200 mb-6"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-3 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-3 text-right font-bold text-blue-900 text-sm">${formatIDR(grandTotal)}</td></tr></tfoot></table><div class="text-[10px] text-slate-600 mb-8"><p class="font-bold mb-1">Rekening Pembayaran:</p><p>BCA: 123-456-7890 a.n CV Rezeki Amanah Jaya</p></div>${ttdSection}`;
             }
             contentDiv.innerHTML = html; modal.classList.remove('hidden'); lucide.createIcons();
         }
@@ -799,10 +714,10 @@
                 reply = "Halo juga. Udah login belum? Kalau belum jangan ganggu aku dulu. 😏";
             } 
             else if (q === 'cara_input' || q.includes('input')) {
-                reply = "Ya ampun, segampang itu kok. <br>1. Pilih tanggal.<br>2. Pilih jenis transaksi.<br>3. <b>WAJIB</b> pilih Client/Vendor (kalau nggak ada, tambah dulu di menu Client).<br>4. Isi deskripsi, qty, harga.<br>5. Klik Simpan. <br><br>Gampang kan? Jangan sampe lupa isi Client ya! 🙄";
+                reply = "Ya ampun, segampang itu kok. <br>1. Pilih tanggal.<br>2. Pilih jenis transaksi.<br>3. <b>WAJIB</b> pilih Client/Vendor (kalau nggak ada, tambah dulu di menu Client).<br>4. Isi deskripsi, qty, harga.<br>5. Klik Simpan. <br><br>Gampang kan? Jangan sampe lupa isi Client ya! ";
             } 
             else if (q === 'cara_cetak' || q.includes('cetak') || q.includes('print') || q.includes('invoice')) {
-                reply = "Ada 2 cara, pilih mau yang mana:<br> <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br> <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ✨";
+                reply = "Ada 2 cara, pilih mau yang mana:<br>🔹 <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br>🔹 <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ✨";
             } 
             else if (q === 'bagi_hasil' || q.includes('investor')) {
                 reply = "Dengerin baik-baik ya, cuma sekali aku jelasin:<br><br>Rumusnya: <b>(Penjualan - HPP - Operasional) x 10%</b><br><br>Itu hak investor. Sisanya baru jadi Laba Bersih perusahaan. Jangan sampai salah hitung nanti saya yang dimarahin bos! ";
@@ -817,7 +732,7 @@
                 reply = "Sama-sama. Lain kali baca menu dulu sebelum nanya ya. 😜 Semangat kerjanya!";
             } 
             else {
-                reply = "Hmm, pertanyaanmu terlalu abstract buat aku. Coba klik tombol menu di atas keyboard ya, disana udah ada panduan lengkapnya. Jangan bikin aku pusing. 🤯";
+                reply = "Hmm, pertanyaanmu terlalu abstract buat aku. Coba klik tombol menu di atas keyboard ya, disana udah ada panduan lengkapnya. Jangan bikin aku pusing. ";
             }
 
             botMessages.innerHTML += `<div class="flex gap-2 chat-pop"><div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">🤖</div><div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">${reply}</div></div>`;
