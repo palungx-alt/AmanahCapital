@@ -4,36 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amanah Capital - Financial Dashboard</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Custom Styling */
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
         .glow-blue { box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.25); }
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%); }
+        
         @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .animate-bounce-subtle { animation: bounce-subtle 3s infinite ease-in-out; }
         .modal-enter { animation: modalFadeIn 0.3s ease-out; }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
+
+        /* PRINT STYLES OPTIMIZED FOR CLEAN PDF */
         @media print {
             body { margin: 0; padding: 0; background: white; }
             body * { visibility: hidden !important; }
             #print-area, #print-area * { visibility: visible !important; }
-            #print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; z-index: 9999; overflow: hidden; box-shadow: none !important; }
+            #print-area {
+                position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0;
+                background: white; z-index: 9999; overflow: hidden; box-shadow: none !important;
+            }
             .no-print { display: none !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .shadow-sm, .rounded-xl, .rounded-2xl, .rounded-lg { box-shadow: none !important; border-radius: 0 !important; }
-            tr, td, th { page-break-inside: avoid; } thead { display: table-header-group; } tfoot { display: table-footer-group; }
+            tr, td, th { page-break-inside: avoid; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
         }
+
         .print-overlay { background-color: #3f3f46; background-image: radial-gradient(#52525b 1px, transparent 1px); background-size: 20px 20px; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
 
-    <!-- LOGIN SCREEN -->
+    <!-- ==================== LAYAR LOGIN ==================== -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center gradient-header px-4">
         <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-700/30">
             <div class="text-center space-y-3">
@@ -53,7 +66,7 @@
         </div>
     </div>
 
-    <!-- DASHBOARD UTAMA -->
+    <!-- ==================== UTAMA DASHBOARD ==================== -->
     <div id="dashboard-screen" class="hidden">
         <header class="gradient-header text-white shadow-xl sticky top-0 z-40 border-b border-slate-700/50">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -71,8 +84,8 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
-            
-            <!-- Filter Periode -->
+
+            <!-- Filter Periode Tanggal -->
             <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-wrap items-center gap-4">
                 <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i><label class="text-sm font-semibold text-slate-700">Periode Transaksi:</label></div>
                 <div class="flex items-center gap-2">
@@ -84,7 +97,7 @@
                 <button onclick="resetFilter()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset</button>
             </div>
 
-            <!-- Metrics Cards (DITAMBAHKAN CLIENT AKTIF) -->
+            <!-- Metrics Overview Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-emerald-500"><p class="text-[11px] font-bold text-slate-400 uppercase">Total Penjualan</p><h3 id="card-penjualan" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-blue-600"><p class="text-[11px] font-bold text-slate-400 uppercase">HPP Pembelian</p><h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
@@ -92,7 +105,7 @@
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-purple-500"><p class="text-[11px] font-bold text-slate-400 uppercase">Bagi Hasil Investor</p><h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-indigo-600"><p class="text-[11px] font-bold text-slate-400 uppercase">Laba Bersih (Nett)</p><h3 id="card-laba" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 
-                <!-- CARD BARU: CLIENT AKTIF -->
+                <!-- CARD CLIENT AKTIF -->
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-cyan-500 cursor-pointer hover:bg-slate-50 transition" onclick="openClientModal()">
                     <div class="flex justify-between items-start">
                         <p class="text-[11px] font-bold text-slate-400 uppercase">Client / Vendor Aktif</p>
@@ -103,7 +116,7 @@
                 </div>
             </div>
 
-            <!-- Charts & Input -->
+            <!-- Section: Charts & Fast Entry -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm">
                     <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
@@ -137,10 +150,10 @@
                 </div>
             </div>
 
-            <!-- Menu Cetak Massal -->
+            <!-- MENU CETAK MASSAL & EXPORT REKAP -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-cyan-500">
-                <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="printer" class="w-5 h-5 text-cyan-600"></i> Cetak Dokumen Massal (Per Client & Periode)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="printer" class="w-5 h-5 text-cyan-600"></i> Cetak Dokumen & Export Rekap (Per Client & Periode)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-4">
                     <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor</label><select id="mass-client-select" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"><option value="">-- Pilih Client --</option></select></div>
                     <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Dari Tanggal</label><input type="date" id="mass-start-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></div>
                     <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Sampai Tanggal</label><input type="date" id="mass-end-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></div>
@@ -149,9 +162,17 @@
                         <button onclick="generateMassPrint('nota')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> Nota</button>
                     </div>
                 </div>
+                
+                <!-- TOMBOL EXPORT REKAP KE SHEETS -->
+                <div class="pt-4 border-t border-slate-200">
+                    <button onclick="exportToSheets()" id="btn-export-rekap" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
+                        <i data-lucide="database" class="w-4 h-4"></i> Export Rekap Pembelian (Berat & Item) ke Sheets
+                    </button>
+                    <p class="text-[10px] text-slate-500 mt-2 text-center">*Data akan disimpan otomatis ke sheet 'Rekap_Client' dengan detail berat total dan jumlah transaksi per item.</p>
+                </div>
             </div>
 
-            <!-- Tabs Transaksi & Buku Besar -->
+            <!-- Tabs: Transaksi & Buku Besar -->
             <div class="glass-card rounded-2xl shadow-sm overflow-hidden">
                 <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex gap-2">
                     <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white transition">Transaksi</button>
@@ -174,7 +195,7 @@
         </main>
     </div>
 
-    <!-- MODAL MANAJEMEN CLIENT (TERINTEGRASI SHEETS) -->
+    <!-- MODAL MANAJEMEN CLIENT -->
     <div id="client-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl relative border border-slate-100 modal-enter max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center border-b pb-3">
@@ -230,7 +251,7 @@
                 <div id="kop-fallback" class="text-center py-4 hidden"><h1 class="text-2xl font-bold text-slate-900">CV. REZEKI AMANAH JAYA</h1><p class="text-xs text-slate-600 mt-1">Jl. Raya Bisnis No. 88, Jakarta | Telp: (021) 555-0123</p></div>
             </div>
             <div id="document-content" class="min-h-[600px]"></div>
-            <div class="absolute bottom-[15mm] left-[15mm] right-[15mm] pt-2 border-t border-slate-200 text-[8px] text-slate-400 text-center">Dokumen elektronik sah oleh Sistem Amanah Capital</div>
+            <div class="absolute bottom-[15mm] left-[15mm] right-[15mm] pt-2 border-t border-slate-200 text-[8px] text-slate-400 text-center no-print">Dokumen elektronik sah oleh Sistem Amanah Capital</div>
         </div>
     </div>
 
@@ -242,7 +263,7 @@
             <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
                 <p>1. Gunakan menu "Manajemen Client" untuk menyimpan data alamat & NPWP ke database.</p>
                 <p>2. Saat input transaksi, pilih Client dari dropdown agar data tersambung.</p>
-                <p>3. Gunakan "Cetak Dokumen Massal" untuk membuat Invoice gabungan per periode.</p>
+                <p>3. Gunakan "Export Rekap Pembelian" untuk menyimpan data berat & item per client ke Sheets.</p>
             </div>
             <button onclick="toggleTutorialModal()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-xs">Tutup</button>
         </div>
@@ -288,6 +309,20 @@
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         let financialChart, allTransactionsData = [], currentFilteredData = [], cachedClients = [];
 
+        // ==================== HELPER: AUTO INVOICE NUMBER ====================
+        function generateAutoDocNumber(type, dateStr) {
+            // Format: TYPE-YYYYMMDD-RANDOM4DIGIT
+            // Contoh: INV-20260926-001 atau NOTA-20260926-8492
+            const dateObj = new Date(dateStr);
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            const randomSeq = Math.floor(1000 + Math.random() * 9000); // 4 digit acak
+            
+            const prefix = type === 'invoice' ? 'INV' : (type === 'nota' ? 'NOTA' : 'KWIT');
+            return `${prefix}-${yyyy}${mm}${dd}-${randomSeq}`;
+        }
+
         // ==================== CLIENT MANAGEMENT VIA SHEETS ====================
         async function loadClientsFromSheets() {
             try {
@@ -297,7 +332,6 @@
                     updateClientDropdowns();
                     document.getElementById('card-client-count').innerText = cachedClients.length;
                     
-                    // Render list di modal jika sedang terbuka
                     if(!document.getElementById('client-modal').classList.contains('hidden')) {
                         renderClientListModal();
                     }
@@ -349,7 +383,7 @@
                 
                 alert('Client berhasil ditambahkan ke Database!');
                 document.getElementById('client-form').reset();
-                await loadClientsFromSheets(); // Reload dari sheets
+                await loadClientsFromSheets();
             } catch(err) { alert('Gagal menyimpan client.'); }
             finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru'; lucide.createIcons(); }
         });
@@ -469,6 +503,45 @@
         });
 
         // ==========================================
+        // EXPORT REKAP PEMBELIAN KE SHEETS
+        // ==========================================
+        async function exportToSheets() {
+            const client = document.getElementById('mass-client-select').value;
+            const s = document.getElementById('mass-start-date').value;
+            const e = document.getElementById('mass-end-date').value;
+            
+            if(!client || !s || !e) return alert("Lengkapi Client dan Periode Tanggal!");
+            
+            const btn = document.getElementById('btn-export-rekap');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div> Mengexport...';
+            
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'exportClientPurchase',
+                        clientName: client,
+                        startDate: s,
+                        endDate: e
+                    })
+                });
+                
+                alert(`✅ Rekap pembelian ${client} berhasil disimpan ke sheet 'Rekap_Client'!`);
+            } catch(err) {
+                alert(' Gagal melakukan export.');
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                lucide.createIcons();
+            }
+        }
+
+        // ==========================================
         // SISTEM PRINT PROFESSIONAL & MASSAL
         // ==========================================
         function getClientDetails(name) {
@@ -485,13 +558,14 @@
             const relatedItems = allTransactionsData.filter(t => (t.vendor||'').toLowerCase() === client.toLowerCase() && t.Tanggal && new Date(t.Tanggal) >= start && new Date(t.Tanggal) <= end && t.kategori !== 'Operasional');
             if(relatedItems.length === 0) return alert("Tidak ada transaksi untuk client & periode tersebut.");
             
-            const refId = relatedItems[0].ID_Penjualan || relatedItems[0].ID_Pembelian || `MASS-${Date.now()}`;
-            openPrintModal(refId, type, relatedItems, client, s, e);
+            // Generate Auto Number untuk Mass Print
+            const autoDocNum = generateAutoDocNumber(type, s);
+            openPrintModal(autoDocNum, type, relatedItems, client, s, e);
         }
 
-        function openPrintModal(id, type, customItems=null, customClient=null, startDate=null, endDate=null) {
-            const mainItem = customItems ? customItems[0] : allTransactionsData.find(t => (t.ID_Penjualan || t.ID_Pembelian) === id);
-            if(!mainItem) return;
+        function openPrintModal(docNumber, type, customItems=null, customClient=null, startDate=null, endDate=null) {
+            const mainItem = customItems ? customItems[0] : null;
+            if(customItems && customItems.length === 0) return;
 
             const modal = document.getElementById('print-modal');
             const contentDiv = document.getElementById('document-content');
@@ -503,13 +577,14 @@
             kopImg.onerror = () => kopFallback.classList.remove('hidden');
             kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime();
 
-            const dateObj = new Date(mainItem.Tanggal);
-            const dateStr = dateObj.toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+            // Gunakan tanggal dari parameter startDate jika mass print, atau dari item jika single print
+            const dateStr = startDate ? new Date(startDate).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : 
+                                     (mainItem ? new Date(mainItem.Tanggal).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : new Date().toLocaleDateString('id-ID'));
             
-            let itemsToPrint = customItems || allTransactionsData.filter(t => t.Tanggal === mainItem.Tanggal && t.kategori === mainItem.kategori && (t.vendor||'').toLowerCase() === (mainItem.vendor||'').toLowerCase());
+            let itemsToPrint = customItems || [];
             const grandTotal = itemsToPrint.reduce((s,i)=>s+(Number(i.total)||0),0);
             
-            const entityName = customClient || mainItem.vendor || 'Klien Umum';
+            const entityName = customClient || (mainItem ? mainItem.vendor : 'Klien Umum');
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
 
@@ -528,12 +603,12 @@
             const rows = itemsToPrint.map(i=>`<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${i.Jumlah_Kg_Unit||1}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatIDR(i.Harga_Satuan||i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
 
             let html = '';
-            const isPurchase = mainItem.kategori === 'Pembelian';
+            const isPurchase = mainItem ? mainItem.kategori === 'Pembelian' : (customItems[0]?.kategori === 'Pembelian');
             const docTitle = type==='nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type==='invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
 
             if(type==='nota') {
                 html = `
-                    <div class="text-center mb-6"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${mainItem.ID_Penjualan||mainItem.ID_Pembelian||'N/A'}</p></div>
+                    <div class="text-center mb-6"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div>
                     <div class="flex justify-between text-xs mb-6">
                         <div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div>
                         <div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1]||dateStr}</p></div>
@@ -544,7 +619,7 @@
             } else if(type==='kwitansi') {
                 html = `
                     <div class="border-2 border-double border-slate-800 p-6 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div>
-                    <h2 class="text-lg font-bold text-center mb-4 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-4">No: ${mainItem.ID_Penjualan||mainItem.ID_Pembelian||'N/A'}</p>
+                    <h2 class="text-lg font-bold text-center mb-4 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-4">No: ${docNumber}</p>
                     <div class="space-y-3 text-xs mb-8">
                         <div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div>
                         <div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div>
@@ -556,7 +631,7 @@
                 html = `
                     <div class="flex justify-between items-start mb-6">
                         <div><h2 class="text-2xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div>
-                        <div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${mainItem.ID_Penjualan||'N/A'}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div>
+                        <div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div>
                     </div>
                     <div class="mb-6 bg-slate-50 p-3 border border-slate-100">
                         <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p>
@@ -580,7 +655,7 @@
         function toggleTutorialModal() { document.getElementById('tutorial-modal').classList.toggle('hidden'); }
         function toggleBotChat() { document.getElementById('bot-chat-window').classList.toggle('hidden'); }
         
-        document.getElementById('bot-form').addEventListener('submit',(e)=>{e.preventDefault();const m=document.getElementById('bot-input').value;if(!m)return;document.getElementById('bot-messages').innerHTML+=`<div class="flex justify-end"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%] text-xs">${m}</div></div>`;document.getElementById('bot-input').value='';setTimeout(()=>{let r="Maaf, Ami belum paham.";if(m.toLowerCase().includes('halo'))r="Halo! Ada yang bisa dibantu?";else if(m.toLowerCase().includes('client'))r="Data client sekarang tersimpan aman di Google Sheets. Klik kartu 'Client Aktif' di dashboard untuk mengelolanya.";document.getElementById('bot-messages').innerHTML+=`<div class="flex"><div class="bg-white border p-2 rounded-lg max-w-[80%] text-xs">${r}</div></div>`;document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;},500);});
+        document.getElementById('bot-form').addEventListener('submit',(e)=>{e.preventDefault();const m=document.getElementById('bot-input').value;if(!m)return;document.getElementById('bot-messages').innerHTML+=`<div class="flex justify-end"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%] text-xs">${m}</div></div>`;document.getElementById('bot-input').value='';setTimeout(()=>{let r="Maaf, Ami belum paham.";if(m.toLowerCase().includes('halo'))r="Halo! Ada yang bisa dibantu?";else if(m.toLowerCase().includes('export'))r="Gunakan tombol 'Export Rekap Pembelian' di menu Cetak Dokumen untuk menyimpan data berat & item ke Sheets.";document.getElementById('bot-messages').innerHTML+=`<div class="flex"><div class="bg-white border p-2 rounded-lg max-w-[80%] text-xs">${r}</div></div>`;document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;},500);});
     </script>
 </body>
 </html>
