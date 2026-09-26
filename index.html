@@ -311,13 +311,11 @@
 
         // ==================== HELPER: AUTO INVOICE NUMBER ====================
         function generateAutoDocNumber(type, dateStr) {
-            // Format: TYPE-YYYYMMDD-RANDOM4DIGIT
-            // Contoh: INV-20260926-001 atau NOTA-20260926-8492
-            const dateObj = new Date(dateStr);
+            const dateObj = new Date(dateStr || new Date());
             const yyyy = dateObj.getFullYear();
             const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
             const dd = String(dateObj.getDate()).padStart(2, '0');
-            const randomSeq = Math.floor(1000 + Math.random() * 9000); // 4 digit acak
+            const randomSeq = Math.floor(1000 + Math.random() * 9000); 
             
             const prefix = type === 'invoice' ? 'INV' : (type === 'nota' ? 'NOTA' : 'KWIT');
             return `${prefix}-${yyyy}${mm}${dd}-${randomSeq}`;
@@ -461,7 +459,7 @@
             tb.innerHTML=currentFilteredData.map(i=>{
                 const bc=i.kategori==='Penjualan'?'bg-emerald-100 text-emerald-700':i.kategori==='Pembelian'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700';
                 let acts=`<button onclick="openEditModal('${i.ID_Penjualan||i.ID_Pembelian}','${i.kategori.toLowerCase()}')" class="text-amber-600 p-1"><i data-lucide="edit" class="w-4 h-4"></i></button>`;
-                if(i.kategori!=='Operasional') acts+=`<div class="flex gap-1 ml-1"><button onclick="openPrintModal('${i.ID_Penjualan||i.ID_Pembelian}','nota')" class="text-blue-600 p-1"><i data-lucide="file-text" class="w-4 h-4"></i></button><button onclick="openPrintModal('${i.ID_Penjualan||i.ID_Pembelian}','kwitansi')" class="text-emerald-600 p-1"><i data-lucide="receipt" class="w-4 h-4"></i></button>${i.kategori==='Penjualan'?`<button onclick="openPrintModal('${i.ID_Penjualan}','invoice')" class="text-purple-600 p-1"><i data-lucide="file-check" class="w-4 h-4"></i></button>`:''}</div>`;
+                if(i.kategori!=='Operasional') acts+=`<div class="flex gap-1 ml-1"><button onclick="openPrintModal(null,'nota',[i])" class="text-blue-600 p-1"><i data-lucide="file-text" class="w-4 h-4"></i></button><button onclick="openPrintModal(null,'kwitansi',[i])" class="text-emerald-600 p-1"><i data-lucide="receipt" class="w-4 h-4"></i></button>${i.kategori==='Penjualan'?`<button onclick="openPrintModal(null,'invoice',[i])" class="text-purple-600 p-1"><i data-lucide="file-check" class="w-4 h-4"></i></button>`:''}</div>`;
                 return `<tr class="border-b hover:bg-slate-50"><td class="p-3 text-xs font-mono">${i.ID_Penjualan||i.ID_Pembelian||'-'}</td><td class="p-3 text-xs">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-3 font-medium">${i.vendor}</td><td class="p-3">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="p-3 font-bold ${i.type==='income'?'text-emerald-600':'text-red-600'}">${formatIDR(i.total)}</td><td class="p-3 flex">${acts}</td></tr>`;
             }).join('');
         }
@@ -542,7 +540,7 @@
         }
 
         // ==========================================
-        // SISTEM PRINT PROFESSIONAL & MASSAL
+        // SISTEM PRINT PROFESSIONAL & MASSAL (FIXED)
         // ==========================================
         function getClientDetails(name) {
             return cachedClients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' };
@@ -563,9 +561,31 @@
             openPrintModal(autoDocNum, type, relatedItems, client, s, e);
         }
 
+        // FUNGSI PRINT YANG SUDAH DIPERBAIKI AGAR TIDAK ERROR NULL
         function openPrintModal(docNumber, type, customItems=null, customClient=null, startDate=null, endDate=null) {
-            const mainItem = customItems ? customItems[0] : null;
-            if(customItems && customItems.length === 0) return;
+            // Handle jika dipanggil dari tabel (customItems mungkin array berisi 1 item)
+            // Handle jika dipanggil dari mass print (customItems adalah array banyak item)
+            
+            let mainItem = null;
+            let itemsToPrint = [];
+            let dateStr = new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+            let entityName = 'Umum';
+
+            if (customItems && Array.isArray(customItems) && customItems.length > 0) {
+                itemsToPrint = customItems;
+                mainItem = customItems[0];
+                dateStr = new Date(mainItem.Tanggal).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});
+                entityName = mainItem.vendor || 'Umum';
+            } else {
+                // Fallback jika tidak ada item (seharusnya tidak terjadi jika logic benar)
+                alert("Tidak ada data transaksi untuk dicetak.");
+                return;
+            }
+
+            // Jika docNumber belum ada (dari klik tabel), generate baru
+            if (!docNumber) {
+                docNumber = generateAutoDocNumber(type, mainItem.Tanggal);
+            }
 
             const modal = document.getElementById('print-modal');
             const contentDiv = document.getElementById('document-content');
@@ -577,14 +597,8 @@
             kopImg.onerror = () => kopFallback.classList.remove('hidden');
             kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime();
 
-            // Gunakan tanggal dari parameter startDate jika mass print, atau dari item jika single print
-            const dateStr = startDate ? new Date(startDate).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : 
-                                     (mainItem ? new Date(mainItem.Tanggal).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}) : new Date().toLocaleDateString('id-ID'));
-            
-            let itemsToPrint = customItems || [];
             const grandTotal = itemsToPrint.reduce((s,i)=>s+(Number(i.total)||0),0);
             
-            const entityName = customClient || (mainItem ? mainItem.vendor : 'Klien Umum');
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
 
@@ -603,7 +617,7 @@
             const rows = itemsToPrint.map(i=>`<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${i.Jumlah_Kg_Unit||1}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatIDR(i.Harga_Satuan||i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
 
             let html = '';
-            const isPurchase = mainItem ? mainItem.kategori === 'Pembelian' : (customItems[0]?.kategori === 'Pembelian');
+            const isPurchase = mainItem.kategori === 'Pembelian';
             const docTitle = type==='nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type==='invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
 
             if(type==='nota') {
