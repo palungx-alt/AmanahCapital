@@ -4,49 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amanah Capital - Financial Dashboard</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom Styling */
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
         .glow-blue { box-shadow: 0 0 20px -5px rgba(37, 99, 235, 0.25); }
         .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%); }
-        
         @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .animate-bounce-subtle { animation: bounce-subtle 3s infinite ease-in-out; }
         .modal-enter { animation: modalFadeIn 0.3s ease-out; }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* PRINT STYLES OPTIMIZED */
+        
         @media print {
             body { margin: 0; padding: 0; background: white; }
             body * { visibility: hidden !important; }
             #print-area, #print-area * { visibility: visible !important; }
-            #print-area {
-                position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0;
-                background: white; z-index: 9999; overflow: hidden; box-shadow: none !important;
-            }
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; z-index: 9999; overflow: hidden; box-shadow: none !important; }
             .no-print { display: none !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .shadow-sm, .rounded-xl, .rounded-2xl, .rounded-lg { box-shadow: none !important; border-radius: 0 !important; }
-            tr, td, th { page-break-inside: avoid; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
+            tr, td, th { page-break-inside: avoid; } thead { display: table-header-group; } tfoot { display: table-footer-group; }
         }
-
         .print-overlay { background-color: #3f3f46; background-image: radial-gradient(#52525b 1px, transparent 1px); background-size: 20px 20px; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
 
-    <!-- ==================== LAYAR LOGIN ==================== -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center gradient-header px-4">
         <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 space-y-6 border border-slate-700/30">
             <div class="text-center space-y-3">
@@ -66,7 +53,7 @@
         </div>
     </div>
 
-    <!-- ==================== UTAMA DASHBOARD ==================== -->
+    <!-- DASHBOARD UTAMA -->
     <div id="dashboard-screen" class="hidden">
         <header class="gradient-header text-white shadow-xl sticky top-0 z-40 border-b border-slate-700/50">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -84,8 +71,8 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
-
-            <!-- Filter Periode Tanggal -->
+            
+            <!-- Filter Periode -->
             <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-wrap items-center gap-4">
                 <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i><label class="text-sm font-semibold text-slate-700">Periode Transaksi:</label></div>
                 <div class="flex items-center gap-2">
@@ -97,16 +84,26 @@
                 <button onclick="resetFilter()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset</button>
             </div>
 
-            <!-- Metrics Overview Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+            <!-- Metrics Cards (DITAMBAHKAN CLIENT AKTIF) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-emerald-500"><p class="text-[11px] font-bold text-slate-400 uppercase">Total Penjualan</p><h3 id="card-penjualan" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-blue-600"><p class="text-[11px] font-bold text-slate-400 uppercase">HPP Pembelian</p><h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-amber-500"><p class="text-[11px] font-bold text-slate-400 uppercase">Biaya Operasional</p><h3 id="card-operasional" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-purple-500"><p class="text-[11px] font-bold text-slate-400 uppercase">Bagi Hasil Investor</p><h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
                 <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-indigo-600"><p class="text-[11px] font-bold text-slate-400 uppercase">Laba Bersih (Nett)</p><h3 id="card-laba" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
+                
+                <!-- CARD BARU: CLIENT AKTIF -->
+                <div class="glass-card p-6 rounded-2xl shadow-sm glow-blue border-l-4 border-l-cyan-500 cursor-pointer hover:bg-slate-50 transition" onclick="openClientModal()">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase">Client / Vendor Aktif</p>
+                        <i data-lucide="users" class="w-5 h-5 text-cyan-500"></i>
+                    </div>
+                    <h3 id="card-client-count" class="text-2xl font-bold text-slate-800 mt-2">0</h3>
+                    <p class="text-[10px] text-cyan-600 mt-1 font-medium">Klik untuk kelola data</p>
+                </div>
             </div>
 
-            <!-- Section: Charts & Fast Entry -->
+            <!-- Charts & Input -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm">
                     <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
@@ -122,11 +119,11 @@
                             <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
                         </select>
                         
-                        <!-- Dropdown Client Dinamis -->
+                        <!-- Dropdown Client Dinamis dari Sheets -->
                         <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor <button type="button" onclick="openClientModal()" class="text-blue-600 text-[10px] underline ml-1">+ Tambah Baru</button></label>
                             <select id="formClient" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required>
-                                <option value="">-- Pilih Client --</option>
+                                <option value="">-- Memuat Data Client --</option>
                             </select>
                         </div>
 
@@ -140,14 +137,11 @@
                 </div>
             </div>
 
-            <!-- MENU CETAK MASSAL PER CLIENT & PERIODE -->
+            <!-- Menu Cetak Massal -->
             <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-l-cyan-500">
                 <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="printer" class="w-5 h-5 text-cyan-600"></i> Cetak Dokumen Massal (Per Client & Periode)</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor</label>
-                        <select id="mass-client-select" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"><option value="">-- Pilih Client --</option></select>
-                    </div>
+                    <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor</label><select id="mass-client-select" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"><option value="">-- Pilih Client --</option></select></div>
                     <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Dari Tanggal</label><input type="date" id="mass-start-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></div>
                     <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Sampai Tanggal</label><input type="date" id="mass-end-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></div>
                     <div class="flex gap-2">
@@ -157,7 +151,7 @@
                 </div>
             </div>
 
-            <!-- Tabs: Transaksi & Buku Besar -->
+            <!-- Tabs Transaksi & Buku Besar -->
             <div class="glass-card rounded-2xl shadow-sm overflow-hidden">
                 <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex gap-2">
                     <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white transition">Transaksi</button>
@@ -180,7 +174,7 @@
         </main>
     </div>
 
-    <!-- MODAL MANAJEMEN CLIENT -->
+    <!-- MODAL MANAJEMEN CLIENT (TERINTEGRASI SHEETS) -->
     <div id="client-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl relative border border-slate-100 modal-enter max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center border-b pb-3">
@@ -194,14 +188,14 @@
                 <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Alamat Lengkap</label><textarea id="client-address" rows="2" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></textarea></div>
                 <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">NPWP (Opsional)</label><input type="text" id="client-npwp" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></div>
                 <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">No. Telepon</label><input type="text" id="client-phone" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none"></div>
-                <div class="md:col-span-2"><button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium text-sm transition">Simpan Client Baru</button></div>
+                <div class="md:col-span-2"><button type="submit" id="btn-save-client" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru</button></div>
             </form>
 
             <!-- Daftar Client Tersimpan -->
             <div class="flex-1 overflow-y-auto pr-1">
-                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan</p>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan di Database</p>
                 <div id="client-list-container" class="space-y-2">
-                    <!-- List client akan dirender di sini -->
+                    <div class="text-center py-4"><div class="loader mx-auto"></div></div>
                 </div>
             </div>
         </div>
@@ -246,7 +240,7 @@
             <button onclick="toggleTutorialModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             <h3 class="text-lg font-bold text-slate-800">Panduan Aplikasi</h3>
             <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
-                <p>1. Gunakan menu "Manajemen Client" untuk menyimpan data alamat & NPWP.</p>
+                <p>1. Gunakan menu "Manajemen Client" untuk menyimpan data alamat & NPWP ke database.</p>
                 <p>2. Saat input transaksi, pilih Client dari dropdown agar data tersambung.</p>
                 <p>3. Gunakan "Cetak Dokumen Massal" untuk membuat Invoice gabungan per periode.</p>
             </div>
@@ -278,7 +272,7 @@
                 document.getElementById('filter-start-date').value = firstDay.toISOString().split('T')[0];
                 document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
                 document.getElementById('formDate').value = today.toISOString().split('T')[0];
-                initChart(); loadDashboardData(); refreshClientDropdowns();
+                initChart(); loadDashboardData(); loadClientsFromSheets();
             } else {
                 document.getElementById('dashboard-screen').classList.add('hidden');
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -292,25 +286,36 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
-        let financialChart, allTransactionsData = [], currentFilteredData = [];
+        let financialChart, allTransactionsData = [], currentFilteredData = [], cachedClients = [];
 
-        // ==================== CLIENT MANAGEMENT SYSTEM ====================
-        function getClients() { return JSON.parse(localStorage.getItem('amanah_clients') || '[]'); }
-        function saveClients(clients) { localStorage.setItem('amanah_clients', JSON.stringify(clients)); }
+        // ==================== CLIENT MANAGEMENT VIA SHEETS ====================
+        async function loadClientsFromSheets() {
+            try {
+                const res = await fetch(`${API_URL}?action=getClients`).then(r=>r.json());
+                if(res.status === 'success') {
+                    cachedClients = res.clients;
+                    updateClientDropdowns();
+                    document.getElementById('card-client-count').innerText = cachedClients.length;
+                    
+                    // Render list di modal jika sedang terbuka
+                    if(!document.getElementById('client-modal').classList.contains('hidden')) {
+                        renderClientListModal();
+                    }
+                }
+            } catch(e) { console.error("Gagal load client:", e); }
+        }
 
-        function refreshClientDropdowns() {
-            const clients = getClients();
-            const options = '<option value="">-- Pilih Client --</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        function updateClientDropdowns() {
+            const options = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
             document.getElementById('formClient').innerHTML = options;
             document.getElementById('mass-client-select').innerHTML = options;
         }
 
-        function renderClientList() {
-            const clients = getClients();
+        function renderClientListModal() {
             const container = document.getElementById('client-list-container');
-            if(clients.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada client tersimpan.</p>'; return; }
+            if(cachedClients.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada client tersimpan.</p>'; return; }
             
-            container.innerHTML = clients.map((c, index) => `
+            container.innerHTML = cachedClients.map((c, index) => `
                 <div class="flex justify-between items-start p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group">
                     <div class="flex-1">
                         <p class="font-bold text-sm text-slate-800">${c.name}</p>
@@ -318,47 +323,57 @@
                         ${c.npwp ? `<p class="text-[10px] text-slate-400 mt-0.5">NPWP: ${c.npwp}</p>` : ''}
                         ${c.phone ? `<p class="text-[10px] text-slate-400">Telp: ${c.phone}</p>` : ''}
                     </div>
-                    <button onclick="deleteClient(${index})" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <button onclick="deleteClient('${c.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        document.getElementById('client-form').addEventListener('submit', (e) => {
+        document.getElementById('client-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const clients = getClients();
-            clients.push({
+            const btn = document.getElementById('btn-save-client');
+            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
+            
+            const clientData = {
                 name: document.getElementById('client-name').value,
                 address: document.getElementById('client-address').value,
                 npwp: document.getElementById('client-npwp').value,
                 phone: document.getElementById('client-phone').value
-            });
-            saveClients(clients);
-            document.getElementById('client-form').reset();
-            renderClientList();
-            refreshClientDropdowns();
-            alert('Client berhasil ditambahkan!');
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'addClient', clientData: clientData })
+                });
+                
+                alert('Client berhasil ditambahkan ke Database!');
+                document.getElementById('client-form').reset();
+                await loadClientsFromSheets(); // Reload dari sheets
+            } catch(err) { alert('Gagal menyimpan client.'); }
+            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru'; lucide.createIcons(); }
         });
 
-        function deleteClient(index) {
-            if(confirm('Hapus client ini?')) {
-                const clients = getClients();
-                clients.splice(index, 1);
-                saveClients(clients);
-                renderClientList();
-                refreshClientDropdowns();
-            }
+        async function deleteClient(clientId) {
+            if(!confirm('Hapus client ini dari database?')) return;
+            try {
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'deleteClient', clientId: clientId })
+                });
+                await loadClientsFromSheets();
+            } catch(err) { alert('Gagal menghapus client.'); }
         }
 
         function openClientModal() { 
             document.getElementById('client-modal').classList.remove('hidden'); 
-            renderClientList(); 
+            renderClientListModal(); 
             lucide.createIcons();
         }
         function closeClientModal() { document.getElementById('client-modal').classList.add('hidden'); }
 
         // ==================== CORE APP LOGIC ====================
-        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); new Image().src = CONFIG.KOP_SURAT_URL; new Image().src = CONFIG.TTD_DIRUT_URL; refreshClientDropdowns(); });
+        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); new Image().src = CONFIG.KOP_SURAT_URL; new Image().src = CONFIG.TTD_DIRUT_URL; });
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
         
         function initChart() {
@@ -457,8 +472,7 @@
         // SISTEM PRINT PROFESSIONAL & MASSAL
         // ==========================================
         function getClientDetails(name) {
-            const clients = getClients();
-            return clients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' };
+            return cachedClients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' };
         }
 
         function generateMassPrint(type) {
@@ -495,7 +509,6 @@
             let itemsToPrint = customItems || allTransactionsData.filter(t => t.Tanggal === mainItem.Tanggal && t.kategori === mainItem.kategori && (t.vendor||'').toLowerCase() === (mainItem.vendor||'').toLowerCase());
             const grandTotal = itemsToPrint.reduce((s,i)=>s+(Number(i.total)||0),0);
             
-            // Ambil data lengkap client
             const entityName = customClient || mainItem.vendor || 'Klien Umum';
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
@@ -567,7 +580,7 @@
         function toggleTutorialModal() { document.getElementById('tutorial-modal').classList.toggle('hidden'); }
         function toggleBotChat() { document.getElementById('bot-chat-window').classList.toggle('hidden'); }
         
-        document.getElementById('bot-form').addEventListener('submit',(e)=>{e.preventDefault();const m=document.getElementById('bot-input').value;if(!m)return;document.getElementById('bot-messages').innerHTML+=`<div class="flex justify-end"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%] text-xs">${m}</div></div>`;document.getElementById('bot-input').value='';setTimeout(()=>{let r="Maaf, Ami belum paham.";if(m.toLowerCase().includes('halo'))r="Halo! Ada yang bisa dibantu?";else if(m.toLowerCase().includes('client'))r="Gunakan tombol '+ Tambah Baru' di form input untuk mengelola data client.";document.getElementById('bot-messages').innerHTML+=`<div class="flex"><div class="bg-white border p-2 rounded-lg max-w-[80%] text-xs">${r}</div></div>`;document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;},500);});
+        document.getElementById('bot-form').addEventListener('submit',(e)=>{e.preventDefault();const m=document.getElementById('bot-input').value;if(!m)return;document.getElementById('bot-messages').innerHTML+=`<div class="flex justify-end"><div class="bg-blue-600 text-white p-2 rounded-lg max-w-[80%] text-xs">${m}</div></div>`;document.getElementById('bot-input').value='';setTimeout(()=>{let r="Maaf, Ami belum paham.";if(m.toLowerCase().includes('halo'))r="Halo! Ada yang bisa dibantu?";else if(m.toLowerCase().includes('client'))r="Data client sekarang tersimpan aman di Google Sheets. Klik kartu 'Client Aktif' di dashboard untuk mengelolanya.";document.getElementById('bot-messages').innerHTML+=`<div class="flex"><div class="bg-white border p-2 rounded-lg max-w-[80%] text-xs">${r}</div></div>`;document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;},500);});
     </script>
 </body>
 </html>
