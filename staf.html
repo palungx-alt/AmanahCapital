@@ -6,7 +6,6 @@
     <title>Amanah Capital - Staf Operasional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -23,11 +22,24 @@
         }
         .animate-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
 
+        /* CSS KHUSUS UNTUK PRINT BROWSER MANUAL */
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20mm; }
+            #print-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                margin: 0; 
+                padding: 15mm; /* Margin aman untuk printer biasa */
+                box-shadow: none !important;
+                background: white !important;
+            }
             .no-print { display: none !important; }
+            /* Paksa warna background tabel saat print */
+            thead tr { background-color: #1e293b !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tfoot tr { background-color: #eff6ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -56,12 +68,10 @@
             <div><h1 class="font-bold text-base leading-tight">Staf Operasional</h1><p id="staf-name-display" class="text-[10px] text-blue-200 uppercase tracking-wider">Memuat...</p></div>
         </div>
         <div class="flex items-center gap-3">
-            <!-- NOTIFIKASI LONCENG -->
             <div class="relative cursor-pointer hover:bg-white/10 p-2 rounded-lg transition" onclick="switchTab('approval')" title="Cek Transaksi Pending">
                 <i data-lucide="bell" class="w-5 h-5 text-white animate-ring" id="notif-bell"></i>
                 <span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
             </div>
-            
             <a href="index.html" class="bg-white/10 hover:bg-blue-500/80 p-2 rounded-lg transition border border-white/20"><i data-lucide="home" class="w-4 h-4 text-white"></i></a>
             <button onclick="logout()" class="bg-white/10 hover:bg-red-500/80 p-2 rounded-lg transition border border-white/20"><i data-lucide="log-out" class="w-4 h-4 text-white"></i></button>
         </div>
@@ -169,7 +179,7 @@
                     <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Dari Tanggal</label><input type="date" id="inv-start-date" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none bg-white"></div>
                     <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Sampai Tanggal</label><input type="date" id="inv-end-date" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none bg-white"></div>
                 </div>
-                <div class="pt-2"><button onclick="previewDocument('invoice')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20"><i data-lucide="eye" class="w-4 h-4"></i> Preview & Download Invoice</button></div>
+                <div class="pt-2"><button onclick="previewDocument('invoice')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20"><i data-lucide="eye" class="w-4 h-4"></i> Preview Invoice (Print Manual)</button></div>
             </div>
         </div>
         <div id="content-nota" class="tab-content hidden space-y-4">
@@ -180,25 +190,33 @@
                     <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Dari Tanggal</label><input type="date" id="nota-start-date" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none bg-white"></div>
                     <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Sampai Tanggal</label><input type="date" id="nota-end-date" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none bg-white"></div>
                 </div>
-                <div class="pt-2"><button onclick="previewDocument('nota')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"><i data-lucide="eye" class="w-4 h-4"></i> Preview & Download Nota</button></div>
+                <div class="pt-2"><button onclick="previewDocument('nota')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"><i data-lucide="eye" class="w-4 h-4"></i> Preview Nota (Print Manual)</button></div>
             </div>
         </div>
 
     </main>
 
-    <!-- MODAL PREVIEW DOKUMEN -->
-    <div id="doc-preview-modal" class="hidden fixed inset-0 z-50 print-overlay overflow-y-auto flex flex-col items-center justify-start p-4 pt-20 no-print">
-        <div class="sticky top-4 z-50 flex gap-3 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-2xl border border-slate-200 mb-6">
-            <button onclick="closePreview()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2"><i data-lucide="x" class="w-4 h-4"></i> Kembali</button>
-            <button id="btn-download-pdf" onclick="downloadPDFDirectly()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-blue-600/30"><i data-lucide="download" class="w-4 h-4"></i> Download PDF</button>
-        </div>
-        <div id="print-area" class="bg-white shadow-2xl mx-auto relative text-slate-900 mb-20" style="width: 794px; padding: 40px; box-sizing: border-box;">
-            <div id="kop-surat-container" class="mb-4 border-b-2 border-slate-800 pb-3">
-                <img id="kop-img" src="" class="w-full h-auto object-contain max-h-[90px] hidden">
-                <div id="kop-fallback" class="text-center py-3 hidden"><h1 class="text-xl font-bold text-slate-900">CV. REZEKI AMANAH JAYA</h1><p class="text-xs text-slate-600 mt-1">Jl. Raya Bisnis No. 88, Jakarta | Telp: (021) 555-0123</p></div>
-            </div>
+    <!-- MODAL PREVIEW DOKUMEN (BERSIH TANPA TOMBOL) -->
+    <div id="doc-preview-modal" class="hidden fixed inset-0 z-50 bg-slate-900/90 overflow-y-auto flex flex-col items-center justify-start p-4 pt-10 no-print">
+        <!-- AREA CETAK DENGAN STYLE INLINE AGAR STABIL DI PRINT BROWSER -->
+        <div id="print-area" class="bg-white shadow-2xl mx-auto relative text-slate-900 mb-20" style="width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; font-family: sans-serif;">
+            <!-- KOP SURAT AKAN DIRENDER SECARA DINAMIS OLEH JS -->
+            <div id="kop-surat-container" style="margin-bottom: 30px;"></div>
+            
+            <!-- KONTEN DINAMIS AKAN DIMASUKKAN DI SINI -->
             <div id="document-content"></div>
-            <div class="mt-4 pt-3 border-t border-slate-200 text-center"><p class="text-xs font-bold text-slate-800 italic">"Terima kasih atas kepercayaan dan kerja sama yang telah diberikan."</p><p class="text-[8px] text-slate-500 mt-1">Generated on <span id="gen-date"></span></p></div>
+            
+            <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: center;">
+                <p style="font-size: 12px; font-weight: bold; color: #1e293b; font-style: italic; margin: 0;">"Terima kasih atas kepercayaan dan kerja sama yang telah diberikan."</p>
+            </div>
+        </div>
+        
+        <!-- INSTRUKSI PRINT SEDERHANA -->
+        <div class="sticky bottom-10 z-50 flex gap-3 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-2xl mt-4">
+            <button onclick="closePreview()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2"><i data-lucide="x" class="w-4 h-4"></i> Tutup Preview</button>
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg">
+                <i data-lucide="printer" class="w-4 h-4"></i> Print (Ctrl+P)
+            </button>
         </div>
     </div>
 
@@ -526,111 +544,176 @@
             const entityName = filteredData[0].vendor;
             const clientData = getClientDetails(entityName);
             
-            document.getElementById('document-content').innerHTML = generatePrintHTML(isInvoice, filteredData, clientData);
+            // Generate Nomor Dokumen untuk Judul Tab & Filename
+            const docNum = `${isInvoice?'INV':'NOTA'}-${Date.now().toString().substr(-6)}`;
+            currentDocNumberForPrint = docNum;
             
-            const kopImg = document.getElementById('kop-img'); 
-            kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime(); 
-            kopImg.style.display = 'block'; 
-            document.getElementById('kop-fallback').style.display = 'none';
+            // UBAH JUDUL TAB BROWSER SESUAI NOMOR INVOICE/NOTA
+            document.title = docNum;
+
+            // Render Kop Surat Centered
+            const kopContainer = document.getElementById('kop-surat-container');
+            kopContainer.innerHTML = `
+                <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 20px;">
+                    <img src="${CONFIG.KOP_SURAT_URL}" onerror="this.style.display='none'" style="max-height: 80px; margin-bottom: 10px;">
+                    <h1 style="font-size: 22px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase;">CV REZEKI AMANAH JAYA GROUP</h1>
+                    <p style="font-size: 12px; color: #475569; margin: 5px 0 0 0; font-weight: 600;">SUPPLIER & WASTE SOLUTION PARTNER</p>
+                    <p style="font-size: 10px; color: #64748b; margin: 2px 0 0 0;">Cluster Puri Flamboyan No. 88, Jakarta Barat | Telp: (021) 555-0123</p>
+                </div>
+            `;
+
+            document.getElementById('document-content').innerHTML = generatePrintHTML(isInvoice, filteredData, clientData, docNum);
             document.getElementById('doc-preview-modal').classList.remove('hidden');
         }
 
-        function generatePrintHTML(isInvoice, items, clientData) {
+        function generatePrintHTML(isInvoice, items, clientData, docNum) {
             const entity = items[0].vendor; 
             const dateStr = new Date(items[0].Tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
-            const docNum = `${isInvoice?'INV':'NOTA'}-${Date.now().toString().substr(-6)}`;
             
-            const rows = items.map(i => `<tr><td class="border border-slate-300 p-2 text-xs">${i.item || i.Nama_Barang_Material}</td><td class="border border-slate-300 p-2 text-center text-xs">${formatNumber(i.qty || i.Jumlah_Kg_Unit)} ${currentStock[i.item]?.unit||''}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatNumber(i.price || i.Harga_Satuan)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
+            // Hitung Total Volume
+            let totalVol = 0;
+            let totalVolUnit = '';
+            
+            // Generate baris tabel item sekaligus hitung total vol
+            const rows = items.map(i => {
+                const qty = parseFloat(i.qty || i.Jumlah_Kg_Unit) || 0;
+                const unit = currentStock[i.item]?.unit || '';
+                totalVol += qty;
+                
+                // Tentukan satuan dominan (jika campuran, ambil yang pertama atau kosongkan)
+                if (!totalVolUnit && unit) totalVolUnit = unit;
+                else if (totalVolUnit && unit && totalVolUnit !== unit) totalVolUnit = 'Mix'; 
+
+                return `
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px;">${i.item || i.Nama_Barang_Material}</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px; text-align: center;">${formatNumber(qty)} ${unit}</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px; text-align: right;">${formatNumber(i.price || i.Harga_Satuan)}</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px; text-align: right; font-weight: bold;">${formatIDR(i.total)}</td>
+                </tr>`;
+            }).join('');
+
+            // Baris Total Volume
+            const totalVolRow = `
+            <tr style="background-color: #f8fafc;">
+                <td colspan="1" style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px; font-weight: bold; text-align: right;">TOTAL VOLUME</td>
+                <td style="border: 1px solid #cbd5e1; padding: 8px; font-size: 12px; font-weight: bold; text-align: center;">${formatNumber(totalVol)} ${totalVolUnit}</td>
+                <td colspan="2" style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+            </tr>`;
             
             const grandTotal = items.reduce((s,i)=>s+(Number(i.total)||0),0);
             
-            const ttd = `<div class="mt-6 flex justify-between items-end"><div class="text-center w-1/3"><p class="text-xs mb-6 text-slate-500">${isInvoice?'Penerima':'Yang Menyetorkan'}</p><div class="border-t border-slate-300 w-32 mx-auto"></div></div><div class="text-center w-1/3"><p class="text-xs mb-1">Jakarta, ${dateStr}</p><p class="text-xs mb-1 text-slate-500">Hormat Kami,</p><div class="h-10 flex items-center justify-center mb-1"><img src="${CONFIG.TTD_DIRUT_URL}" class="h-full object-contain"></div><p class="font-bold text-xs text-slate-900 underline decoration-slate-400 underline-offset-2">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500">Direktur Utama</p></div></div>`;
+            // Template Tanda Tangan
+            const ttd = `
+            <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div style="text-align: center; width: 33%;">
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 60px;">${isInvoice ? 'Penerima / Pembeli' : 'Yang Menyetorkan'}</p>
+                    <div style="border-top: 1px solid #94a3b8; width: 150px; margin: 0 auto;"></div>
+                </div>
+                <div style="text-align: center; width: 33%;">
+                    <p style="font-size: 12px; margin: 0;">Jakarta, ${dateStr}</p>
+                    <p style="font-size: 12px; color: #64748b; margin: 5px 0;">Hormat Kami,</p>
+                    <div style="height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                        <img src="${CONFIG.TTD_DIRUT_URL}" style="max-height: 100%; object-contain;">
+                    </div>
+                    <p style="font-size: 12px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p>
+                    <p style="font-size: 10px; color: #64748b; margin-top: 2px;">Direktur Utama</p>
+                </div>
+            </div>`;
             
-            if(!isInvoice) return `<div class="text-center mb-4"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">NOTA PEMBELIAN</h2><p class="text-xs text-slate-500 mt-1">No: ${docNum}</p></div><div class="flex justify-between text-xs mb-4"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${entity}</p></div><div class="text-right"><p class="font-bold text-slate-700">Tanggal</p><p class="text-slate-600">${dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-4"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttd}`;
+            if(!isInvoice) {
+                // TEMPLATE NOTA PEMBELIAN
+                return `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="font-size: 28px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 5px 0; color: #0f172a;">NOTA PEMBELIAN</h2>
+                    <p style="font-size: 14px; color: #475569; margin: 0;">No: ${docNum}</p>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 20px;">
+                    <div>
+                        <p style="font-weight: bold; color: #334155; margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase;">Kepada Yth:</p>
+                        <p style="font-weight: 700; color: #0f172a; margin: 0; font-size: 16px;">${entity}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="font-weight: bold; color: #334155; margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase;">Tanggal Transaksi</p>
+                        <p style="color: #0f172a; margin: 0; font-size: 16px;">${dateStr}</p>
+                    </div>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #1e293b; color: white;">
+                            <th style="border: 1px solid #334155; padding: 10px; text-align: left;">Uraian</th>
+                            <th style="border: 1px solid #334155; padding: 10px; text-align: center; width: 100px;">Vol</th>
+                            <th style="border: 1px solid #334155; padding: 10px; text-align: right; width: 120px;">Harga Satuan</th>
+                            <th style="border: 1px solid #334155; padding: 10px; text-align: right; width: 140px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                    <tfoot>
+                        ${totalVolRow}
+                        <tr style="background-color: #eff6ff;">
+                            <td colspan="3" style="border: 1px solid #bfdbfe; padding: 12px; text-align: right; font-weight: bold; color: #1e3a8a; font-size: 14px;">TOTAL TAGIHAN</td>
+                            <td style="border: 1px solid #bfdbfe; padding: 12px; text-align: right; font-weight: bold; color: #1e3a8a; font-size: 16px;">${formatIDR(grandTotal)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                ${ttd}`;
+            } 
             
-            // TEMPLATE INVOICE YANG DIPERBAIKI
+            // TEMPLATE INVOICE PENJUALAN
             return `
-            <div class="flex justify-between items-start mb-6">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 20px;">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">INVOICE</h2>
-                    <p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p>
+                    <h2 style="font-size: 28px; font-weight: bold; color: #0f172a; margin: 0;">INVOICE</h2>
+                    <p style="font-size: 11px; color: #64748b; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;">Tagihan Resmi Perusahaan</p>
                 </div>
-                <div class="text-right text-xs">
-                    <div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNum}</span></div>
-                    <div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div>
+                <div style="text-align: right; font-size: 13px;">
+                    <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: block; color: #334155; font-size: 10px; text-transform: uppercase;">No. Invoice</span><span style="font-family: monospace; font-size: 16px; font-weight: 600;">${docNum}</span></div>
+                    <div><span style="font-weight: bold; display: block; color: #334155; font-size: 10px; text-transform: uppercase;">Tanggal Terbit</span><span style="font-size: 16px;">${dateStr}</span></div>
                 </div>
             </div>
             
-            <div class="mb-6 bg-slate-50 p-3 border border-slate-100 rounded-lg">
-                <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Ditagihkan Kepada:</p>
-                <p class="font-bold text-slate-800 text-sm">${clientData.name}</p>
-                <p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>
-                ${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}
-                ${clientData.phone !== '-' ? `<p class="text-[10px] text-slate-500">Telp: ${clientData.phone}</p>` : ''}
+            <div style="background-color: #f8fafc; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 30px;">
+                <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin: 0 0 8px 0; letter-spacing: 1px;">Ditagihkan Kepada:</p>
+                <p style="font-weight: bold; color: #0f172a; font-size: 18px; margin: 0;">${clientData.name}</p>
+                <p style="font-size: 12px; color: #475569; margin-top: 8px; line-height: 1.5;">${clientData.address}</p>
+                ${clientData.npwp !== '-' ? `<p style="font-size: 11px; color: #64748b; margin-top: 8px;"><span style="font-weight: 600;">NPWP:</span> ${clientData.npwp}</p>` : ''}
+                ${clientData.phone !== '-' ? `<p style="font-size: 11px; color: #64748b;"><span style="font-weight: 600;">Telp:</span> ${clientData.phone}</p>` : ''}
             </div>
             
-            <table class="w-full text-xs border-collapse border border-slate-200 mb-6">
-                <thead class="bg-slate-800 text-white">
-                    <tr>
-                        <th class="border border-slate-700 p-2 text-left">Deskripsi</th>
-                        <th class="border border-slate-700 p-2 text-center w-20">Qty</th>
-                        <th class="border border-slate-700 p-2 text-right w-28">Harga Satuan</th>
-                        <th class="border border-slate-700 p-2 text-right w-28">Jumlah</th>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #1e293b; color: white;">
+                        <th style="border: 1px solid #334155; padding: 12px; text-align: left;">Deskripsi Item</th>
+                        <th style="border: 1px solid #334155; padding: 12px; text-align: center; width: 100px;">Qty</th>
+                        <th style="border: 1px solid #334155; padding: 12px; text-align: right; width: 120px;">Harga Satuan</th>
+                        <th style="border: 1px solid #334155; padding: 12px; text-align: right; width: 140px;">Jumlah</th>
                     </tr>
                 </thead>
                 <tbody>${rows}</tbody>
                 <tfoot>
-                    <tr class="bg-blue-50">
-                        <td colspan="3" class="border border-blue-100 p-2 text-right font-bold text-blue-900">TOTAL TAGIHAN</td>
-                        <td class="border border-blue-100 p-2 text-right font-bold text-blue-900 text-sm">${formatIDR(grandTotal)}</td>
+                    ${totalVolRow}
+                    <tr style="background-color: #eff6ff;">
+                        <td colspan="3" style="border: 1px solid #bfdbfe; padding: 12px; text-align: right; font-weight: bold; color: #1e3a8a; font-size: 14px;">TOTAL TAGIHAN</td>
+                        <td style="border: 1px solid #bfdbfe; padding: 12px; text-align: right; font-weight: bold; color: #1e3a8a; font-size: 16px;">${formatIDR(grandTotal)}</td>
                     </tr>
                 </tfoot>
             </table>
             
-            <div class="text-[10px] text-slate-600 mb-6 bg-slate-50 p-2 rounded border border-slate-100">
-                <p class="font-bold mb-0.5">Rekening Pembayaran:</p>
-                <p>Mandiri: 1210014494995 a.n CV Rezeki Amanah Jaya Group</p>
+            <div style="font-size: 11px; color: #475569; margin-bottom: 40px; background-color: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                <p style="font-weight: bold; margin: 0 0 8px 0; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: #64748b;">Informasi Pembayaran</p>
+                <p style="margin: 0; font-size: 13px;"><span style="font-weight: 600;">Bank Mandiri:</span> 1210014494995</p>
+                <p style="margin: 5px 0 0 0; font-size: 13px;"><span style="font-weight: 600;">Atas Nama:</span> CV Rezeki Amanah Jaya Group</p>
             </div>
             
             ${ttd}`;
         }
 
-        function closePreview() { document.getElementById('doc-preview-modal').classList.add('hidden'); }
-        function downloadPDFDirectly() {
-            const element = document.getElementById('print-area'); 
-            const btn = document.getElementById('btn-download-pdf'); 
-            const originalBtnText = btn.innerHTML; 
-            btn.disabled = true; 
-            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Generating...';
-            
-            document.getElementById('gen-date').innerText = new Date().toLocaleString('id-ID');
-
-            // KONFIGURASI AGAR PDF IDENTIK DENGAN PREVIEW
-            const opt = {
-                margin:       0,
-                filename:     `${currentDocNumberForPrint || 'Invoice'}-${currentClientNameForFile || Date.now()}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true, 
-                    logging: false, 
-                    windowWidth: 794, 
-                    scrollY: 0,
-                    allowTaint: true
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => { 
-                btn.disabled = false; 
-                btn.innerHTML = originalBtnText; 
-                showToast("PDF berhasil didownload!");
-            }).catch(err => {
-                console.error("Gagal generate PDF:", err);
-                alert("Gagal membuat PDF. Coba lagi.");
-                btn.disabled = false;
-                btn.innerHTML = originalBtnText;
-            });
+        function closePreview() { 
+            document.getElementById('doc-preview-modal').classList.add('hidden'); 
+            // Kembalikan judul tab ke default
+            document.title = "Amanah Capital - Staf Operasional";
         }
 
         // ==================== HELPERS ====================
