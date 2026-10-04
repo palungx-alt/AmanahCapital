@@ -3,125 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amanah Capital - Driver App</title>
+    <title>Amanah Capital - Driver Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        select option { padding: 12px; font-size: 16px; }
+        /* Light Futuristic Palette */
+        :root {
+            --bg-base: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(16, 185, 129, 0.15);
+            --accent-primary: #10b981; /* Emerald 500 */
+            --accent-dark: #047857;   /* Emerald 700 */
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            background: linear-gradient(135deg, #ecfdf5 0%, #f8fafc 50%, #e0f2fe 100%);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Clean Glassmorphism Cards */
+        .glass-card { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 10px 40px -10px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Futuristic Inputs */
+        input, select {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        input:focus, select:focus {
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+            outline: none;
+        }
+        input::placeholder { color: #94a3b8; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Animations */
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-enter { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        /* Animasi Cart */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .status-dot { animation: pulse-ring 2s infinite; }
+
+        .loader { border: 3px solid #e2e8f0; border-top-color: var(--accent-primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col relative">
+<body class="antialiased flex flex-col relative pb-24">
 
     <!-- HEADER -->
-    <header class="gradient-bg text-white shadow-lg sticky top-0 z-40 px-4 py-4 flex justify-between items-center">
+    <header class="sticky top-0 z-40 px-5 py-4 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm"><i data-lucide="truck" class="w-6 h-6 text-emerald-300"></i></div>
-            <div><h1 class="font-bold text-lg leading-tight">Driver Portal</h1><p id="driver-name-display" class="text-xs text-emerald-200 opacity-90">Memuat nama...</p></div>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <i data-lucide="truck" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base tracking-wide text-slate-800">Driver Portal</h1>
+                <p id="driver-name-display" class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Memuat...</p>
+            </div>
         </div>
-        <button onclick="logout()" class="bg-white/10 hover:bg-red-500/80 p-2 rounded-lg transition backdrop-blur-sm border border-white/20"><i data-lucide="log-out" class="w-5 h-5 text-white"></i></button>
+        <button onclick="logout()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
     </header>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 p-4 max-w-md mx-auto w-full space-y-4 pb-24">
+    <main class="flex-1 p-4 max-w-md mx-auto w-full space-y-4">
         
         <!-- STATUS CARD -->
-        <div class="glass-card p-4 rounded-2xl shadow-sm border-l-4 border-l-emerald-500 flex items-center justify-between">
-            <div><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Status Koneksi</p><div class="flex items-center gap-2 mt-1"><span id="conn-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span id="conn-text" class="text-sm font-semibold text-slate-700">Online & Siap Input</span></div></div>
-            <div id="clock" class="text-2xl font-mono font-bold text-slate-600">--:--</div>
+        <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span id="conn-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 status-dot"></span>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status Sistem</p>
+                    <p id="conn-text" class="text-xs font-bold text-emerald-600">Online & Siap Input</p>
+                </div>
+            </div>
+            <div id="clock" class="text-xl font-mono font-bold text-slate-600 tabular-nums">--:--</div>
         </div>
 
-        <!-- FORM INPUT TRANSAKSI (ADD TO CART) -->
-        <form id="driver-form" class="glass-card p-5 rounded-2xl shadow-sm space-y-5">
-            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100"><i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Tambah Item ke Nota</h2>
-
-            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Tanggal Transaksi</label><input type="date" id="form-date" required readonly class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 cursor-not-allowed"></div>
-
-            <div>
-                <div class="flex justify-between items-end mb-1.5">
-                    <label class="block text-xs font-bold uppercase text-slate-500">Nama Bank Sampah / Vendor</label>
-                    <button type="button" onclick="openAddClientModal()" class="text-[10px] text-blue-600 font-bold flex items-center gap-1 hover:text-blue-800"><i data-lucide="plus" class="w-3 h-3"></i> Tambah Baru</button>
-                </div>
-                <select id="form-vendor" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white appearance-none"><option value="">-- Pilih Vendor --</option></select>
-                <div class="relative pointer-events-none absolute right-8 top-[108px]"><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Jenis Sampah</label>
-                <select id="form-item" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white appearance-none"><option value="">-- Pilih Jenis Sampah --</option></select>
-                <div class="relative pointer-events-none absolute right-8 top-[172px]"><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></div>
+        <!-- FORM INPUT FUTURISTIK -->
+        <form id="driver-form" class="glass-card p-5 rounded-2xl space-y-5 animate-enter" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-500"></i>
+                <h2 class="text-sm font-bold text-slate-800 tracking-wide">Tambah Timbangan</h2>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Berat (Kg)</label><input type="number" id="form-qty" inputmode="decimal" step="0.1" required placeholder="0.0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none bg-white font-mono"></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Total Harga (Rp)</label><input type="text" id="form-total" readonly placeholder="0" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 cursor-not-allowed font-mono"></div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Tanggal</label>
+                    <input type="date" id="form-date" required readonly class="w-full rounded-xl px-3 py-2.5 text-xs font-medium cursor-not-allowed bg-slate-50">
+                </div>
+                <div>
+                    <div class="flex justify-between items-end mb-1.5">
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 tracking-wider">Vendor / BSU</label>
+                        <button type="button" onclick="openAddClientModal()" class="text-[9px] text-emerald-600 font-bold flex items-center gap-0.5 hover:text-emerald-700"><i data-lucide="plus" class="w-3 h-3"></i> Baru</button>
+                    </div>
+                    <select id="form-vendor" required class="w-full rounded-xl px-3 py-2.5 text-xs appearance-none pr-8"><option value="">-- Pilih --</option></select>
+                    <div class="relative pointer-events-none absolute right-5 top-[30px]"><i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i></div>
+                </div>
             </div>
 
-            <!-- TOMBOL ADD TO CART (BUKAN SUBMIT LANGSUNG) -->
-            <button type="button" id="btn-add-cart" onclick="addToCart()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 text-base"><i data-lucide="shopping-cart" class="w-5 h-5"></i> Tambah ke Nota Sementara</button>
+            <div class="space-y-3 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-emerald-700 mb-1.5 tracking-wider">Jenis Sampah</label>
+                    <select id="form-item" required class="w-full rounded-xl px-3 py-3 text-sm appearance-none pr-8 font-medium bg-white"><option value="">-- Pilih Jenis --</option></select>
+                    <div class="relative pointer-events-none absolute right-5 top-[72px]"><i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Berat (Kg)</label>
+                        <input type="number" id="form-qty" inputmode="decimal" step="0.1" placeholder="0.0" class="w-full rounded-xl px-3 py-3 text-lg font-bold text-center tabular-nums bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 tracking-wider">Estimasi (Rp)</label>
+                        <input type="text" id="form-total" readonly placeholder="0" class="w-full rounded-xl px-3 py-3 text-sm font-bold text-center tabular-nums bg-slate-50 cursor-not-allowed text-slate-500">
+                    </div>
+                </div>
+
+                <button type="button" id="btn-add-cart" onclick="addToCart()" disabled class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/20 disabled:shadow-none">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Tambah ke Daftar
+                </button>
+            </div>
         </form>
 
-        <!-- KERANJANG / PREVIEW NOTA SEMENTARA -->
-        <div id="cart-section" class="glass-card p-5 rounded-2xl shadow-sm hidden animate-slide-up">
-            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4 text-amber-500"></i> Preview Nota Hari Ini</h3>
-                <span id="cart-count-badge" class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Item</span>
+        <!-- KERANJANG DETAIL PER TIMBANGAN -->
+        <div id="cart-section" class="glass-card p-5 rounded-2xl space-y-4 hidden animate-enter" style="animation-delay: 0.2s;">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="text-xs font-bold text-slate-600 flex items-center gap-2 uppercase tracking-wider"><i data-lucide="list" class="w-4 h-4 text-emerald-500"></i> Detail Timbangan</h3>
+                <span id="cart-count-badge" class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-200">0 Item</span>
             </div>
             
-            <div id="cart-list" class="space-y-2 max-h-60 overflow-y-auto pr-1 mb-4"></div>
+            <div id="cart-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
 
-            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center mb-4">
-                <span class="text-xs font-bold text-slate-500 uppercase">Total Keseluruhan</span>
-                <span id="cart-grand-total" class="text-lg font-bold text-blue-700 font-mono">Rp 0</span>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 flex justify-between items-center">
+                <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-widest">Total Keseluruhan</span>
+                <span id="cart-grand-total" class="text-lg font-bold text-emerald-600 font-mono tabular-nums">Rp 0</span>
             </div>
 
-            <!-- TOMBOL CHECKOUT (SUBMIT KE SHEET) -->
-            <button type="button" id="btn-save-batch" onclick="saveBatchToServer()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 text-base"><i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi (Kirim ke Admin)</button>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+                <button type="button" id="btn-merge" onclick="confirmMerge()" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                    <i data-lucide="combine" class="w-4 h-4"></i> Gabungkan
+                </button>
+                <button type="button" id="btn-save-batch" onclick="saveBatchToServer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                    <i data-lucide="save" class="w-4 h-4"></i> Simpan Transaksi
+                </button>
+            </div>
         </div>
 
         <!-- RIWAYAT SINGKAT -->
-        <div class="glass-card p-4 rounded-2xl shadow-sm">
-            <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Riwayat Input Terakhir</h3>
-            <div id="history-list" class="space-y-2"><p class="text-xs text-slate-400 text-center italic py-2">Belum ada transaksi hari ini.</p></div>
+        <div class="glass-card p-4 rounded-2xl animate-enter" style="animation-delay: 0.3s;">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Riwayat Terakhir</h3>
+            <div id="history-list" class="space-y-2"><p class="text-[10px] text-slate-400 text-center italic py-2">Belum ada aktivitas hari ini.</p></div>
         </div>
 
     </main>
 
-    <!-- MODAL TAMBAH CLIENT BARU (DENGAN NO TELP) -->
-    <div id="add-client-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl relative border border-slate-100 modal-enter">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-blue-600"></i> Tambah Vendor Baru</h3>
+    <!-- MODAL KONFIRMASI GABUNGKAN -->
+    <div id="merge-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-emerald-200 animate-enter bg-white">
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-emerald-100">
+                    <i data-lucide="combine" class="w-7 h-7 text-emerald-500"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Konfirmasi Penggabungan</h3>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">Item dengan jenis sampah yang sama akan digabung menjadi satu baris total.</p>
+            </div>
+            
+            <div id="merge-preview" class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-5 max-h-40 overflow-y-auto text-xs space-y-2">
+                <!-- Preview hasil merge -->
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeMergeModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl font-bold text-xs transition uppercase tracking-wider">Batal</button>
+                <button onclick="executeMerge()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 uppercase tracking-wider">
+                    <i data-lucide="check" class="w-4 h-4"></i> Ya, Gabungkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH CLIENT BARU -->
+    <div id="add-client-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl w-full max-w-sm p-6 space-y-4 shadow-2xl border border-emerald-200 animate-enter bg-white">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5 text-emerald-500"></i> Vendor Baru</h3>
                 <button onclick="closeAddClientModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <form id="add-client-form" class="space-y-4">
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nama Vendor / BSU</label><input type="text" id="new-client-name" required placeholder="Contoh: BSU Melati Jaya" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none uppercase"></div>
-                
-                <!-- FIELD NO TELP OPSIONAL -->
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">No. Telepon (Opsional)</label><input type="tel" id="new-client-phone" placeholder="0812..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none"></div>
-                
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Alamat (Opsional)</label><textarea id="new-client-address" rows="2" placeholder="Alamat lengkap..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none resize-none"></textarea></div>
-                <button type="submit" id="btn-save-new-client" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Simpan Vendor</button>
+            <form id="add-client-form" class="space-y-3">
+                <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Nama Vendor</label><input type="text" id="new-client-name" required placeholder="BSU Melati Jaya" class="w-full rounded-xl px-3 py-2.5 text-xs uppercase"></div>
+                <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">No. Telepon (Opsional)</label><input type="tel" id="new-client-phone" placeholder="0812..." class="w-full rounded-xl px-3 py-2.5 text-xs"></div>
+                <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Alamat (Opsional)</label><textarea id="new-client-address" rows="2" placeholder="Alamat lengkap..." class="w-full rounded-xl px-3 py-2.5 text-xs resize-none"></textarea></div>
+                <button type="submit" id="btn-save-new-client" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2 text-xs uppercase tracking-wider mt-2"><i data-lucide="save" class="w-4 h-4"></i> Simpan Vendor</button>
             </form>
         </div>
     </div>
 
     <!-- NOTIFIKASI TOAST -->
-    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-medium hidden z-50 flex items-center gap-2 transition-all duration-300"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil disimpan!</span></div>
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-medium hidden z-50 flex items-center gap-2 transition-all duration-300 border border-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil!</span></div>
 
     <script>
-        // URL API ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         
-        // VARIABEL GLOBAL UNTUK KERANJANG
         let masterItems = [], cachedClients = [], transactionCart = [];
         let localHistory = JSON.parse(localStorage.getItem('driver_history') || '[]');
 
@@ -129,37 +228,46 @@
             lucide.createIcons(); checkAuth(); updateClock(); setInterval(updateClock, 60000);
             document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
             
-            // LOAD DATA DROPDOWN (LOGIKA LAMA ANDA TETAP JALAN DI SINI)
+            // Pastikan load data berjalan berurutan
             loadMasterDataForDropdown(); 
             loadClientsForDropdown(); 
             renderHistory();
             
             document.getElementById('form-item').addEventListener('change', calculateTotal);
             document.getElementById('form-qty').addEventListener('input', calculateTotal);
+            document.getElementById('form-vendor').addEventListener('change', validateForm);
+            document.getElementById('form-item').addEventListener('change', validateForm);
+            
+            document.getElementById('form-qty').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); addToCart(); }
+            });
         });
 
         function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); }
-
         function checkAuth() {
             const params = new URLSearchParams(window.location.search);
             if (!params.get('token')) { alert("Akses tidak sah!"); window.location.href = 'index.html'; return; }
             document.getElementById('driver-name-display').innerText = `Halo, ${decodeURIComponent(params.get('bsName') || 'Driver')}`;
         }
-
         function logout() { if(confirm("Yakin ingin keluar?")) { sessionStorage.removeItem('driver_session'); window.location.href = 'index.html'; } }
 
-        // --- LOGIKA DROPDOWN TETAP SAMA SEPERTI SEBELUMNYA ---
         async function loadMasterDataForDropdown() {
             try {
                 const res = await fetch(`${API_URL}?action=getMasterData`).then(r => r.json());
                 if (res.status === 'success') {
                     masterItems = res.items.map(i => ({...i, price: parseFloat(i.price)||0})).sort((a,b)=>a.name.localeCompare(b.name));
                     const select = document.getElementById('form-item');
+                    select.innerHTML = '<option value="">-- Pilih Jenis --</option>'; // Reset dulu
                     masterItems.forEach(item => {
-                        const opt = document.createElement('option'); opt.value = item.name; opt.text = `${item.name} (Rp ${formatNumber(item.price)})`; opt.dataset.price = item.price; select.appendChild(opt);
+                        const opt = document.createElement('option'); opt.value = item.name; opt.text = `${item.name} | Rp ${formatNumber(item.price)}`; opt.dataset.price = item.price; select.appendChild(opt);
                     });
+                } else {
+                    console.error("Gagal load master:", res);
                 }
-            } catch (err) { showToast("Gagal memuat daftar sampah.", true); }
+            } catch (err) { 
+                console.error(err);
+                showToast("Gagal memuat daftar sampah.", true); 
+            }
         }
 
         async function loadClientsForDropdown() {
@@ -168,82 +276,115 @@
                 if (res.status === 'success') {
                     cachedClients = res.clients;
                     const select = document.getElementById('form-vendor');
-                    cachedClients.forEach(c => { const opt = document.createElement('option'); opt.value = c.name; opt.text = c.name; select.appendChild(opt); });
+                    select.innerHTML = '<option value="">-- Pilih Vendor --</option>'; // Reset dulu
+                    
+                    if(cachedClients.length === 0) {
+                        // Jika kosong, tambah opsi dummy agar driver tahu harus tambah vendor baru
+                        const opt = document.createElement('option'); 
+                        opt.value = ""; 
+                        opt.text = "(Belum ada vendor, klik 'Baru')"; 
+                        opt.disabled = true;
+                        select.appendChild(opt);
+                    } else {
+                        cachedClients.sort((a,b)=>a.name.localeCompare(b.name)).forEach(c => { 
+                            const opt = document.createElement('option'); 
+                            opt.value = c.name; 
+                            opt.text = c.name; 
+                            select.appendChild(opt); 
+                        });
+                    }
+                } else {
+                    console.error("Gagal load clients:", res);
                 }
-            } catch (err) { showToast("Gagal memuat vendor.", true); }
+            } catch (err) { 
+                console.error(err);
+                showToast("Gagal memuat vendor.", true); 
+            }
         }
 
         function calculateTotal() {
             const price = parseFloat(document.getElementById('form-item').options[document.getElementById('form-item').selectedIndex].dataset.price) || 0;
             const qty = parseFloat(document.getElementById('form-qty').value) || 0;
             document.getElementById('form-total').value = formatNumber(price * qty);
+            validateForm();
         }
 
-        // --- MODAL CLIENT DENGAN NO TELP ---
+        function validateForm() {
+            const vendor = document.getElementById('form-vendor').value;
+            const item = document.getElementById('form-item').value;
+            const qty = parseFloat(document.getElementById('form-qty').value);
+            const btn = document.getElementById('btn-add-cart');
+            
+            if (vendor && item && qty && qty > 0) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        // --- MODAL CLIENT ---
         function openAddClientModal() { document.getElementById('add-client-modal').classList.remove('hidden'); lucide.createIcons(); }
         function closeAddClientModal() { document.getElementById('add-client-modal').classList.add('hidden'); document.getElementById('add-client-form').reset(); }
         
         document.getElementById('add-client-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-save-new-client');
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
+            btn.disabled = true; btn.innerHTML = '<div class="loader"></div>';
             
             const clientData = {
                 name: document.getElementById('new-client-name').value.trim().toUpperCase(),
-                phone: document.getElementById('new-client-phone').value.trim(), // Data No Telp
+                phone: document.getElementById('new-client-phone').value.trim(),
                 address: document.getElementById('new-client-address').value.trim()
             };
 
             try {
-                // Panggil action addClient di backend
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addClient', clientData }) });
                 showToast("Vendor berhasil ditambahkan!");
                 
-                // Update dropdown lokal tanpa reload
+                // Update dropdown lokal
                 cachedClients.push({name: clientData.name});
                 const select = document.getElementById('form-vendor');
                 select.innerHTML = '<option value="">-- Pilih Vendor --</option>';
                 cachedClients.sort((a,b)=>a.name.localeCompare(b.name)).forEach(c => { const opt = document.createElement('option'); opt.value = c.name; opt.text = c.name; select.appendChild(opt); });
-                select.value = clientData.name;
+                select.value = clientData.name; // Auto select vendor baru
+                
                 closeAddClientModal();
+                validateForm(); // Re-validate karena vendor sekarang sudah terpilih
             } catch (err) { showToast("Gagal menambah vendor.", true); }
-            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Vendor'; }
+            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Vendor'; lucide.createIcons(); }
         });
 
-        // --- LOGIKA KERANJANG (CART) & AUTO MERGE ---
+        // --- LOGIKA KERANJANG TANPA MERGE OTOMATIS ---
         function addToCart() {
             const vendor = document.getElementById('form-vendor').value.trim().toUpperCase();
             const itemName = document.getElementById('form-item').value;
             const date = document.getElementById('form-date').value;
             const qty = parseFloat(document.getElementById('form-qty').value);
             
-            if(!vendor || !itemName || !qty) return showToast("Lengkapi semua data!", true);
+            if(!vendor || !itemName || !qty || qty <= 0) return showToast("Lengkapi data dengan benar!", true);
 
             const itemPrice = parseFloat(document.getElementById('form-item').options[document.getElementById('form-item').selectedIndex].dataset.price) || 0;
             const total = qty * itemPrice;
 
-            // AUTO MERGE: Cek apakah item & vendor sama sudah ada di keranjang
-            const existingIndex = transactionCart.findIndex(item => item.vendor === vendor && item.itemName === itemName);
+            transactionCart.push({ 
+                id: `TEMP-${Date.now()}-${Math.random().toString(36).substr(2,5)}`, 
+                date, vendor, itemName, qty, price: itemPrice, total 
+            });
 
-            if (existingIndex !== -1) {
-                transactionCart[existingIndex].qty += qty;
-                transactionCart[existingIndex].total += total;
-                showToast(`${itemName} digabung! Total jadi ${transactionCart[existingIndex].qty} Kg`);
-            } else {
-                transactionCart.push({ id: `TEMP-${Date.now()}`, date, vendor, itemName, qty, price: itemPrice, total });
-                showToast(`${itemName} (${qty} Kg) ditambahkan.`);
-            }
+            showToast(`${itemName} (${formatNumber(qty)} Kg) masuk daftar.`);
 
-            // Reset input item & qty saja
-            document.getElementById('form-item').value = "";
             document.getElementById('form-qty').value = "";
             document.getElementById('form-total').value = "";
+            document.getElementById('form-qty').focus(); 
+            
+            validateForm();
             renderCart();
         }
 
         function removeFromCart(id) {
             transactionCart = transactionCart.filter(item => item.id !== id);
             renderCart();
+            showToast("Baris dihapus.");
         }
 
         function renderCart() {
@@ -254,20 +395,27 @@
 
             if (transactionCart.length === 0) { section.classList.add('hidden'); return; }
             section.classList.remove('hidden');
-            badge.innerText = `${transactionCart.length} Item`;
+            badge.innerText = `${transactionCart.length} Timbangan`;
 
             let grandTotal = 0;
-            list.innerHTML = transactionCart.map(item => {
+            const sortedCart = [...transactionCart].reverse(); 
+            
+            list.innerHTML = sortedCart.map((item, index) => {
                 grandTotal += item.total;
-                return `<div class="flex justify-between items-start p-3 bg-slate-50 rounded-lg border border-slate-100 text-xs group">
+                const noUrut = transactionCart.length - index;
+                
+                return `<div class="flex justify-between items-start p-3 bg-white rounded-xl border border-slate-100 shadow-sm text-xs group animate-enter">
                     <div class="flex-1">
-                        <p class="font-bold text-slate-700">${item.itemName}</p>
-                        <p class="text-slate-500 mt-0.5">${item.vendor} • ${new Date(item.date).toLocaleDateString('id-ID')}</p>
-                        <p class="font-mono text-blue-600 mt-1">${formatNumber(item.qty)} Kg x ${formatIDR(item.price)}</p>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">#${noUrut}</span>
+                            <p class="font-bold text-slate-700">${item.itemName}</p>
+                        </div>
+                        <p class="text-slate-400 text-[10px] mb-1">${item.vendor} • ${new Date(item.date).toLocaleDateString('id-ID')}</p>
+                        <p class="font-mono text-emerald-600 text-[11px] font-medium">${formatNumber(item.qty)} Kg × ${formatIDR(item.price)}</p>
                     </div>
                     <div class="text-right ml-2 flex flex-col items-end gap-2">
-                        <p class="font-bold text-slate-800 font-mono">${formatIDR(item.total)}</p>
-                        <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        <p class="font-bold text-slate-700 font-mono text-[11px]">${formatIDR(item.total)}</p>
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-600 p-1 transition bg-red-50 rounded-lg hover:bg-red-100 border border-red-100" title="Hapus"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                     </div>
                 </div>`;
             }).join('');
@@ -276,25 +424,96 @@
             lucide.createIcons();
         }
 
+        // --- LOGIKA MANUAL MERGE DENGAN KONFIRMASI ---
+        function confirmMerge() {
+            const mergedPreview = {};
+            transactionCart.forEach(item => {
+                const key = item.itemName;
+                if (!mergedPreview[key]) {
+                    mergedPreview[key] = { name: item.itemName, count: 0, totalQty: 0, totalPrice: 0 };
+                }
+                mergedPreview[key].count++;
+                mergedPreview[key].totalQty += item.qty;
+                mergedPreview[key].totalPrice += item.total;
+            });
+
+            const previewContainer = document.getElementById('merge-preview');
+            previewContainer.innerHTML = Object.values(mergedPreview).map(m => 
+                `<div class="flex justify-between py-2 border-b border-slate-100 last:border-0 items-center">
+                    <div>
+                        <p class="font-bold text-slate-700">${m.name}</p>
+                        <p class="text-[10px] text-slate-400">${m.count} kali timbang</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-emerald-600">${formatNumber(m.totalQty)} Kg</p>
+                        <p class="text-[10px] text-slate-400">${formatIDR(m.totalPrice)}</p>
+                    </div>
+                </div>`
+            ).join('');
+
+            document.getElementById('merge-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeMergeModal() { document.getElementById('merge-modal').classList.add('hidden'); }
+
+        function executeMerge() {
+            const mergedMap = {};
+            transactionCart.forEach(item => {
+                const key = item.itemName;
+                if (!mergedMap[key]) {
+                    mergedMap[key] = { ...item };
+                } else {
+                    mergedMap[key].qty += item.qty;
+                    mergedMap[key].total += item.total;
+                }
+            });
+
+            transactionCart = Object.values(mergedMap);
+            closeMergeModal();
+            renderCart();
+            showToast("Item berhasil dirapikan!");
+        }
+
         // --- CHECKOUT BATCH KE SERVER ---
         async function saveBatchToServer() {
             if(transactionCart.length === 0) return;
             const btn = document.getElementById('btn-save-batch');
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-5 h-5 border-2 border-white border-t-transparent"></div> Mengirim...';
+            btn.disabled = true; btn.innerHTML = '<div class="loader"></div>';
 
             try {
-                // Kirim seluruh isi keranjang sekaligus ke backend
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ action: 'checkoutDriverCart', cartItems: transactionCart })
+                // Merge otomatis saat checkout sebagai pengaman
+                const mergedCart = {};
+                transactionCart.forEach(item => {
+                    const key = `${item.vendor}|${item.itemName}`;
+                    if (!mergedCart[key]) {
+                        mergedCart[key] = { ...item };
+                    } else {
+                        mergedCart[key].qty += item.qty;
+                        mergedCart[key].total += item.total;
+                    }
                 });
 
-                showToast(`Berhasil! ${transactionCart.length} item tersimpan.`);
-                addToHistory(transactionCart.length);
+                const finalCart = Object.values(mergedCart);
+
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'checkoutDriverCart', cartItems: finalCart })
+                });
+
+                showToast(`Berhasil! ${finalCart.length} jenis item tersimpan.`);
+                addToHistory(finalCart.length);
+                
                 transactionCart = [];
+                document.getElementById('form-vendor').value = "";
+                document.getElementById('form-item').value = "";
+                document.getElementById('form-qty').value = "";
+                document.getElementById('form-total').value = "";
+                
                 renderCart();
+                validateForm();
             } catch (err) { showToast("Gagal menyimpan.", true); }
-            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi'; }
+            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Transaksi'; lucide.createIcons(); }
         }
 
         // HELPERS
@@ -304,9 +523,9 @@
         function showToast(msg, isError = false) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            toast.className = `fixed bottom-5 left-1/2 -translate-x-1/2 ${isError ? 'bg-red-600' : 'bg-slate-800'} text-white px-6 py-3 rounded-full shadow-2xl text-sm font-medium z-50 flex items-center gap-2 transition-all duration-300`;
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 ${isError ? 'bg-red-500 text-white border-red-600' : 'bg-slate-800 text-white border-slate-700'} px-5 py-3 rounded-full shadow-2xl text-xs font-medium z-50 flex items-center gap-2 transition-all duration-300 border`;
             toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3500);
+            setTimeout(() => toast.classList.add('hidden'), 3000);
         }
 
         function addToHistory(count) {
@@ -318,8 +537,8 @@
 
         function renderHistory() {
             const container = document.getElementById('history-list');
-            if(localHistory.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center italic py-2">Belum ada transaksi.</p>'; return; }
-            container.innerHTML = localHistory.map(h => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100 text-xs"><div><p class="font-bold text-slate-700">${h.count} Item Disimpan</p><p class="text-slate-500">${h.vendor}</p></div><div class="text-right"><p class="font-mono font-bold text-emerald-600">Pending</p><p class="text-slate-400">${h.time}</p></div></div>`).join('');
+            if(localHistory.length === 0) { container.innerHTML = '<p class="text-[10px] text-slate-400 text-center italic py-2">Belum ada aktivitas.</p>'; return; }
+            container.innerHTML = localHistory.map(h => `<div class="flex justify-between items-center p-2.5 bg-white rounded-lg border border-slate-100 shadow-sm text-[10px]"><div><p class="font-bold text-slate-600">${h.count} Item Tersimpan</p><p class="text-slate-400">${h.vendor}</p></div><div class="text-right"><p class="font-mono font-bold text-emerald-600">Pending</p><p class="text-slate-400">${h.time}</p></div></div>`).join('');
         }
     </script>
 </body>
