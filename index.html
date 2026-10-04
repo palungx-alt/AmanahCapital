@@ -28,17 +28,8 @@
         .chat-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         /* Styling khusus untuk Tab Login */
-        .login-tab.active {
-            background-color: #2563eb;
-            color: white;
-            border-color: #2563eb;
-        }
-        .login-tab {
-            background-color: transparent;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
+        .login-tab.active { background-color: #2563eb; color: white; border-color: #2563eb; }
+        .login-tab { background-color: transparent; color: #64748b; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen relative">
@@ -58,7 +49,7 @@
             <!-- TAB PILIHAN PERAN -->
             <div class="flex gap-2 p-1 bg-slate-100 rounded-xl">
                 <button onclick="switchLoginTab('admin')" id="tab-admin" class="login-tab active flex-1 py-2 rounded-lg text-sm font-bold">Admin</button>
-                <button onclick="switchLoginTab('driver')" id="tab-driver" class="login-tab flex-1 py-2 rounded-lg text-sm font-bold">Driver / BSU</button>
+                <button onclick="switchLoginTab('operasional')" id="tab-operasional" class="login-tab flex-1 py-2 rounded-lg text-sm font-bold">Staf / Operasional</button>
             </div>
 
             <div id="login-error" class="hidden p-3 text-sm text-red-700 bg-red-100/80 rounded-lg text-center font-medium border border-red-200"></div>
@@ -70,11 +61,11 @@
                 <button type="submit" id="btn-login-admin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-sm transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"><i data-lucide="log-in" class="w-4 h-4"></i> Masuk Sebagai Admin</button>
             </form>
 
-            <!-- FORM LOGIN DRIVER (Hidden by default) -->
-            <form id="login-form-driver" class="space-y-4 hidden">
-                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Username Driver / BSU</label><input type="text" id="driver-username" required placeholder="Masukkan username" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50"></div>
-                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password</label><input type="password" id="driver-password" required placeholder="••••••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50"></div>
-                <button type="submit" id="btn-login-driver" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl text-sm transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30"><i data-lucide="truck" class="w-4 h-4"></i> Masuk Sebagai Driver</button>
+            <!-- FORM LOGIN OPERASIONAL -->
+            <form id="login-form-operasional" class="space-y-4 hidden">
+                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Username Staf / Driver</label><input type="text" id="operasional-username" required placeholder="Masukkan username" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50"></div>
+                <div><label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Password</label><input type="password" id="operasional-password" required placeholder="••••••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none transition bg-slate-50/50"></div>
+                <button type="submit" id="btn-login-operasional" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl text-sm transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30"><i data-lucide="truck" class="w-4 h-4"></i> Masuk Dashboard</button>
             </form>
         </div>
     </div>
@@ -92,7 +83,6 @@
                     <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs px-3 py-1.5 rounded-full border border-blue-400/30 transition"><i data-lucide="help-circle" class="w-4 h-4 text-blue-300"></i> Panduan</button>
                     <div class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 backdrop-blur-sm"><span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span><span id="status-text" class="text-slate-300">Menghubungkan...</span></div>
                     
-                    <!-- MENU BARU: KELOLA MASTER DATA -->
                     <button onclick="openMasterDataModal()" class="hidden sm:flex items-center gap-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 text-xs px-3 py-1.5 rounded-full border border-purple-400/30 transition">
                         <i data-lucide="settings" class="w-4 h-4 text-purple-300"></i> Kelola Master Data
                     </button>
@@ -104,7 +94,7 @@
 
         <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24">
 
-            <!-- Filter Periode Tanggal -->
+            <!-- Filter Periode Tanggal (Default 1 Tahun) -->
             <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-wrap items-center gap-4">
                 <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i><label class="text-sm font-semibold text-slate-700">Periode Transaksi:</label></div>
                 <div class="flex items-center gap-2">
@@ -133,43 +123,18 @@
                 </div>
             </div>
 
-            <!-- Section: Charts & Fast Entry -->
+            <!-- Section: Charts & Stock Visualization -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 glass-card p-6 rounded-2xl shadow-sm">
                     <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-blue-600"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
                     <div class="relative h-64"><canvas id="financialChart"></canvas></div>
                 </div>
+                
+                <!-- GRAFIK STOK FISIK TERBANYAK -->
                 <div class="glass-card p-6 rounded-2xl shadow-sm">
-                    <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> Input Transaksi</h2>
-                    <form id="transactionForm" class="space-y-4">
-                        <input type="date" id="formDate" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                        <select id="formTarget" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white">
-                            <option value="PEMBELIAN">Pembelian Material / HPP</option>
-                            <option value="PENJUALAN">Penjualan Offtaker</option>
-                            <option value="OPERASIONAL_BIAYA">Biaya Operasional</option>
-                        </select>
-                        
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor <button type="button" onclick="openClientModal()" class="text-blue-600 text-[10px] underline ml-1">+ Tambah Baru</button></label>
-                            <select id="formClient" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required>
-                                <option value="">-- Memuat Data Client --</option>
-                            </select>
-                        </div>
-
-                        <input type="text" id="formDesc" placeholder="Deskripsi Item" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none" required>
-                        
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Qty (Bisa pakai koma)</label>
-                                <input type="text" id="formQty" inputmode="decimal" placeholder="Contoh: 2,5" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan</label>
-                                <input type="text" id="formPrice" inputmode="numeric" placeholder="Contoh: 5000" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
-                            </div>
-                        </div>
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-sm transition">Simpan Data</button>
-                    </form>
+                    <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="package" class="w-5 h-5 text-emerald-600"></i> Stok Fisik Terbanyak</h2></div>
+                    <div class="relative h-64"><canvas id="stockChart"></canvas></div>
+                    <p class="text-[10px] text-slate-400 mt-3 text-center">*Hanya menghitung transaksi berstatus Paid</p>
                 </div>
             </div>
 
@@ -194,12 +159,15 @@
                 </div>
             </div>
 
-            <!-- Tabs: Transaksi & Buku Besar -->
+            <!-- Tabs: Transaksi, Buku Besar, & Log Aktivitas -->
             <div class="glass-card rounded-2xl shadow-sm overflow-hidden">
                 <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex gap-2">
                     <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white transition">Transaksi</button>
                     <button onclick="switchTab('ledger')" id="tab-ledger" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Buku Besar</button>
+                    <button onclick="switchTab('logs')" id="tab-logs" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Log Aktivitas</button>
                 </div>
+                
+                <!-- Tab Transaksi -->
                 <div id="content-transactions" class="p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-800">Daftar Transaksi Detail</h2>
@@ -221,9 +189,31 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Tab Buku Besar -->
                 <div id="content-ledger" class="p-6 hidden">
                     <div class="flex justify-between items-center mb-4"><h2 class="text-base font-bold text-slate-800">Buku Besar</h2><button onclick="exportLedgerToCSV()" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5"></i> CSV</button></div>
                     <div class="overflow-x-auto"><table class="w-full text-sm text-left text-slate-600"><thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70"><tr><th>Tanggal</th><th>Ket</th><th>Kat</th><th class="text-right">Debit</th><th class="text-right">Kredit</th><th class="text-right">Saldo</th></tr></thead><tbody id="table-ledger-body"></tbody></table></div>
+                </div>
+
+                <!-- Tab Log Aktivitas -->
+                <div id="content-logs" class="p-6 hidden">
+                    <div class="flex justify-between items-center mb-4"><h2 class="text-base font-bold text-slate-800">Log Aktivitas Operasional & Staf</h2></div>
+                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-[11px] text-slate-500 uppercase bg-slate-100/70 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3">Waktu</th>
+                                    <th class="px-6 py-3">Aktivitas</th>
+                                    <th class="px-6 py-3">Detail</th>
+                                    <th class="px-6 py-3">Pelaku</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-logs-body" class="divide-y divide-slate-100">
+                                <tr><td colspan="4" class="px-6 py-8 text-center text-slate-400">Memuat log aktivitas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -321,14 +311,14 @@
             <h3 class="text-lg font-bold text-slate-800">Panduan Aplikasi</h3>
             <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
                 <p>1. Gunakan menu "Manajemen Client" untuk menyimpan data alamat & NPWP ke database.</p>
-                <p>2. Saat input transaksi, pilih Client dari dropdown agar data tersambung.</p>
-                <p>3. Gunakan "Export Rekap Pembelian" untuk menyimpan data berat & item per client ke Sheets.</p>
+                <p>2. Gunakan "Export Rekap Pembelian" untuk menyimpan data berat & item per client ke Sheets.</p>
+                <p>3. Cek tab "Log Aktivitas" untuk memantau siapa saja yang melakukan input/approve transaksi.</p>
             </div>
             <button onclick="toggleTutorialModal()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-medium text-xs">Tutup</button>
         </div>
     </div>
 
-    <!-- MODAL MASTER DATA (BARU: UNTUK KELOLA HARGA & ITEM) -->
+    <!-- MODAL MASTER DATA -->
     <div id="master-data-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl relative border border-slate-100 modal-enter max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center border-b pb-3">
@@ -338,7 +328,7 @@
             
             <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
                 <p class="text-xs text-purple-800 font-medium mb-2">💡 Info Penting:</p>
-                <p class="text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi. Pastikan nama jenis sampah sama persis dengan yang digunakan driver.</p>
+                <p class="text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi.</p>
             </div>
 
             <form id="master-data-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -380,7 +370,6 @@
             </div>
 
             <div class="px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
-                <button onclick="sendQuickQuestion('cara_input')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💡 Cara Input</button>
                 <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">️ Cara Cetak</button>
                 <button onclick="sendQuickQuestion('bagi_hasil')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">💰 Rumus Bagi Hasil</button>
                 <button onclick="sendQuickQuestion('export_rekap')" class="bg-white border border-slate-300 hover:bg-blue-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm"> Export Rekap</button>
@@ -414,10 +403,14 @@
             if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard-screen').classList.remove('hidden');
-                const today = new Date(); const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                document.getElementById('filter-start-date').value = firstDay.toISOString().split('T')[0];
+                
+                // SET DEFAULT FILTER 1 TAHUN
+                const today = new Date();
+                const oneYearAgo = new Date();
+                oneYearAgo.setFullYear(today.getFullYear() - 1);
+                
+                document.getElementById('filter-start-date').value = oneYearAgo.toISOString().split('T')[0];
                 document.getElementById('filter-end-date').value = today.toISOString().split('T')[0];
-                document.getElementById('formDate').value = today.toISOString().split('T')[0];
                 
                 initChart(); loadDashboardData(); loadClientsFromSheets(); loadMasterData();
 
@@ -436,34 +429,28 @@
             }
         });
 
-        // Handle Login Admin
         document.getElementById('login-form-admin').addEventListener('submit', async (e) => { 
             e.preventDefault(); 
-            try { 
-                await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value); 
-            } catch(err) { 
-                document.getElementById('login-error').innerText = err.message; 
-                document.getElementById('login-error').classList.remove('hidden'); 
-            } 
+            try { await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value); } 
+            catch(err) { document.getElementById('login-error').innerText = err.message; document.getElementById('login-error').classList.remove('hidden'); } 
         });
 
-        // Handle Login Driver (Redirect ke driver.html)
-        document.getElementById('login-form-driver').addEventListener('submit', async (e) => {
+        document.getElementById('login-form-operasional').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-login-driver');
+            const btn = document.getElementById('btn-login-operasional');
             const originalText = btn.innerHTML;
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Memverifikasi...';
+            btn.disabled = true; 
+            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Memverifikasi...';
             
-            const username = document.getElementById('driver-username').value;
-            const password = document.getElementById('driver-password').value;
+            const username = document.getElementById('operasional-username').value;
+            const password = document.getElementById('operasional-password').value;
 
             try {
-                // Validasi driver via Google Sheets
                 const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`).then(r=>r.json());
                 
                 if(res.status === 'success') {
-                    // Redirect ke driver.html dengan token sesi
-                    window.location.href = `driver.html?token=${res.token}&bsName=${encodeURIComponent(res.bsName)}`;
+                    if (res.role === 'staf') window.location.href = `staf.html?token=${res.token}&role=staf&driverName=${encodeURIComponent(res.driverName)}`;
+                    else window.location.href = `driver.html?token=${res.token}&bsName=${encodeURIComponent(res.bsName || res.driverName)}`;
                 } else {
                     document.getElementById('login-error').innerText = res.message || 'Username atau password salah!';
                     document.getElementById('login-error').classList.remove('hidden');
@@ -484,29 +471,16 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
-        let financialChart, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
-        let currentDocNumberForPrint = ""; 
-        let currentClientNameForFile = ""; 
+        let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
+        let currentDocNumberForPrint = "", currentClientNameForFile = ""; 
 
         // ==================== HELPER FUNCTIONS ====================
-        function parseInputNumber(val) {
-            if (!val) return 0;
-            return parseFloat(String(val).replace(',', '.')) || 0;
-        }
-
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num || 0);
-        }
-
-        function formatIDR(v) { 
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0); 
-        }
-
+        function parseInputNumber(val) { if (!val) return 0; return parseFloat(String(val).replace(',', '.')) || 0; }
+        function formatNumber(num) { return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num || 0); }
+        function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0); }
         function generateAutoDocNumber(type, dateStr) {
             const dateObj = new Date(dateStr || new Date());
-            const yyyy = dateObj.getFullYear();
-            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const dd = String(dateObj.getDate()).padStart(2, '0');
+            const yyyy = dateObj.getFullYear(); const mm = String(dateObj.getMonth() + 1).padStart(2, '0'); const dd = String(dateObj.getDate()).padStart(2, '0');
             const randomSeq = Math.floor(1000 + Math.random() * 9000); 
             const prefix = type === 'invoice' ? 'INV' : (type === 'nota' ? 'NOTA' : 'KWIT');
             return `${prefix}-${yyyy}${mm}${dd}-${randomSeq}`;
@@ -514,182 +488,69 @@
 
         // ==================== SWITCH LOGIN TAB ====================
         function switchLoginTab(role) {
-            const tabAdmin = document.getElementById('tab-admin');
-            const tabDriver = document.getElementById('tab-driver');
-            const formAdmin = document.getElementById('login-form-admin');
-            const formDriver = document.getElementById('login-form-driver');
-            const errorBox = document.getElementById('login-error');
-
-            errorBox.classList.add('hidden');
-
-            if (role === 'admin') {
-                tabAdmin.classList.add('active');
-                tabDriver.classList.remove('active');
-                formAdmin.classList.remove('hidden');
-                formDriver.classList.add('hidden');
-            } else {
-                tabDriver.classList.add('active');
-                tabAdmin.classList.remove('active');
-                formDriver.classList.remove('hidden');
-                formAdmin.classList.add('hidden');
-            }
+            const tabAdmin = document.getElementById('tab-admin'); const tabOps = document.getElementById('tab-operasional');
+            const formAdmin = document.getElementById('login-form-admin'); const formOps = document.getElementById('login-form-operasional');
+            document.getElementById('login-error').classList.add('hidden');
+            if (role === 'admin') { tabAdmin.classList.add('active'); tabOps.classList.remove('active'); formAdmin.classList.remove('hidden'); formOps.classList.add('hidden'); } 
+            else { tabOps.classList.add('active'); tabAdmin.classList.remove('active'); formOps.classList.remove('hidden'); formAdmin.classList.add('hidden'); }
         }
 
         // ==================== DIRECT PDF DOWNLOAD ====================
         function downloadPDFDirectly() {
-            const element = document.getElementById('print-area');
-            const btn = document.getElementById('btn-download-pdf');
-            
-            const originalBtnText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Generating...';
-
+            const element = document.getElementById('print-area'); const btn = document.getElementById('btn-download-pdf');
+            const originalBtnText = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Generating...';
             document.getElementById('gen-date').innerText = new Date().toLocaleString('id-ID');
-
-            const opt = {
-                margin:       0,
-                filename:     `${currentDocNumberForPrint}-${currentClientNameForFile}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true, 
-                    logging: false, 
-                    windowWidth: 794,
-                    scrollY: 0
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalBtnText;
-            }).catch(err => {
-                console.error("Gagal generate PDF:", err);
-                alert("Gagal membuat PDF. Coba lagi.");
-                btn.disabled = false;
-                btn.innerHTML = originalBtnText;
-            });
+            const opt = { margin: 0, filename: `${currentDocNumberForPrint}-${currentClientNameForFile}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 794, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save().then(() => { btn.disabled = false; btn.innerHTML = originalBtnText; }).catch(err => { console.error("Gagal generate PDF:", err); alert("Gagal membuat PDF."); btn.disabled = false; btn.innerHTML = originalBtnText; });
         }
 
-        // ==================== CLIENT MANAGEMENT VIA SHEETS ====================
+        // ==================== CLIENT MANAGEMENT ====================
         async function loadClientsFromSheets() {
             try {
                 const res = await fetch(`${API_URL}?action=getClients`).then(r=>r.json());
-                if(res.status === 'success') {
-                    cachedClients = res.clients;
-                    updateClientDropdowns();
-                    document.getElementById('card-client-count').innerText = cachedClients.length;
-                    if(!document.getElementById('client-modal').classList.contains('hidden')) renderClientListModal();
-                }
+                if(res.status === 'success') { cachedClients = res.clients; updateClientDropdowns(); document.getElementById('card-client-count').innerText = cachedClients.length; if(!document.getElementById('client-modal').classList.contains('hidden')) renderClientListModal(); }
             } catch(e) { console.error("Gagal load client:", e); }
         }
-
         function updateClientDropdowns() {
             const options = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            document.getElementById('formClient').innerHTML = options;
             document.getElementById('mass-client-select').innerHTML = options;
-            
             const editVendorSelect = document.getElementById('edit-vendor');
-            if (editVendorSelect) {
-                editVendorSelect.innerHTML = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            }
+            if (editVendorSelect) editVendorSelect.innerHTML = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         }
-
         function renderClientListModal() {
             const container = document.getElementById('client-list-container');
             if(cachedClients.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada client tersimpan.</p>'; return; }
-            container.innerHTML = cachedClients.map((c, index) => `
-                <div class="flex justify-between items-start p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm text-slate-800">${c.name}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">${c.address}</p>
-                        ${c.npwp ? `<p class="text-[10px] text-slate-400 mt-0.5">NPWP: ${c.npwp}</p>` : ''}
-                        ${c.phone ? `<p class="text-[10px] text-slate-400">Telp: ${c.phone}</p>` : ''}
-                    </div>
-                    <button onclick="deleteClient('${c.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                </div>
-            `).join('');
+            container.innerHTML = cachedClients.map((c, index) => `<div class="flex justify-between items-start p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group"><div class="flex-1"><p class="font-bold text-sm text-slate-800">${c.name}</p><p class="text-xs text-slate-500 mt-0.5">${c.address}</p>${c.npwp ? `<p class="text-[10px] text-slate-400 mt-0.5">NPWP: ${c.npwp}</p>` : ''}${c.phone ? `<p class="text-[10px] text-slate-400">Telp: ${c.phone}</p>` : ''}</div><button onclick="deleteClient('${c.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
             lucide.createIcons();
         }
-
         document.getElementById('client-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-client');
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
+            e.preventDefault(); const btn = document.getElementById('btn-save-client'); btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
             const clientData = { name: document.getElementById('client-name').value, address: document.getElementById('client-address').value, npwp: document.getElementById('client-npwp').value, phone: document.getElementById('client-phone').value };
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addClient', clientData: clientData }) });
-                alert('Client berhasil ditambahkan ke Database!');
-                document.getElementById('client-form').reset();
-                await loadClientsFromSheets();
-            } catch(err) { alert('Gagal menyimpan client.'); }
-            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru'; lucide.createIcons(); }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addClient', clientData: clientData }) }); alert('Client berhasil ditambahkan!'); document.getElementById('client-form').reset(); await loadClientsFromSheets(); } 
+            catch(err) { alert('Gagal menyimpan client.'); } finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru'; lucide.createIcons(); }
         });
-
-        async function deleteClient(clientId) {
-            if(!confirm('Hapus client ini dari database?')) return;
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteClient', clientId: clientId }) }); await loadClientsFromSheets(); } 
-            catch(err) { alert('Gagal menghapus client.'); }
-        }
-
+        async function deleteClient(clientId) { if(!confirm('Hapus client ini?')) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteClient', clientId: clientId }) }); await loadClientsFromSheets(); } catch(err) { alert('Gagal menghapus client.'); } }
         function openClientModal() { document.getElementById('client-modal').classList.remove('hidden'); renderClientListModal(); lucide.createIcons(); }
         function closeClientModal() { document.getElementById('client-modal').classList.add('hidden'); }
 
-        // ==================== MASTER DATA MANAGEMENT (BARU) ====================
+        // ==================== MASTER DATA MANAGEMENT ====================
         async function loadMasterData() {
-            try {
-                const res = await fetch(`${API_URL}?action=getMasterData`).then(r=>r.json());
-                if(res.status === 'success') {
-                    masterDataItems = res.items;
-                    renderMasterDataList();
-                    // Update dropdown di form input admin jika diperlukan
-                }
-            } catch(e) { console.error("Gagal load master data:", e); }
+            try { const res = await fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()); if(res.status === 'success') { masterDataItems = res.items; renderMasterDataList(); } } 
+            catch(e) { console.error("Gagal load master data:", e); }
         }
-
         function renderMasterDataList() {
             const container = document.getElementById('master-data-list');
             if(masterDataItems.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada master data.</p>'; return; }
-            
-            container.innerHTML = masterDataItems.map((item, index) => `
-                <div class="flex justify-between items-center p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm text-slate-800">${item.name}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Harga: ${formatIDR(item.price)} / Kg</p>
-                    </div>
-                    <button onclick="deleteMasterItem('${item.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                </div>
-            `).join('');
+            container.innerHTML = masterDataItems.map((item, index) => `<div class="flex justify-between items-center p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition group"><div class="flex-1"><p class="font-bold text-sm text-slate-800">${item.name}</p><p class="text-xs text-slate-500 mt-0.5">Harga: ${formatIDR(item.price)} / Kg</p></div><button onclick="deleteMasterItem('${item.id}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
             lucide.createIcons();
         }
-
         document.getElementById('master-data-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-master');
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
-            
-            const itemData = { 
-                name: document.getElementById('md-item-name').value, 
-                price: parseInputNumber(document.getElementById('md-item-price').value) 
-            };
-            
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addMasterItem', itemData: itemData }) });
-                alert('Item berhasil ditambahkan ke Master Data!');
-                document.getElementById('master-data-form').reset();
-                await loadMasterData();
-            } catch(err) { alert('Gagal menyimpan item.'); }
-            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Tambah Item'; lucide.createIcons(); }
+            e.preventDefault(); const btn = document.getElementById('btn-save-master'); btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div> Menyimpan...';
+            const itemData = { name: document.getElementById('md-item-name').value, price: parseInputNumber(document.getElementById('md-item-price').value) };
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'addMasterItem', itemData: itemData }) }); alert('Item berhasil ditambahkan!'); document.getElementById('master-data-form').reset(); await loadMasterData(); } 
+            catch(err) { alert('Gagal menyimpan item.'); } finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Tambah Item'; lucide.createIcons(); }
         });
-
-        async function deleteMasterItem(itemId) {
-            if(!confirm('Hapus item ini dari master data?')) return;
-            try { 
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteMasterItem', itemId: itemId }) }); 
-                await loadMasterData(); 
-            } catch(err) { alert('Gagal menghapus item.'); }
-        }
-
+        async function deleteMasterItem(itemId) { if(!confirm('Hapus item ini?')) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteMasterItem', itemId: itemId }) }); await loadMasterData(); } catch(err) { alert('Gagal menghapus item.'); } }
         function openMasterDataModal() { document.getElementById('master-data-modal').classList.remove('hidden'); renderMasterDataList(); lucide.createIcons(); }
         function closeMasterDataModal() { document.getElementById('master-data-modal').classList.add('hidden'); }
 
@@ -700,17 +561,20 @@
             financialChart = new Chart(document.getElementById('financialChart'), { type: 'bar', data: { labels: ['Penjualan','HPP','Operasional','Bagi Hasil','Laba'], datasets: [{ data:[0,0,0,0,0], backgroundColor:['#10b981','#2563eb','#f59e0b','#a855f7','#06b6d4'], borderRadius:6 }] }, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}} });
         }
 
-        function resetFilter() { const t=new Date(); document.getElementById('filter-start-date').value=new Date(t.getFullYear(),t.getMonth(),1).toISOString().split('T')[0]; document.getElementById('filter-end-date').value=t.toISOString().split('T')[0]; loadDashboardData(); }
+        function resetFilter() { 
+            const t=new Date(); 
+            const oneYearAgo = new Date(); oneYearAgo.setFullYear(t.getFullYear() - 1);
+            document.getElementById('filter-start-date').value = oneYearAgo.toISOString().split('T')[0]; 
+            document.getElementById('filter-end-date').value = t.toISOString().split('T')[0]; 
+            loadDashboardData(); 
+        }
 
         async function loadDashboardData() {
             const s=document.getElementById('filter-start-date').value, e=document.getElementById('filter-end-date').value;
             if(!s||!e) return alert("Pilih periode tanggal!");
             
-            const ind = document.getElementById('status-indicator');
-            const txt = document.getElementById('status-text');
-            ind.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
-            txt.innerText = "Menghubungkan...";
-            
+            const ind = document.getElementById('status-indicator'); const txt = document.getElementById('status-text');
+            ind.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"; txt.innerText = "Menghubungkan...";
             document.getElementById('chart-loader').classList.remove('hidden');
             document.getElementById('data-status').innerHTML='<div class="loader w-3 h-3 border-2"></div> Loading...';
             
@@ -719,7 +583,7 @@
                 if(res.status==="success") {
                     let raw=[];
                     if(res.penjualan) res.penjualan.forEach(i=>raw.push({...i,kategori:'Penjualan',total:i.Total_Penjualan,type:'income',vendor:i.Nama_Buyer||i.Vendor||'Umum'}));
-                    if(res.pembelian) res.pembelian.forEach(i=>raw.push({...i,kategori:'Pembelian',total:i.Total_Harga_HPP,type:'expense',vendor:i.Vendor_Supplier||i.Vendor||'Umum'}));
+                    if(res.pembelian) { res.pembelian.forEach(i=>{ raw.push({...i,kategori:'Pembelian',total:i.Total_Harga_HPP,type:'expense',vendor:i.Vendor_Supplier||i.Vendor||'Umum'}); }); }
                     if(res.operasional) res.operasional.forEach(i=>raw.push({...i,kategori:'Operasional',total:i.Jumlah_Nominal,type:'expense',vendor:'Internal'}));
                     
                     raw.sort((a,b)=>new Date(b.Tanggal)-new Date(a.Tanggal));
@@ -740,76 +604,132 @@
                     
                     financialChart.data.datasets[0].data=[pj,pb,op,bh,lb-bh]; financialChart.update();
                     
-                    renderTable(); renderLedger();
+                    // Render Grafik Stok Fisik (Hanya Paid)
+                    renderStockChart(currentFilteredData);
                     
-                    ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
-                    txt.innerText = "Terhubung";
+                    renderTable(); renderLedger(); renderLogs();
+                    
+                    ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400"; txt.innerText = "Terhubung";
                     document.getElementById('data-status').innerHTML='<span class="text-emerald-600">Data Updated</span>';
                 } else { throw new Error("Response status not success"); }
-            } catch(e) { 
-                console.error(e); 
-                ind.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-                txt.innerText = "Gagal Terhubung";
-                document.getElementById('data-status').innerHTML='<span class="text-red-600">Error Loading Data</span>';
-            } 
+            } catch(e) { console.error(e); ind.className = "w-2.5 h-2.5 rounded-full bg-red-500"; txt.innerText = "Gagal Terhubung"; document.getElementById('data-status').innerHTML='<span class="text-red-600">Error Loading Data</span>'; } 
             finally { document.getElementById('chart-loader').classList.add('hidden'); lucide.createIcons(); }
+        }
+
+        // FUNGSI BARU: RENDER GRAFIK STOK FISIK
+        function renderStockChart(filteredData) {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            const stockMap = {};
+            
+            // Hitung stok hanya dari transaksi PAID dalam periode filter
+            filteredData.forEach(t => {
+                const itemName = t.Nama_Barang_Material || t.Deskripsi;
+                const qty = parseFloat(t.Jumlah_Kg_Unit) || 0;
+                const isPaid = t.Status && t.Status.toLowerCase() === 'paid';
+                
+                if (!stockMap[itemName]) stockMap[itemName] = 0;
+                
+                if (t.kategori === 'Pembelian' && isPaid) stockMap[itemName] += qty;
+                else if (t.kategori === 'Penjualan' && isPaid) stockMap[itemName] -= qty;
+            });
+
+            // Urutkan dari yang terbanyak dan ambil Top 10
+            const sortedStock = Object.entries(stockMap)
+                .filter(([name, qty]) => qty > 0)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (stockChartInstance) stockChartInstance.destroy();
+
+            stockChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedStock.map(s => s[0]),
+                    datasets: [{
+                        label: 'Stok Fisik (Kg/Pcs)',
+                        data: sortedStock.map(s => s[1]),
+                        backgroundColor: '#10b981',
+                        borderRadius: 4,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, grid: { color: '#f1f5f9' } }, y: { grid: { display: false } } }
+                }
+            });
         }
 
         function renderTable() {
             const tb = document.getElementById('table-transactions-body');
-            if (!currentFilteredData.length) { 
-                tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>'; 
-                return; 
-            }
+            if (!currentFilteredData.length) { tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>'; return; }
             tb.innerHTML = currentFilteredData.map(i => {
                 const id = i.ID_Penjualan || i.ID_Pembelian || i.ID_Operasional || '';
-                let acts = `
-                    <button onclick="openEditModal('${id}','${i.kategori.toLowerCase()}')" class="text-amber-600 hover:text-amber-700 p-1.5 rounded-lg hover:bg-amber-50 transition" title="Edit">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="deleteTransaction('${id}','${i.kategori.toLowerCase()}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition" title="Hapus">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                `;
+                let acts = `<button onclick="openEditModal('${id}','${i.kategori.toLowerCase()}')" class="text-amber-600 hover:text-amber-700 p-1.5 rounded-lg hover:bg-amber-50 transition" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteTransaction('${id}','${i.kategori.toLowerCase()}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
                 if (i.kategori !== 'Operasional') {
-                    acts += `
-                        <div class="flex gap-1 ml-1">
-                            <button onclick="openPrintModal(null,'nota',[i])" class="text-blue-600 hover:text-blue-700 p-1.5 rounded-lg hover:bg-blue-50 transition" title="Nota">
-                                <i data-lucide="file-text" class="w-4 h-4"></i>
-                            </button>
-                            ${i.kategori === 'Penjualan' ? `
-                                <button onclick="openPrintModal(null,'invoice',[i])" class="text-purple-600 hover:text-purple-700 p-1.5 rounded-lg hover:bg-purple-50 transition" title="Invoice">
-                                    <i data-lucide="file-check" class="w-4 h-4"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-                    `;
+                    acts += `<div class="flex gap-1 ml-1"><button onclick="openPrintModal(null,'nota',[i])" class="text-blue-600 hover:text-blue-700 p-1.5 rounded-lg hover:bg-blue-50 transition" title="Nota"><i data-lucide="file-text" class="w-4 h-4"></i></button>${i.kategori === 'Penjualan' ? `<button onclick="openPrintModal(null,'invoice',[i])" class="text-purple-600 hover:text-purple-700 p-1.5 rounded-lg hover:bg-purple-50 transition" title="Invoice"><i data-lucide="file-check" class="w-4 h-4"></i></button>` : ''}</div>`;
                 }
-                return `<tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-3 text-xs font-mono text-slate-500">${id}</td>
-                    <td class="p-3 text-xs">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td>
-                    <td class="p-3 font-medium text-slate-700">${i.vendor}</td>
-                    <td class="p-3 text-slate-600">${i.Nama_Barang_Material || i.Deskripsi}</td>
-                    <td class="p-3 font-bold ${i.type === 'income' ? 'text-emerald-600' : 'text-red-600'}">${formatIDR(i.total)}</td>
-                    <td class="p-3"><div class="flex items-center">${acts}</div></td>
-                </tr>`;
+                return `<tr class="border-b hover:bg-slate-50 transition"><td class="p-3 text-xs font-mono text-slate-500">${id}</td><td class="p-3 text-xs">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-3 font-medium text-slate-700">${i.vendor}</td><td class="p-3 text-slate-600">${i.Nama_Barang_Material || i.Deskripsi}</td><td class="p-3 font-bold ${i.type === 'income' ? 'text-emerald-600' : 'text-red-600'}">${formatIDR(i.total)}</td><td class="p-3"><div class="flex items-center">${acts}</div></td></tr>`;
             }).join('');
         }
 
         function renderLedger() {
             const tb=document.getElementById('table-ledger-body'); let bal=0;
             const sorted=[...currentFilteredData].sort((a,b)=>new Date(a.Tanggal)-new Date(b.Tanggal));
-            tb.innerHTML=sorted.map(i=>{
-                const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; bal+=(kre-deb);
-                return `<tr class="border-b text-xs"><td class="p-2">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-2">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="p-2">${i.kategori}</td><td class="p-2 text-right text-red-600">${deb?formatIDR(deb):'-'}</td><td class="p-2 text-right text-emerald-600">${kre?formatIDR(kre):'-'}</td><td class="p-2 text-right font-bold">${formatIDR(bal)}</td></tr>`;
+            tb.innerHTML=sorted.map(i=>{ const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; bal+=(kre-deb); return `<tr class="border-b text-xs"><td class="p-2">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-2">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="p-2">${i.kategori}</td><td class="p-2 text-right text-red-600">${deb?formatIDR(deb):'-'}</td><td class="p-2 text-right text-emerald-600">${kre?formatIDR(kre):'-'}</td><td class="p-2 text-right font-bold">${formatIDR(bal)}</td></tr>`; }).join('');
+        }
+
+        // FUNGSI BARU: RENDER LOG AKTIVITAS
+        function renderLogs() {
+            const tb = document.getElementById('table-logs-body');
+            // Ambil log dari kolom Keterangan (Index 8) yang berisi "Input ..." atau "Edit ..."
+            const logs = currentFilteredData.filter(i => i.Keterangan && (String(i.Keterangan).includes('Input ') || String(i.Keterangan).includes('Edit ')));
+            
+            if (logs.length === 0) { tb.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400">Tidak ada log aktivitas di periode ini.</td></tr>'; return; }
+
+            // Urutkan berdasarkan waktu terbaru
+            logs.sort((a, b) => {
+                const timeA = new Date(String(a.Keterangan).split('Input ')[1] || String(a.Keterangan).split('Edit ')[1] || 0);
+                const timeB = new Date(String(b.Keterangan).split('Input ')[1] || String(b.Keterangan).split('Edit ')[1] || 0);
+                return timeB - timeA;
+            });
+
+            tb.innerHTML = logs.map(l => {
+                const note = String(l.Keterangan || '');
+                let activity = 'Input Transaksi'; let actor = 'Sistem'; let time = '-';
+                
+                if (note.includes('Input ')) {
+                    time = note.split('Input ')[1];
+                    actor = l.kategori === 'Pembelian' ? 'Driver/Staf' : 'Admin/Staf';
+                } else if (note.includes('Edit ')) {
+                    activity = 'Edit Transaksi';
+                    time = note.split('Edit ')[1];
+                    actor = 'Admin/Staf';
+                }
+
+                const formattedTime = time !== '-' ? new Date(time).toLocaleString('id-ID') : '-';
+                const detail = `${l.kategori} - ${l.Nama_Barang_Material || l.Deskripsi} (${formatIDR(l.total)})`;
+
+                return `<tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                    <td class="p-3 text-xs font-mono text-slate-500">${formattedTime}</td>
+                    <td class="p-3 text-xs font-medium text-slate-700">${activity}</td>
+                    <td class="p-3 text-xs text-slate-600">${detail}</td>
+                    <td class="p-3 text-xs text-slate-500">${actor}</td>
+                </tr>`;
             }).join('');
         }
 
         function switchTab(t) {
             document.getElementById('content-transactions').classList.toggle('hidden',t!=='transactions');
             document.getElementById('content-ledger').classList.toggle('hidden',t!=='ledger');
+            document.getElementById('content-logs').classList.toggle('hidden',t!=='logs');
             document.getElementById('tab-transactions').className=t==='transactions'?'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white':'px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100';
             document.getElementById('tab-ledger').className=t==='ledger'?'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white':'px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100';
+            document.getElementById('tab-logs').className=t==='logs'?'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white':'px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100';
         }
 
         // ==========================================
@@ -818,102 +738,35 @@
         function openEditModal(id, type) { 
             const t = allTransactionsData.find(x => (x.ID_Penjualan || x.ID_Pembelian || x.ID_Operasional) === id); 
             if (!t) return; 
-            
-            document.getElementById('edit-id').value = id; 
-            document.getElementById('edit-original-type').value = type; 
-            document.getElementById('edit-original-vendor').value = t.vendor || '';
-            document.getElementById('edit-date').value = t.Tanggal; 
-            document.getElementById('edit-desc').value = t.Nama_Barang_Material || t.Deskripsi; 
+            document.getElementById('edit-id').value = id; document.getElementById('edit-original-type').value = type; document.getElementById('edit-original-vendor').value = t.vendor || '';
+            document.getElementById('edit-date').value = t.Tanggal; document.getElementById('edit-desc').value = t.Nama_Barang_Material || t.Deskripsi; 
             document.getElementById('edit-qty').value = t.Jumlah_Kg_Unit ? String(t.Jumlah_Kg_Unit).replace('.', ',') : ''; 
             document.getElementById('edit-price').value = t.Harga_Satuan ? String(t.Harga_Satuan).replace('.', ',') : ''; 
             document.getElementById('edit-total').innerText = formatIDR(t.total); 
-            
             const editVendorSelect = document.getElementById('edit-vendor');
-            if (editVendorSelect.options.length <= 1) {
-                editVendorSelect.innerHTML = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            }
-            const existingVendor = t.vendor || 'Umum';
-            let hasOption = Array.from(editVendorSelect.options).some(opt => opt.value === existingVendor);
-            if (!hasOption) {
-                const newOption = document.createElement('option');
-                newOption.value = existingVendor;
-                newOption.text = existingVendor + ' (dari data lama)';
-                editVendorSelect.add(newOption);
-            }
+            if (editVendorSelect.options.length <= 1) editVendorSelect.innerHTML = '<option value="">-- Pilih Client --</option>' + cachedClients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            const existingVendor = t.vendor || 'Umum'; let hasOption = Array.from(editVendorSelect.options).some(opt => opt.value === existingVendor);
+            if (!hasOption) { const newOption = document.createElement('option'); newOption.value = existingVendor; newOption.text = existingVendor + ' (dari data lama)'; editVendorSelect.add(newOption); }
             editVendorSelect.value = existingVendor;
-            
-            document.getElementById('edit-modal').classList.remove('hidden'); 
-            lucide.createIcons();
+            document.getElementById('edit-modal').classList.remove('hidden'); lucide.createIcons();
         }
-        
         function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
-
-        function deleteFromEditModal() {
-            const id = document.getElementById('edit-id').value;
-            const type = document.getElementById('edit-original-type').value;
-            if (!id) {
-                alert('ID transaksi tidak ditemukan!');
-                return;
-            }
-            closeEditModal();
-            setTimeout(() => {
-                deleteTransaction(id, type);
-            }, 300);
-        }
-        
-        document.getElementById('edit-qty').addEventListener('input', () => {
-            const q = parseInputNumber(document.getElementById('edit-qty').value);
-            const p = parseInputNumber(document.getElementById('edit-price').value);
-            document.getElementById('edit-total').innerText = formatIDR(q * p);
-        });
-        document.getElementById('edit-price').addEventListener('input', () => {
-            const q = parseInputNumber(document.getElementById('edit-qty').value);
-            const p = parseInputNumber(document.getElementById('edit-price').value);
-            document.getElementById('edit-total').innerText = formatIDR(q * p);
-        });
+        function deleteFromEditModal() { const id = document.getElementById('edit-id').value; const type = document.getElementById('edit-original-type').value; if (!id) { alert('ID transaksi tidak ditemukan!'); return; } closeEditModal(); setTimeout(() => deleteTransaction(id, type), 300); }
+        document.getElementById('edit-qty').addEventListener('input', () => { document.getElementById('edit-total').innerText = formatIDR(parseInputNumber(document.getElementById('edit-qty').value) * parseInputNumber(document.getElementById('edit-price').value)); });
+        document.getElementById('edit-price').addEventListener('input', () => { document.getElementById('edit-total').innerText = formatIDR(parseInputNumber(document.getElementById('edit-qty').value) * parseInputNumber(document.getElementById('edit-price').value)); });
         
         document.getElementById('edit-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const date = document.getElementById('edit-date').value;
-            const desc = document.getElementById('edit-desc').value;
-            const qty = parseInputNumber(document.getElementById('edit-qty').value);
-            const price = parseInputNumber(document.getElementById('edit-price').value);
-            const total = qty * price;
-            const originalType = document.getElementById('edit-original-type').value;
-            const vendor = document.getElementById('edit-vendor').value;
-
-            if (!vendor) {
-                alert('Pilih Client/Vendor terlebih dahulu!');
-                return;
-            }
-
-            let targetSheet = '';
-            let rowData = [];
-            
-            if (originalType === 'penjualan') {
-                targetSheet = 'PENJUALAN';
-                rowData = [id, date, vendor, desc, qty, price, total, 'Lunas', 'Edit Web'];
-            } else if (originalType === 'pembelian') {
-                targetSheet = 'PEMBELIAN';
-                rowData = [id, date, 'Material', desc, qty, price, total, vendor, 'Edit Web'];
-            } else if (originalType === 'operasional') {
-                targetSheet = 'OPERASIONAL_BIAYA';
-                rowData = [id, date, 'Ops', desc, qty, price, total, vendor, 'Edit Web'];
-            }
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'update', targetSheet: targetSheet, id: id, rowData: rowData })
-                });
-                alert('Transaksi berhasil diperbarui!');
-                closeEditModal();
-                setTimeout(() => loadDashboardData(), 1000);
-            } catch (err) { 
-                alert('Gagal memperbarui transaksi.'); 
-                console.error(err); 
-            }
+            const id = document.getElementById('edit-id').value; const date = document.getElementById('edit-date').value; const desc = document.getElementById('edit-desc').value;
+            const qty = parseInputNumber(document.getElementById('edit-qty').value); const price = parseInputNumber(document.getElementById('edit-price').value); const total = qty * price;
+            const originalType = document.getElementById('edit-original-type').value; const vendor = document.getElementById('edit-vendor').value;
+            if (!vendor) { alert('Pilih Client/Vendor terlebih dahulu!'); return; }
+            let targetSheet = '', rowData = [];
+            if (originalType === 'penjualan') { targetSheet = 'PENJUALAN'; rowData = [id, date, vendor, desc, qty, price, total, 'Lunas', 'Edit Web']; } 
+            else if (originalType === 'pembelian') { targetSheet = 'PEMBELIAN'; rowData = [id, date, 'Material', desc, qty, price, total, vendor, 'Edit Web']; } 
+            else { targetSheet = 'OPERASIONAL_BIAYA'; rowData = [id, date, 'Ops', desc, qty, price, total, vendor, 'Edit Web']; }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update', targetSheet: targetSheet, id: id, rowData: rowData }) }); alert('Transaksi berhasil diperbarui!'); closeEditModal(); setTimeout(() => loadDashboardData(), 1000); } 
+            catch (err) { alert('Gagal memperbarui transaksi.'); console.error(err); }
         });
 
         // ==========================================
@@ -922,142 +775,60 @@
         async function deleteTransaction(id, type) {
             const confirmed = confirm(`⚠️ PERINGATAN!\n\nAnda akan menghapus transaksi dengan ID:\n${id}\n\nTindakan ini TIDAK BISA dibatalkan.\nLanjutkan?`);
             if (!confirmed) return;
-
             const secondConfirm = confirm(`Konfirmasi sekali lagi:\nHapus transaksi ${id} dari database?`);
             if (!secondConfirm) return;
-
-            const statusEl = document.getElementById('data-status');
-            const originalStatus = statusEl.innerHTML;
-            statusEl.innerHTML = '<div class="loader w-3 h-3 border-2"></div> Menghapus...';
-
+            const statusEl = document.getElementById('data-status'); const originalStatus = statusEl.innerHTML; statusEl.innerHTML = '<div class="loader w-3 h-3 border-2"></div> Menghapus...';
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'delete',
-                        targetSheet: type.toUpperCase(),
-                        id: id
-                    })
-                });
-
-                alert('✅ Transaksi berhasil dihapus dari database!');
-                await loadDashboardData();
-            } catch (err) {
-                console.error('Error deleting transaction:', err);
-                alert('❌ Gagal menghapus transaksi. Coba lagi.');
-                statusEl.innerHTML = originalStatus;
-            }
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', targetSheet: type.toUpperCase(), id: id }) });
+                alert('✅ Transaksi berhasil dihapus dari database!'); await loadDashboardData();
+            } catch (err) { console.error('Error deleting transaction:', err); alert(' Gagal menghapus transaksi. Coba lagi.'); statusEl.innerHTML = originalStatus; }
         }
-
-        // FORM SUBMIT
-        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-            
-            const b = document.getElementById('submitBtn');
-            if (!b) { console.error("Tombol submit tidak ditemukan!"); return; }
-            
-            b.disabled = true; b.innerText = 'Saving...';
-            const ts = document.getElementById('formTarget').value, 
-                  dt = document.getElementById('formDate').value, 
-                  ds = document.getElementById('formDesc').value, 
-                  vn = document.getElementById('formClient').value;
-            
-            const q = parseInputNumber(document.getElementById('formQty').value);
-            const p = parseInputNumber(document.getElementById('formPrice').value);
-            const tot = q * p;
-            
-            if (!vn) { alert('Pilih Client/Vendor terlebih dahulu!'); b.disabled = false; b.innerText = 'Simpan Data'; return; }
-            
-            let rd = [];
-            if (ts === 'PEMBELIAN') rd = [`BUY-${Date.now()}`, dt, 'Material', ds, q, p, tot, vn, 'Web'];
-            else if (ts === 'PENJUALAN') rd = [`SEL-${Date.now()}`, dt, vn, ds, q, p, tot, 'Lunas', 'Web'];
-            else rd = [`EXP-${Date.now()}`, dt, 'Ops', ds, q, p, tot, vn, 'Web'];
-            
-            try { 
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ targetSheet: ts, rowData: rd }) }); 
-                alert('Tersimpan!'); 
-                document.getElementById('transactionForm').reset(); 
-                document.getElementById('formDate').value = new Date().toISOString().split('T')[0]; 
-                setTimeout(loadDashboardData, 1000); 
-            } catch (err) { alert('Gagal'); } 
-            finally { b.disabled = false; b.innerText = 'Simpan Data'; }
-        });
 
         // ==========================================
         // EXPORT REKAP PEMBELIAN KE SHEETS
         // ==========================================
         async function exportToSheets() {
-            const client = document.getElementById('mass-client-select').value;
-            const s = document.getElementById('mass-start-date').value;
-            const e = document.getElementById('mass-end-date').value;
+            const client = document.getElementById('mass-client-select').value; const s = document.getElementById('mass-start-date').value; const e = document.getElementById('mass-end-date').value;
             if (!client || !s || !e) return alert("Lengkapi Client dan Periode Tanggal!");
-            const btn = document.getElementById('btn-export-rekap');
-            const originalText = btn.innerHTML;
-            btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div> Mengexport...';
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'exportClientPurchase', clientName: client, startDate: s, endDate: e }) });
-                alert(`✅ Rekap pembelian ${client} berhasil disimpan ke sheet 'Rekap_Client'!`);
-            } catch (err) { alert('Gagal melakukan export.'); console.error(err); } 
-            finally { btn.disabled = false; btn.innerHTML = originalText; lucide.createIcons(); }
+            const btn = document.getElementById('btn-export-rekap'); const originalText = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div> Mengexport...';
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'exportClientPurchase', clientName: client, startDate: s, endDate: e }) }); alert(`✅ Rekap pembelian ${client} berhasil disimpan ke sheet 'Rekap_Client'!`); } 
+            catch (err) { alert('Gagal melakukan export.'); console.error(err); } finally { btn.disabled = false; btn.innerHTML = originalText; lucide.createIcons(); }
         }
 
         // ==========================================
         // SISTEM PRINT PROFESSIONAL & MASSAL
         // ==========================================
         function getClientDetails(name) { return cachedClients.find(c => c.name === name) || { name: name, address: '-', npwp: '-', phone: '-' }; }
-
         function generateMassPrint(type) {
-            const client = document.getElementById('mass-client-select').value;
-            const s = document.getElementById('mass-start-date').value;
-            const e = document.getElementById('mass-end-date').value;
+            const client = document.getElementById('mass-client-select').value; const s = document.getElementById('mass-start-date').value; const e = document.getElementById('mass-end-date').value;
             if (!client || !s || !e) return alert("Lengkapi Client dan Periode Tanggal!");
             const start = new Date(s); start.setHours(0, 0, 0, 0); const end = new Date(e); end.setHours(23, 59, 59, 999);
             const relatedItems = allTransactionsData.filter(t => (t.vendor || '').toLowerCase() === client.toLowerCase() && t.Tanggal && new Date(t.Tanggal) >= start && new Date(t.Tanggal) <= end && t.kategori !== 'Operasional');
             if (relatedItems.length === 0) return alert("Tidak ada transaksi untuk client & periode tersebut.");
-            const autoDocNum = generateAutoDocNumber(type, s);
-            openPrintModal(autoDocNum, type, relatedItems, client, s, e);
+            const autoDocNum = generateAutoDocNumber(type, s); openPrintModal(autoDocNum, type, relatedItems, client, s, e);
         }
-
         function openPrintModal(docNumber, type, customItems = null, customClient = null, startDate = null, endDate = null) {
             let mainItem = null; let itemsToPrint = []; let dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); let entityName = 'Umum';
-            if (customItems && Array.isArray(customItems) && customItems.length > 0) {
-                itemsToPrint = customItems; mainItem = customItems[0]; dateStr = new Date(mainItem.Tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); entityName = mainItem.vendor || 'Umum';
-            } else { alert("Tidak ada data transaksi untuk dicetak."); return; }
+            if (customItems && Array.isArray(customItems) && customItems.length > 0) { itemsToPrint = customItems; mainItem = customItems[0]; dateStr = new Date(mainItem.Tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); entityName = mainItem.vendor || 'Umum'; } 
+            else { alert("Tidak ada data transaksi untuk dicetak."); return; }
             if (!docNumber) docNumber = generateAutoDocNumber(type, mainItem.Tanggal);
-            
-            currentDocNumberForPrint = docNumber;
-            currentClientNameForFile = entityName.replace(/[^a-zA-Z0-9]/g, '-'); 
-
+            currentDocNumberForPrint = docNumber; currentClientNameForFile = entityName.replace(/[^a-zA-Z0-9]/g, '-'); 
             const modal = document.getElementById('print-modal'); const contentDiv = document.getElementById('document-content');
             const kopImg = document.getElementById('kop-img'); const kopFallback = document.getElementById('kop-fallback');
             kopImg.classList.add('hidden'); kopFallback.classList.add('hidden');
             kopImg.onload = () => kopImg.classList.remove('hidden'); kopImg.onerror = () => kopFallback.classList.remove('hidden');
             kopImg.src = CONFIG.KOP_SURAT_URL + '?t=' + new Date().getTime();
-
             const grandTotal = itemsToPrint.reduce((s, i) => s + (Number(i.total) || 0), 0);
             const clientData = getClientDetails(entityName);
             const periodText = (startDate && endDate) ? `Periode: ${new Date(startDate).toLocaleDateString('id-ID')} s/d ${new Date(endDate).toLocaleDateString('id-ID')}` : `Tanggal: ${dateStr}`;
-
             const ttdSection = `<div class="mt-6 flex justify-between items-end"><div class="text-center w-1/3"><p class="text-xs mb-6 text-slate-500">${type === 'kwitansi' ? 'Yang Menyetorkan' : 'Penerima / Pembeli'}</p><div class="border-t border-slate-300 w-32 mx-auto"></div></div><div class="text-center w-1/3"><p class="text-xs mb-1">Jakarta, ${dateStr}</p><p class="text-xs mb-1 text-slate-500">Hormat Kami,</p><div class="h-10 flex items-center justify-center mb-1"><img src="${CONFIG.TTD_DIRUT_URL}" class="h-full object-contain"></div><p class="font-bold text-xs text-slate-900 underline decoration-slate-400 underline-offset-2">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500">Direktur Utama</p></div></div>`;
-            
             const rows = itemsToPrint.map(i => `<tr><td class="border border-slate-300 p-2 text-xs">${i.Nama_Barang_Material || i.Deskripsi}</td><td class="border border-slate-300 p-2 text-center text-xs">${formatNumber(i.Jumlah_Kg_Unit || 1)}</td><td class="border border-slate-300 p-2 text-right text-xs">${formatNumber(i.Harga_Satuan || i.total)}</td><td class="border border-slate-300 p-2 text-right text-xs font-bold">${formatIDR(i.total)}</td></tr>`).join('');
-            
-            let html = '';
-            const isPurchase = mainItem.kategori === 'Pembelian';
-            const docTitle = type === 'nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type === 'invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
-
-            if (type === 'nota') {
-                html = `<div class="text-center mb-4"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div><div class="flex justify-between text-xs mb-4"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div><div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1] || dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-4"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttdSection}`;
-            } else if (type === 'kwitansi') {
-                html = `<div class="border-2 border-double border-slate-800 p-4 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div><h2 class="text-base font-bold text-center mb-2 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-2">No: ${docNumber}</p><div class="space-y-2 text-xs mb-4"><div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1] || dateStr})</span></div></div><div class="flex justify-end"><div class="text-center w-40"><p class="mb-4 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-8 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>`;
-            } else if (type === 'invoice') {
-                html = `<div class="flex justify-between items-start mb-4"><div><h2 class="text-xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div><div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div></div><div class="mb-4 bg-slate-50 p-2 border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p><p class="font-bold text-slate-800 text-xs">${clientData.name}</p><p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}<p class="text-[10px] text-slate-500 mt-1">${periodText}</p></div><table class="w-full text-xs border-collapse border border-slate-200 mb-4"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-2 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-2 text-right font-bold text-blue-900 text-xs">${formatIDR(grandTotal)}</td></tr></tfoot></table><div class="text-[10px] text-slate-600 mb-4"><p class="font-bold mb-0.5">Rekening Pembayaran:</p><p>BCA: 123-456-7890 a.n CV Rezeki Amanah Jaya</p></div>${ttdSection}`;
-            }
+            let html = ''; const isPurchase = mainItem.kategori === 'Pembelian'; const docTitle = type === 'nota' ? (isPurchase ? 'NOTA PEMBELIAN' : 'NOTA PENJUALAN') : (type === 'invoice' ? 'INVOICE PENJUALAN' : 'KWITANSI');
+            if (type === 'nota') { html = `<div class="text-center mb-4"><h2 class="text-xl font-bold uppercase tracking-wider border-b-2 border-slate-800 inline-block pb-1">${docTitle}</h2><p class="text-xs text-slate-500 mt-1">No: ${docNumber}</p></div><div class="flex justify-between text-xs mb-4"><div><p class="font-bold text-slate-700">Kepada Yth:</p><p class="text-slate-600 font-medium">${clientData.name}</p><p class="text-slate-500 text-[10px] mt-0.5">${clientData.address}</p></div><div class="text-right"><p class="font-bold text-slate-700">${periodText.split(':')[0]}</p><p class="text-slate-600">${periodText.split(': ')[1] || dateStr}</p></div></div><table class="w-full text-xs border-collapse border border-slate-300 mb-4"><thead class="bg-slate-100"><tr><th class="border border-slate-300 p-2 text-left">Uraian</th><th class="border border-slate-300 p-2 text-center w-16">Vol</th><th class="border border-slate-300 p-2 text-right w-24">Harga</th><th class="border border-slate-300 p-2 text-right w-24">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-slate-50"><td colspan="3" class="border border-slate-300 p-2 text-right font-bold">TOTAL</td><td class="border border-slate-300 p-2 text-right font-bold text-emerald-700">${formatIDR(grandTotal)}</td></tr></tfoot></table>${ttdSection}`; } 
+            else if (type === 'kwitansi') { html = `<div class="border-2 border-double border-slate-800 p-4 relative"><div class="absolute top-2 right-2 bg-slate-800 text-white px-2 py-0.5 text-[10px] font-bold">KWITANSI</div><h2 class="text-base font-bold text-center mb-2 uppercase">BUKTI PENERIMAAN UANG</h2><p class="text-xs mb-2">No: ${docNumber}</p><div class="space-y-2 text-xs mb-4"><div class="flex"><span class="w-32 font-bold shrink-0">Sudah Terima Dari</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${clientData.name}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Uang Sejumlah</span><span class="border-b border-dotted border-slate-400 flex-1 px-1 font-bold italic">${formatIDR(grandTotal)}</span></div><div class="flex"><span class="w-32 font-bold shrink-0">Untuk Pembayaran</span><span class="border-b border-dotted border-slate-400 flex-1 px-1">${itemsToPrint.length} Item (${periodText.split(': ')[1] || dateStr})</span></div></div><div class="flex justify-end"><div class="text-center w-40"><p class="mb-4 text-xs">Yang Menerima,</p><img src="${CONFIG.TTD_DIRUT_URL}" class="h-8 mx-auto mb-1 object-contain"><p class="font-bold text-xs border-b border-slate-400 inline-block pb-0.5">SIDIK DWI KUNCAHYO</p><p class="text-[9px] text-slate-500 mt-0.5">Direktur Utama</p></div></div></div>`; } 
+            else if (type === 'invoice') { html = `<div class="flex justify-between items-start mb-4"><div><h2 class="text-xl font-bold text-slate-800">INVOICE</h2><p class="text-[10px] text-slate-500">Tagihan Resmi Perusahaan</p></div><div class="text-right text-xs"><div class="mb-1"><span class="font-bold block text-slate-700">No. Invoice</span><span class="font-mono">${docNumber}</span></div><div><span class="font-bold block text-slate-700">Tanggal</span><span>${dateStr}</span></div></div></div><div class="mb-4 bg-slate-50 p-2 border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Ditagihkan Kepada:</p><p class="font-bold text-slate-800 text-xs">${clientData.name}</p><p class="text-[10px] text-slate-600 mt-0.5">${clientData.address}</p>${clientData.npwp !== '-' ? `<p class="text-[10px] text-slate-500 mt-0.5">NPWP: ${clientData.npwp}</p>` : ''}<p class="text-[10px] text-slate-500 mt-1">${periodText}</p></div><table class="w-full text-xs border-collapse border border-slate-200 mb-4"><thead class="bg-slate-800 text-white"><tr><th class="border border-slate-700 p-2 text-left">Deskripsi</th><th class="border border-slate-700 p-2 text-center w-16">Qty</th><th class="border border-slate-700 p-2 text-right w-24">Harga</th><th class="border border-slate-700 p-2 text-right w-24">Jumlah</th></tr></thead><tbody>${rows}</tbody><tfoot><tr class="bg-blue-50"><td colspan="3" class="border border-blue-100 p-2 text-right font-bold text-blue-900">TOTAL TAGIHAN</td><td class="border border-blue-100 p-2 text-right font-bold text-blue-900 text-xs">${formatIDR(grandTotal)}</td></tr></tfoot></table><div class="text-[10px] text-slate-600 mb-4"><p class="font-bold mb-0.5">Rekening Pembayaran:</p><p>Mandiri: 1210014494995 a.n CV Rezeki Amanah Jaya Group</p></div>${ttdSection}`; }
             contentDiv.innerHTML = html; modal.classList.remove('hidden'); lucide.createIcons();
         }
-
         function closePrintModal() { document.getElementById('print-modal').classList.add('hidden'); }
         function toggleTutorialModal() { document.getElementById('tutorial-modal').classList.toggle('hidden'); }
         function toggleBotChat() { document.getElementById('bot-chat-window').classList.toggle('hidden'); }
@@ -1065,65 +836,19 @@
         // ==========================================
         // AMI ASSISTANT LOGIC
         // ==========================================
-        const botForm = document.getElementById('bot-form');
-        const botInput = document.getElementById('bot-input');
-        const botMessages = document.getElementById('bot-messages');
-
-        botForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = botInput.value.trim();
-            if (!text) return;
-            appendBotUserMessage(text);
-            botInput.value = '';
-            setTimeout(() => replyBotMessage(text), 600);
-        });
-
-        function sendQuickQuestion(key) {
-            let questionText = "";
-            if (key === 'cara_input') questionText = "Gimana cara input data transaksi?";
-            else if (key === 'cara_cetak') questionText = "Cara cetak invoice atau nota gimana?";
-            else if (key === 'bagi_hasil') questionText = "Rumus bagi hasil investor berapa %?";
-            else if (key === 'export_rekap') questionText = "Gimana cara export rekap ke sheets?";
-            else if (key === 'siapa_ami') questionText = "Siapa sih kamu ini?";
-            
-            appendBotUserMessage(questionText);
-            setTimeout(() => replyBotMessage(key), 500);
-        }
-
-        function appendBotUserMessage(msg) {
-            botMessages.innerHTML += `<div class="flex gap-2 justify-end chat-pop"><div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs leading-relaxed">${msg}</div></div>`;
-            botMessages.scrollTop = botMessages.scrollHeight;
-        }
-
+        const botForm = document.getElementById('bot-form'); const botInput = document.getElementById('bot-input'); const botMessages = document.getElementById('bot-messages');
+        botForm.addEventListener('submit', (e) => { e.preventDefault(); const text = botInput.value.trim(); if (!text) return; appendBotUserMessage(text); botInput.value = ''; setTimeout(() => replyBotMessage(text), 600); });
+        function sendQuickQuestion(key) { let questionText = ""; if (key === 'cara_cetak') questionText = "Cara cetak invoice atau nota gimana?"; else if (key === 'bagi_hasil') questionText = "Rumus bagi hasil investor berapa %?"; else if (key === 'export_rekap') questionText = "Gimana cara export rekap ke sheets?"; else if (key === 'siapa_ami') questionText = "Siapa sih kamu ini?"; appendBotUserMessage(questionText); setTimeout(() => replyBotMessage(key), 500); }
+        function appendBotUserMessage(msg) { botMessages.innerHTML += `<div class="flex gap-2 justify-end chat-pop"><div class="bg-blue-600 text-white p-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] text-xs leading-relaxed">${msg}</div></div>`; botMessages.scrollTop = botMessages.scrollHeight; }
         function replyBotMessage(userMsg) {
-            let reply = "";
-            const q = userMsg.toLowerCase();
-
-            if (q.includes('halo') || q.includes('hai') || q.includes('pagi')) {
-                reply = "Halo juga. Udah login belum? Kalau belum jangan ganggu aku dulu. 😏";
-            } 
-            else if (q === 'cara_input' || q.includes('input')) {
-                reply = "Ya ampun, segampang itu kok. <br>1. Pilih tanggal.<br>2. Pilih jenis transaksi.<br>3. <b>WAJIB</b> pilih Client/Vendor (kalau nggak ada, tambah dulu di menu Client).<br>4. Isi deskripsi, qty, harga.<br>5. Klik Simpan. <br><br>Gampang kan? Jangan sampe lupa isi Client ya! 🙄";
-            } 
-            else if (q === 'cara_cetak' || q.includes('cetak') || q.includes('print') || q.includes('invoice')) {
-                reply = "Ada 2 cara, pilih mau yang mana:<br> <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br> <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ";
-            } 
-            else if (q === 'bagi_hasil' || q.includes('investor')) {
-                reply = "Dengerin baik-baik ya, cuma sekali aku jelasin:<br><br>Rumusnya: <b>(Penjualan - HPP - Operasional) x 10%</b><br><br>Itu hak investor. Sisanya baru jadi Laba Bersih perusahaan. Jangan sampai salah hitung nanti saya yang dimarahin bos! ";
-            } 
-            else if (q === 'export_rekap' || q.includes('export') || q.includes('rekap')) {
-                reply = "Buat yang males ngitung manual, pakai fitur ini:<br>1. Masuk menu 'Cetak Dokumen & Export Rekap'.<br>2. Pilih Client & Tentukan Periode.<br>3. Klik tombol hijau 'Export Rekap Pembelian'.<br><br>Data berat & jumlah item bakal otomatis masuk ke sheet 'Rekap_Client'. Tinggal cek deh! ";
-            } 
-            else if (q === 'siapa_ami' || q.includes('siapa')) {
-                reply = "Aku Ami. Asisten virtual paling cerdas (dan sedikit judes) di Amanah Capital. Tugas aku bantu kamu biar nggak bingung pakai aplikasi ini. <br><br>Jadi, ada lagi yang mau ditanyain atau udah paham semua? ";
-            } 
-            else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks')) {
-                reply = "Sama-sama. Lain kali baca menu dulu sebelum nanya ya. 😜 Semangat kerjanya!";
-            } 
-            else {
-                reply = "Hmm, pertanyaanmu terlalu abstract buat aku. Coba klik tombol menu di atas keyboard ya, disana udah ada panduan lengkapnya. Jangan bikin aku pusing. 🤯";
-            }
-
+            let reply = ""; const q = userMsg.toLowerCase();
+            if (q.includes('halo') || q.includes('hai') || q.includes('pagi')) reply = "Halo juga. Udah login belum? Kalau belum jangan ganggu aku dulu. 😏";
+            else if (q === 'cara_cetak' || q.includes('cetak') || q.includes('print') || q.includes('invoice')) reply = "Ada 2 cara, pilih mau yang mana:<br> <b>Satuan:</b> Klik ikon printer kecil di sebelah kanan tabel transaksi.<br> <b>Massal:</b> Scroll ke bawah, cari menu 'Cetak Dokumen Massal', pilih Client & Periodenya, lalu klik tombol Invoice/Nota.<br><br>Ingat: Pas jendela print muncul, <b>hilangkan centang 'Headers and footers'</b> biar hasilnya bersih! ";
+            else if (q === 'bagi_hasil' || q.includes('investor')) reply = "Dengerin baik-baik ya, cuma sekali aku jelasin:<br><br>Rumusnya: <b>(Penjualan - HPP - Operasional) x 10%</b><br><br>Itu hak investor. Sisanya baru jadi Laba Bersih perusahaan. Jangan sampai salah hitung nanti saya yang dimarahin bos! ";
+            else if (q === 'export_rekap' || q.includes('export') || q.includes('rekap')) reply = "Buat yang males ngitung manual, pakai fitur ini:<br>1. Masuk menu 'Cetak Dokumen & Export Rekap'.<br>2. Pilih Client & Tentukan Periode.<br>3. Klik tombol hijau 'Export Rekap Pembelian'.<br><br>Data berat & jumlah item bakal otomatis masuk ke sheet 'Rekap_Client'. Tinggal cek deh! ";
+            else if (q === 'siapa_ami' || q.includes('siapa')) reply = "Aku Ami. Asisten virtual paling cerdas (dan sedikit judes) di Amanah Capital. Tugas aku bantu kamu biar nggak bingung pakai aplikasi ini. <br><br>Jadi, ada lagi yang mau ditanyain atau udah paham semua? ";
+            else if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks')) reply = "Sama-sama. Lain kali baca menu dulu sebelum nanya ya. 😜 Semangat kerjanya!";
+            else reply = "Hmm, pertanyaanmu terlalu abstract buat aku. Coba klik tombol menu di atas keyboard ya, disana udah ada panduan lengkapnya. Jangan bikin aku pusing. 🤯";
             botMessages.innerHTML += `<div class="flex gap-2 chat-pop"><div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"></div><div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">${reply}</div></div>`;
             botMessages.scrollTop = botMessages.scrollHeight;
         }
