@@ -499,6 +499,17 @@
 
         document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
 
+        // ==================== HELPER FUNCTIONS (FIXED) ====================
+        function parseInputNumber(val) { 
+            if (!val) return 0; 
+            // Hapus titik ribuan (jika ada) lalu ganti koma desimal dengan titik
+            let cleanVal = String(val).replace(/\./g, '').replace(',', '.');
+            return parseFloat(cleanVal) || 0; 
+        }
+
+        function formatNumber(num) { return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(num || 0); }
+        function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
+
         async function checkAuthAndInit() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('token') && params.get('role') === 'staf') {
@@ -894,6 +905,7 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
+                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
@@ -1148,6 +1160,10 @@
             btn.disabled = true; 
             btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
 
+            // Ambil nilai dan pastikan harga diubah menjadi angka yang valid menggunakan parseInputNumber
+            const priceVal = document.getElementById('new-offtaker-price').value;
+            const cleanPrice = parseInputNumber(priceVal); 
+
             const newData = {
                 nama_offtaker: document.getElementById('new-offtaker-name').value.trim(),
                 no_telp: document.getElementById('new-offtaker-phone').value.trim(),
@@ -1155,7 +1171,7 @@
                 link_map: document.getElementById('new-offtaker-map').value.trim(),
                 kategori_internal: document.getElementById('new-offtaker-cat-internal').value,
                 kode_item_offtaker: document.getElementById('new-offtaker-code-external').value.trim(),
-                harga_beli_rp: parseInputNumber(document.getElementById('new-offtaker-price').value),
+                harga_beli_rp: cleanPrice, // Gunakan variabel yang sudah diparsing
                 status: 'Aktif'
             };
 
@@ -1175,7 +1191,10 @@
                     populateOfftakerDropdown();
                     renderOfftakerListStaf();
                 }
-            } catch(err) { showToast("Gagal menyimpan offtaker.", true); }
+            } catch(err) { 
+                console.error(err);
+                showToast("Gagal menyimpan offtaker.", true); 
+            }
             finally { 
                 btn.disabled = false; 
                 btn.innerHTML = originalText; 
@@ -1326,8 +1345,6 @@
 
         function closePreview() { document.getElementById('doc-preview-modal').classList.add('hidden'); document.title="Amanah Capital - Staf Operasional"; }
 
-        function formatNumber(num) { return new Intl.NumberFormat('id-ID', {maximumFractionDigits:2}).format(num||0); }
-        function formatIDR(v) { return new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', maximumFractionDigits:0}).format(v||0); }
         function showToast(msg, isError=false) { const toast=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; toast.className=`fixed bottom-6 left-1/2 -translate-x-1/2 ${isError?'bg-red-500 text-white border-red-600':'bg-slate-800 text-white border-slate-700'} px-5 py-3 rounded-full shadow-2xl text-xs font-medium z-50 flex items-center gap-2 transition-all duration-300 border`; toast.classList.remove('hidden'); setTimeout(()=>toast.classList.add('hidden'), 3000); }
         document.getElementById('trx-qty').addEventListener('input', calcTrxTotal); document.getElementById('trx-price').addEventListener('input', calcTrxTotal); document.getElementById('trx-item').addEventListener('change', autoFillPrice);
     </script>
