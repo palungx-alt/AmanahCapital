@@ -219,6 +219,7 @@
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-medium hidden z-50 flex items-center gap-2 transition-all duration-300 border border-slate-700"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil!</span></div>
 
     <script>
+        // URL API YANG SUDAH DIPERBARUI SESUAI PERMINTAAN ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         
         let masterItems = [], cachedClients = [], transactionCart = [];
@@ -228,10 +229,13 @@
             lucide.createIcons(); checkAuth(); updateClock(); setInterval(updateClock, 60000);
             document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
             
-            // Pastikan load data berjalan berurutan
+            // OPTIMASI: Load data kritis dulu, data sekunder di background
             loadMasterDataForDropdown(); 
-            loadClientsForDropdown(); 
-            renderHistory();
+            
+            setTimeout(() => {
+                loadClientsForDropdown(); 
+                renderHistory();
+            }, 300);
             
             document.getElementById('form-item').addEventListener('change', calculateTotal);
             document.getElementById('form-qty').addEventListener('input', calculateTotal);
@@ -530,6 +534,7 @@
 
         function addToHistory(count) {
             localHistory.unshift({ count, time: new Date().toLocaleTimeString('id-ID'), vendor: document.getElementById('form-vendor').value });
+            // BATASI RIWAYAT MAKSIMAL 5 ITEM AGAR TIDAK LEMOT
             if(localHistory.length > 5) localHistory.pop(); 
             localStorage.setItem('driver_history', JSON.stringify(localHistory));
             renderHistory();

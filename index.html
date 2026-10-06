@@ -661,6 +661,7 @@
 
     <!-- App Logic -->
     <script>
+        // URL API YANG SUDAH DIPERBARUI SESUAI PERMINTAAN ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
@@ -675,9 +676,8 @@
         function formatNumber(num) { return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num || 0); }
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0); }
         
-        // FUNGSI TOAST YANG SEBELUMNYA HILANG (FIXED)
+        // FUNGSI TOAST NOTIFICATION
         function showToast(msg, isError=false) { 
-            // Cek apakah elemen toast sudah ada di HTML, jika belum buat dinamis
             let toast = document.getElementById('toast');
             if(!toast) {
                 toast = document.createElement('div');
@@ -1259,7 +1259,7 @@
         }
 
         // ==========================================
-        // LOGIKA MANAJEMEN OFFTAKER (DIPERBAIKI)
+        // LOGIKA MANAJEMEN OFFTAKER (BARU)
         // ==========================================
         
         // 1. Auto-setup sheet Offtakers via API call pertama kali

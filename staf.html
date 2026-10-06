@@ -12,7 +12,7 @@
         /* Light Futuristic Palette */
         :root {
             --bg-base: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(16, 185, 129, 0.15);
             --accent-primary: #10b981;
             --text-main: #0f172a;
@@ -68,19 +68,30 @@
 </head>
 <body class="antialiased flex flex-col relative pb-24">
 
-    <!-- LOGIN OVERLAY -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm no-print">
-        <div class="glass-card rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 animate-fade-in bg-white">
+    <!-- LOGIN OVERLAY (DESAIN BARU: TERANG & GLASSMORPHISM) -->
+    <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md no-print" style="background: linear-gradient(135deg, rgba(236, 253, 245, 0.95) 0%, rgba(248, 250, 252, 0.98) 50%, rgba(224, 242, 254, 0.95) 100%);">
+        <div class="glass-card rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 animate-fade-in bg-white/90 border border-emerald-200">
             <div class="text-center">
-                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="briefcase" class="w-8 h-8 text-emerald-600"></i></div>
-                <h2 class="text-xl font-bold text-slate-900">Login Staf Operasional</h2>
+                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <i data-lucide="briefcase" class="w-8 h-8 text-emerald-600"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Login Staf Operasional</h2>
+                <p class="text-xs text-slate-500 mt-1">Masukkan kredensial Anda untuk mengakses dashboard</p>
             </div>
             <form id="staf-login-form" class="space-y-4">
-                <input type="text" id="staf-user" required placeholder="Username Staf" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <input type="password" id="staf-pass" required placeholder="Password" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-500/20">Masuk Dashboard</button>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 ml-1">Username Staf</label>
+                    <input type="text" id="staf-user" required placeholder="Contoh: naura.staf" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-all">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5 ml-1">Password</label>
+                    <input type="password" id="staf-pass" required placeholder="••••••••" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white transition-all">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Masuk Dashboard
+                </button>
             </form>
-            <p id="staf-login-error" class="text-center text-red-500 text-xs hidden">Username atau password salah!</p>
+            <p id="staf-login-error" class="text-center text-red-500 text-xs hidden bg-red-50 p-2 rounded-lg border border-red-100">Username atau password salah!</p>
         </div>
     </div>
 
@@ -186,7 +197,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Harga Beli (Rp/Kg)</label>
-                                <input type="number" id="new-offtaker-price" required placeholder="0" class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none font-mono">
+                                <input type="number" id="new-offtaker-price" required step="0.01" placeholder="0.00" class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none font-mono">
                             </div>
                         </div>
                     </div>
@@ -340,7 +351,7 @@
 
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Jumlah / Berat</label><input type="number" id="trx-qty" step="0.1" required placeholder="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white font-mono"></div>
-                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Harga Satuan (Rp)</label><input type="number" id="trx-price" required placeholder="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white font-mono"></div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Harga Satuan (Rp)</label><input type="number" id="trx-price" step="0.01" required placeholder="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white font-mono"></div>
                 </div>
                 <button type="submit" id="btn-save-trx" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi</button>
             </form>
@@ -485,6 +496,7 @@
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-medium hidden z-50 flex items-center gap-2 transition-all duration-300 border border-slate-700 no-print"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil!</span></div>
 
     <script>
+        // URL API YANG SUDAH DIPERBARUI SESUAI PERMINTAAN ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         
@@ -536,29 +548,48 @@
 
         async function loadAllData() {
             try {
-                const [masterRes, clientRes, trxRes, offtakerRes] = await Promise.all([
+                // OPTIMASI: Load data kritis dulu, data sekunder di background
+                const [masterRes, trxRes] = await Promise.all([
                     fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()), 
-                    fetch(`${API_URL}?action=getClients`).then(r=>r.json()), 
-                    fetch(`${API_URL}?action=getTransactions`).then(r=>r.json()),
-                    fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json()) // Load data offtaker
+                    fetch(`${API_URL}?action=getTransactions`).then(r=>r.json())
                 ]);
                 
-                if(masterRes.status === 'success') { masterItems = masterRes.items.map(i => ({...i, price: parseFloat(i.price)||0, satuan: i.satuan||'Kg'})); populateItemDropdown(); }
-                if(clientRes.status === 'success') { cachedClients = clientRes.clients; populateClientDropdowns(); }
+                if(masterRes.status === 'success') { 
+                    masterItems = masterRes.items.map(i => ({...i, price: parseFloat(i.price)||0, satuan: i.satuan||'Kg'})); 
+                    populateItemDropdown(); 
+                }
+                
                 if(trxRes.status === 'success') { 
                     processTransactions(trxRes); 
                     renderApprovalTable(); 
                     renderHistoryTable(); 
-                    renderStockDashboard(); 
+                    // Jangan render chart dulu, tunggu tab diklik
                     updateNotifBadge(); 
                     populateTimbangDropdown(); 
                     populatePressDropdown(); 
                 }
-                if(offtakerRes.status === 'success') {
-                    offtakersData = offtakerRes.data || [];
-                    populateOfftakerDropdown(); // Isi dropdown offtaker saat load data
-                    renderOfftakerListStaf(); // Render daftar offtaker di tab manajemen
-                }
+
+                // Load data sekunder di background agar UI tidak freeze
+                setTimeout(async () => {
+                    try {
+                        const [clientRes, offtakerRes] = await Promise.all([
+                            fetch(`${API_URL}?action=getClients`).then(r=>r.json()),
+                            fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json())
+                        ]);
+                        
+                        if(clientRes.status === 'success') { 
+                            cachedClients = clientRes.clients; 
+                            populateClientDropdowns(); 
+                        }
+                        
+                        if(offtakerRes.status === 'success') {
+                            offtakersData = offtakerRes.data || [];
+                            populateOfftakerDropdown();
+                            renderOfftakerListStaf();
+                        }
+                    } catch(e) { console.log("Gagal load data sekunder:", e); }
+                }, 500);
+
             } catch(err) { showToast("Gagal memuat data.", true); console.error(err); }
         }
 
@@ -615,7 +646,12 @@
             if(activeBtn) activeBtn.className = tabName === 'approval' ? "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap" : "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap";
             
             lucide.createIcons();
-            if(tabName === 'stok') renderStockDashboard();
+            
+            // LAZY LOAD: Chart hanya dirender saat tab stok dibuka
+            if(tabName === 'stok') {
+                if(!stockChartInstance) renderStockChart();
+                renderStockTable();
+            }
             if(tabName === 'approval') renderApprovalTable();
             if(tabName === 'history') renderHistoryTable();
             if(tabName === 'offtaker') renderOfftakerListStaf();
@@ -659,7 +695,7 @@
             finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client'; lucide.createIcons(); }
         });
 
-        // --- LOGIKA HISTORI TRANSAKSI ---
+        // --- LOGIKA HISTORI TRANSAKSI (OPTIMIZED: MAX 50 ROWS) ---
         function renderHistoryTable() {
             const container = document.getElementById('history-table-body');
             const statusFilter = document.getElementById('history-status-filter').value;
@@ -675,12 +711,15 @@
 
             filtered.sort((a, b) => new Date(b.Tanggal || b.timestamp) - new Date(a.Tanggal || a.timestamp));
 
-            if (filtered.length === 0) { 
+            // BATASI RENDER MAKSIMAL 50 BARIS AGAR TIDAK LEMOT
+            const limitedFiltered = filtered.slice(0, 50);
+
+            if (limitedFiltered.length === 0) { 
                 container.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400">Tidak ada data transaksi ditemukan.</td></tr>'; 
                 return; 
             }
 
-            container.innerHTML = filtered.map(t => {
+            container.innerHTML = limitedFiltered.map(t => {
                 const id = t.ID_Pembelian || t.ID_Penjualan || t.ID_Operasional || '-';
                 const isPaid = t.status && t.status.toLowerCase() === 'paid';
                 const statusBadge = isPaid 
@@ -774,7 +813,11 @@
         function closeReminder() { document.getElementById('reminder-popup').classList.add('hidden'); }
         function goToApproval() { closeReminder(); switchTab('approval'); }
 
-        function renderStockDashboard() { renderStockChart(); renderStockTable(); }
+        // OPTIMASI: Chart hanya dirender saat dibutuhkan
+        function renderStockDashboard() { 
+            if(!stockChartInstance) renderStockChart();
+            renderStockTable(); 
+        }
         function renderStockChart() {
             const ctx=document.getElementById('stockChart').getContext('2d');
             const sortedStock=Object.keys(currentStock).map(name => ({name, physical:currentStock[name].qtyIn-currentStock[name].qtyOutPaid, unit:currentStock[name].unit})).filter(s => s.physical>0).sort((a,b) => b.physical-a.physical).slice(0,10);
@@ -953,7 +996,7 @@
                 
                 if(loss >= 0) {
                     display.className = 'p-3 rounded-xl border border-amber-200 bg-amber-50 text-center text-sm font-bold text-amber-700';
-                    display.innerHTML = `⚠️ Susut Press: ${formatNumber(loss)} Kg (${lossPercent}%)`;
+                    display.innerHTML = `️ Susut Press: ${formatNumber(loss)} Kg (${lossPercent}%)`;
                 } else {
                     display.className = 'p-3 rounded-xl border border-emerald-200 bg-emerald-50 text-center text-sm font-bold text-emerald-700';
                     display.innerHTML = `✅ Tidak ada susut (Lebih: ${formatNumber(Math.abs(loss))} Kg)`;
