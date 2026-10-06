@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amanah Capital - Staf Operasional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,7 +12,7 @@
         /* Light Futuristic Palette */
         :root {
             --bg-base: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.9);
             --glass-border: rgba(16, 185, 129, 0.15);
             --accent-primary: #10b981;
             --text-main: #0f172a;
@@ -24,6 +24,7 @@
             color: var(--text-main);
             font-family: 'Inter', system-ui, sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .glass-card { 
@@ -34,7 +35,7 @@
             box-shadow: 0 10px 40px -10px rgba(16, 185, 129, 0.1);
         }
 
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -42,8 +43,12 @@
         @keyframes ring { 0%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-15deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(5deg)}60%{transform:rotate(-5deg)}100%{transform:rotate(0)} }
         .animate-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
 
+        /* Sidebar Animation */
+        .sidebar-overlay { transition: opacity 0.3s ease; }
+        .sidebar-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
         @media print {
-            header, main, .no-print, 
+            header, main, .no-print, #sidebar-overlay, #sidebar-menu,
             #doc-preview-modal > div:first-child, 
             #doc-preview-modal > div:last-child, 
             body > *:not(#doc-preview-modal) { display: none !important; visibility: hidden !important; }
@@ -79,24 +84,53 @@
         </div>
     </div>
 
-    <!-- HEADER STAF -->
-    <header class="sticky top-0 z-40 px-5 py-4 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
+    <!-- HEADER STAF (RESPONSIVE) -->
+    <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
+            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
+            <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30"><i data-lucide="briefcase" class="w-5 h-5 text-white"></i></div>
             <div><h1 class="font-bold text-base tracking-wide text-slate-800">Staf Operasional</h1><p id="staf-name-display" class="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Memuat...</p></div>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <div class="relative cursor-pointer hover:bg-white/50 p-2 rounded-lg transition" onclick="switchTab('approval')"><i data-lucide="bell" class="w-5 h-5 text-emerald-600 animate-ring" id="notif-bell"></i><span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span></div>
             <a href="index.html" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="home" class="w-4 h-4 text-slate-500"></i></a>
             <button onclick="logout()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
         </div>
     </header>
 
+    <!-- SIDEBAR NAVIGATION (MOBILE) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden lg:hidden sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 bg-white z-[70] shadow-2xl transform -translate-x-full transition-transform duration-300 lg:hidden flex flex-col">
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+            <h2 class="font-bold text-lg text-slate-800">Menu Navigasi</h2>
+            <button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-slate-100"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-2">
+            <button onclick="switchTab('approval'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl bg-emerald-50 text-emerald-700 font-bold text-sm flex items-center gap-3"><i data-lucide="clipboard-check" class="w-4 h-4"></i> Approval (<span id="pending-count-sidebar">0</span>)</button>
+            <button onclick="switchTab('offtaker'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="handshake" class="w-4 h-4"></i> Manajemen Offtaker</button>
+            <button onclick="switchTab('stok'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Stok</button>
+            <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
+            <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
+            <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
+            <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
+            <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
+            <button onclick="switchTab('history'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="history" class="w-4 h-4"></i> Riwayat</button>
+        </div>
+        <div class="p-4 border-t border-slate-100">
+            <p class="text-[10px] text-slate-400 text-center">Amanah Capital v2.0</p>
+        </div>
+    </div>
+
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-4 max-w-6xl mx-auto w-full space-y-6 pb-24 no-print">
-        <!-- TAB NAVIGASI (PRESS DILETAKKAN SETELAH TIMBANG ULANG) -->
-        <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <!-- TAB NAVIGASI (DESKTOP ONLY) -->
+        <div class="hidden lg:flex gap-2 overflow-x-auto pb-2 no-scrollbar">
             <button onclick="switchTab('approval')" id="tab-approval" class="tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="clipboard-check" class="w-4 h-4"></i> Approval (<span id="pending-count">0</span>)</button>
+            <button onclick="switchTab('offtaker')" id="tab-offtaker" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="handshake" class="w-4 h-4"></i> Offtaker</button>
             <button onclick="switchTab('stok')" id="tab-stok" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Stok</button>
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
@@ -115,6 +149,57 @@
                         <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="py-3 px-4">Tanggal</th><th class="py-3 px-4">Vendor</th><th class="py-3 px-4">Detail</th><th class="py-3 px-4 text-right">Total</th><th class="py-3 px-4 text-center">Aksi</th></tr></thead>
                         <tbody id="approval-table-body" class="divide-y divide-slate-100"><tr><td colspan="5" class="py-8 text-center text-slate-400">Tidak ada transaksi pending.</td></tr></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB BARU: MANAJEMEN OFFTAKER (KHUSUS STAF) -->
+        <div id="content-offtaker" class="tab-content hidden space-y-4">
+            <div class="glass-card p-5 rounded-2xl bg-white/80">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i data-lucide="handshake" class="w-5 h-5 text-purple-500"></i> Manajemen Offtaker</h2>
+                    <button onclick="showAddOfftakerFormStaf()" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-purple-500/20"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Offtaker Baru</button>
+                </div>
+
+                <!-- Form Tambah Offtaker (Hidden by default) -->
+                <form id="add-offtaker-form-staf" class="hidden space-y-4 mb-6 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                    <h3 class="text-xs font-bold text-purple-700 uppercase">Data Offtaker Baru</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Nama Offtaker / Perusahaan</label><input type="text" id="new-offtaker-name" required placeholder="Contoh: PT. Daur Ulang Jaya" class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none uppercase"></div>
+                        <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">No. Telepon</label><input type="tel" id="new-offtaker-phone" placeholder="0812..." class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none"></div>
+                    </div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Alamat Lengkap</label><textarea id="new-offtaker-address" rows="2" required placeholder="Alamat lengkap..." class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none resize-none"></textarea></div>
+                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Link Google Maps</label><input type="text" id="new-offtaker-map" placeholder="https://maps.google.com/..." class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none"></div>
+                    
+                    <div class="border-t border-purple-200 pt-3 mt-2">
+                        <h4 class="text-[10px] font-bold text-purple-600 uppercase mb-2">Item & Harga Pertama</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kategori Internal</label>
+                                <select id="new-offtaker-cat-internal" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none">
+                                    <option value="">-- Pilih Kategori --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kode Item Eksternal</label>
+                                <input type="text" id="new-offtaker-code-external" required placeholder="Misal: PET Flake Clear" class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Harga Beli (Rp/Kg)</label>
+                                <input type="number" id="new-offtaker-price" required placeholder="0" class="w-full border border-slate-200 rounded-lg p-2.5 text-xs bg-white focus:ring-2 focus:ring-purple-500 outline-none font-mono">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="hideAddOfftakerFormStaf()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold transition">Batal</button>
+                        <button type="submit" id="btn-save-new-offtaker-staf" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg shadow-purple-500/20 flex items-center justify-center gap-1.5"><i data-lucide="save" class="w-3.5 h-3.5"></i> Simpan Offtaker</button>
+                    </div>
+                </form>
+
+                <!-- Daftar Offtaker -->
+                <div id="offtaker-list-container-staf" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="col-span-full text-center py-8 text-slate-400"><div class="loader mx-auto mb-2"></div><p class="text-xs">Memuat data offtaker...</p></div>
                 </div>
             </div>
         </div>
@@ -169,7 +254,7 @@
             </div>
         </div>
 
-        <!-- TAB BARU: PRESS / PEMADATAN -->
+        <!-- TAB PRESS / PEMADATAN -->
         <div id="content-press" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i data-lucide="package" class="w-5 h-5 text-purple-500"></i> Input Proses Press / Pemadatan</h2>
@@ -213,12 +298,19 @@
             </div>
         </div>
 
-        <!-- TAB INPUT -->
+        <!-- TAB INPUT (DENGAN INTEGRASI OFFTAKER SEDERHANA) -->
         <div id="content-input" class="tab-content hidden space-y-4">
             <form id="transaksi-form" class="glass-card p-5 rounded-2xl bg-white/80 space-y-5">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100"><i data-lucide="edit-3" class="w-5 h-5 text-emerald-500"></i> Form Input Baru</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Jenis Transaksi</label><select id="trx-type" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white"><option value="PEMBELIAN">Pembelian (Stok Masuk)</option><option value="PENJUALAN">Penjualan Workshop (Stok Keluar)</option><option value="OPERASIONAL">Biaya Operasional</option></select></div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Jenis Transaksi</label>
+                        <select id="trx-type" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white">
+                            <option value="PEMBELIAN">Pembelian (Stok Masuk)</option>
+                            <option value="PENJUALAN">Penjualan Workshop (Stok Keluar)</option>
+                            <option value="OPERASIONAL">Biaya Operasional</option>
+                        </select>
+                    </div>
                     <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Tanggal</label><input type="date" id="trx-date" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white"></div>
                 </div>
                 
@@ -231,6 +323,21 @@
                 </div>
 
                 <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Nama Barang</label><select id="trx-item" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white"><option value="">-- Pilih dari Master Data --</option></select></div>
+                
+                <!-- BAGIAN BARU: PILIHAN OFFTAKER (HANYA MUNCUL SAAT PENJUALAN) -->
+                <div id="offtaker-section" class="hidden space-y-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <label class="block text-[10px] font-bold uppercase text-purple-700">Pilih Offtaker / Pembeli</label>
+                        <button type="button" onclick="switchTab('offtaker')" class="text-[9px] text-purple-600 font-bold flex items-center gap-1 hover:text-purple-700 bg-white px-2 py-1 rounded-lg border border-purple-200 transition shadow-sm">
+                            <i data-lucide="settings" class="w-3 h-3"></i> Kelola Offtaker
+                        </button>
+                    </div>
+                    <select id="trx-offtaker" class="w-full border border-purple-200 rounded-xl px-4 py-3 text-xs outline-none bg-white focus:ring-2 focus:ring-purple-500">
+                        <option value="">-- Pilih Offtaker --</option>
+                    </select>
+                    <p class="text-[9px] text-purple-600 mt-1">*Harga akan otomatis terisi sesuai data offtaker. Untuk tambah/edit offtaker, gunakan menu "Manajemen Offtaker".</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Jumlah / Berat</label><input type="number" id="trx-qty" step="0.1" required placeholder="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white font-mono"></div>
                     <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Harga Satuan (Rp)</label><input type="number" id="trx-price" required placeholder="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white font-mono"></div>
@@ -263,7 +370,7 @@
             </div>
         </div>
 
-        <!-- TAB RIWAYAT TRANSAKSI (PALING KANAN) -->
+        <!-- TAB RIWAYAT TRANSAKSI -->
         <div id="content-history" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
@@ -386,6 +493,9 @@
         let reminderInterval = null, selectedFile = null, currentApproveNoteKey = null;
         let physicalCorrections = {}; // Variabel global untuk menyimpan koreksi timbang ulang
         let pressHistory = []; // Variabel global untuk menyimpan riwayat press lokal
+        
+        // Variabel Global untuk Offtaker di Staf
+        let offtakersData = [];
 
         document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
 
@@ -414,7 +524,13 @@
 
         async function loadAllData() {
             try {
-                const [masterRes, clientRes, trxRes] = await Promise.all([fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()), fetch(`${API_URL}?action=getClients`).then(r=>r.json()), fetch(`${API_URL}?action=getTransactions`).then(r=>r.json())]);
+                const [masterRes, clientRes, trxRes, offtakerRes] = await Promise.all([
+                    fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()), 
+                    fetch(`${API_URL}?action=getClients`).then(r=>r.json()), 
+                    fetch(`${API_URL}?action=getTransactions`).then(r=>r.json()),
+                    fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json()) // Load data offtaker
+                ]);
+                
                 if(masterRes.status === 'success') { masterItems = masterRes.items.map(i => ({...i, price: parseFloat(i.price)||0, satuan: i.satuan||'Kg'})); populateItemDropdown(); }
                 if(clientRes.status === 'success') { cachedClients = clientRes.clients; populateClientDropdowns(); }
                 if(trxRes.status === 'success') { 
@@ -423,10 +539,15 @@
                     renderHistoryTable(); 
                     renderStockDashboard(); 
                     updateNotifBadge(); 
-                    populateTimbangDropdown(); // Populate dropdown timbang ulang
-                    populatePressDropdown();   // Populate dropdown press
+                    populateTimbangDropdown(); 
+                    populatePressDropdown(); 
                 }
-            } catch(err) { showToast("Gagal memuat data.", true); }
+                if(offtakerRes.status === 'success') {
+                    offtakersData = offtakerRes.data || [];
+                    populateOfftakerDropdown(); // Isi dropdown offtaker saat load data
+                    renderOfftakerListStaf(); // Render daftar offtaker di tab manajemen
+                }
+            } catch(err) { showToast("Gagal memuat data.", true); console.error(err); }
         }
 
         function processTransactions(res) {
@@ -452,16 +573,40 @@
             });
         }
 
+        // --- FUNGSI SIDEBAR MOBILE ---
+        function toggleSidebar() {
+            const overlay = document.getElementById('sidebar-overlay');
+            const menu = document.getElementById('sidebar-menu');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    menu.classList.remove('-translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                menu.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            
+            // Update active state for desktop tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap");
             const activeBtn = document.getElementById(`tab-${tabName}`);
-            activeBtn.className = tabName === 'approval' ? "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap" : "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap";
+            if(activeBtn) activeBtn.className = tabName === 'approval' ? "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap" : "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap";
+            
             lucide.createIcons();
             if(tabName === 'stok') renderStockDashboard();
             if(tabName === 'approval') renderApprovalTable();
             if(tabName === 'history') renderHistoryTable();
+            if(tabName === 'offtaker') renderOfftakerListStaf();
         }
 
         function populateItemDropdown() { const select = document.getElementById('trx-item'); select.innerHTML = '<option value="">-- Pilih dari Master Data --</option>'; masterItems.sort((a,b)=>a.name.localeCompare(b.name)).forEach(item => { const opt = document.createElement('option'); opt.value = item.name; opt.text = `${item.name} (${item.satuan})`; opt.dataset.price = item.price; select.appendChild(opt); }); }
@@ -558,6 +703,7 @@
             });
             const notesArray = Object.values(groupedNotes).sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('pending-count').innerText = notesArray.length;
+            document.getElementById('pending-count-sidebar').innerText = notesArray.length; // Update sidebar count too
             updateNotifBadge(notesArray.length);
             if(notesArray.length === 0) { container.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400"> Tidak ada transaksi yang menunggu verifikasi.</td></tr>'; return; }
             container.innerHTML = notesArray.map(note => {
@@ -685,13 +831,11 @@
             btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
             
             try {
-                // Simpan koreksi ke Google Sheets (Opsional: buat sheet 'TIMBANG_ULANG')
                 await fetch(API_URL, { 
                     method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ action: 'savePhysicalCorrection', itemName, actualQty, timestamp: new Date().toISOString() }) 
                 });
                 
-                // Update state lokal
                 const sysQty = currentStock[itemName].qtyIn - currentStock[itemName].qtyOutPaid;
                 physicalCorrections[itemName] = actualQty - sysQty;
                 
@@ -772,7 +916,7 @@
             select.innerHTML = '<option value="">-- Pilih Item Curah --</option>';
             Object.keys(currentStock).sort().forEach(name => {
                 const sysQty = currentStock[name].qtyIn - currentStock[name].qtyOutPaid;
-                if(sysQty > 0) { // Hanya tampilkan item yang punya stok
+                if(sysQty > 0) { 
                     const opt = document.createElement('option');
                     opt.value = name;
                     opt.text = `${name} (Stok: ${formatNumber(sysQty)} ${currentStock[name].unit})`;
@@ -816,14 +960,12 @@
             if (!looseItem) return showToast("Pilih item curah terlebih dahulu!", true);
             if (beforeQty <= 0 || afterQty <= 0) return showToast("Berat harus lebih dari 0!", true);
             
-            // Validasi stok cukup
             const sysQty = currentStock[looseItem].qtyIn - currentStock[looseItem].qtyOutPaid;
             if (beforeQty > sysQty) return showToast(`Stok ${looseItem} tidak mencukupi! Tersedia: ${formatNumber(sysQty)} Kg`, true);
 
             btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
             
             try {
-                // Simpan riwayat press ke Google Sheets (Opsional: buat sheet 'PRESS_LOG')
                 await fetch(API_URL, { 
                     method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ 
@@ -836,14 +978,8 @@
                     }) 
                 });
                 
-                // Update state lokal stok
-                currentStock[looseItem].qtyOutPaid += beforeQty; // Kurangi stok curah
+                currentStock[looseItem].qtyOutPaid += beforeQty; 
                 
-                // Jika nama item bal berbeda (misal: Kardus -> Bal Kardus), tambahkan stok baru
-                // Untuk simplifikasi, kita anggap nama item tetap sama tapi dianggap sebagai "Bal Padat"
-                // Di implementasi nyata, Anda bisa mapping looseItem -> packedItem
-                
-                // Simpan ke riwayat lokal
                 pressHistory.unshift({
                     looseItem,
                     beforeQty,
@@ -856,11 +992,10 @@
                 document.getElementById('press-form').reset();
                 document.getElementById('press-loss-display').classList.add('hidden');
                 
-                // Refresh tampilan stok & riwayat
                 renderStockTable();
                 renderStockChart();
                 renderPressHistory();
-                populatePressDropdown(); // Refresh dropdown karena stok berkurang
+                populatePressDropdown(); 
                 
             } catch (err) { showToast("Gagal menyimpan data press.", true); }
             finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Simpan Proses Press'; lucide.createIcons(); }
@@ -874,7 +1009,7 @@
                 return;
             }
             
-            tbody.innerHTML = pressHistory.slice(0, 10).map(p => { // Tampilkan 10 terakhir
+            tbody.innerHTML = pressHistory.slice(0, 10).map(p => { 
                 const lossColor = p.loss > 0 ? 'text-amber-600' : 'text-emerald-600';
                 return `<tr class="hover:bg-slate-50">
                     <td class="py-2 px-3 text-slate-500">${p.time.toLocaleString('id-ID')}</td>
@@ -886,21 +1021,229 @@
             }).join('');
         }
 
+        // ==========================================
+        // LOGIKA BARU: MANAJEMEN OFFTAKER KHUSUS STAF
+        // ==========================================
+        
+        // Populate dropdown offtaker berdasarkan data dari admin
+        function populateOfftakerDropdown() {
+            const select = document.getElementById('trx-offtaker');
+            select.innerHTML = '<option value="">-- Pilih Offtaker --</option>';
+            
+            // Group by nama offtaker agar tidak duplikat
+            const uniqueOfftakers = [...new Map(offtakersData.map(item => [item.Nama_Offtaker, item])).values()];
+            
+            uniqueOfftakers.sort((a,b) => a.Nama_Offtaker.localeCompare(b.Nama_Offtaker)).forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = o.ID_Offtaker; // Gunakan ID sebagai value
+                opt.text = o.Nama_Offtaker;
+                opt.dataset.nama = o.Nama_Offtaker; // Simpan nama untuk referensi
+                select.appendChild(opt);
+            });
+        }
+
+        // Tampilkan/sembunyikan section offtaker berdasarkan jenis transaksi
+        document.getElementById('trx-type').addEventListener('change', function() {
+            const offtakerSection = document.getElementById('offtaker-section');
+            if (this.value === 'PENJUALAN') {
+                offtakerSection.classList.remove('hidden');
+            } else {
+                offtakerSection.classList.add('hidden');
+                document.getElementById('trx-offtaker').value = ""; // Reset pilihan
+            }
+        });
+
+        // Auto-fill harga saat offtaker DAN item dipilih
+        function updatePriceFromOfftaker() {
+            const itemType = document.getElementById('trx-type').value;
+            if (itemType !== 'PENJUALAN') return; // Hanya untuk penjualan
+            
+            const itemId = document.getElementById('trx-item').value;
+            const offtakerId = document.getElementById('trx-offtaker').value;
+            const priceInput = document.getElementById('trx-price');
+            
+            if (itemId && offtakerId) {
+                // Cari data offtaker yang cocok dengan item dan offtaker yang dipilih
+                const matchedOfftaker = offtakersData.find(o => 
+                    o.ID_Offtaker === offtakerId && 
+                    o.Kategori_Internal === itemId
+                );
+                
+                if (matchedOfftaker) {
+                    priceInput.value = matchedOfftaker.Harga_Beli_Rp;
+                    showToast(`Harga auto-fill dari ${matchedOfftaker.Nama_Offtaker}`);
+                } else {
+                    // Jika tidak ada mapping spesifik, kosongkan atau biarkan manual
+                    priceInput.value = '';
+                }
+            }
+        }
+
+        // Event listeners untuk trigger auto-fill
+        document.getElementById('trx-item').addEventListener('change', updatePriceFromOfftaker);
+        document.getElementById('trx-offtaker').addEventListener('change', updatePriceFromOfftaker);
+
+        // --- FUNGSI MANAJEMEN OFFTAKER DI STAF ---
+        function showAddOfftakerFormStaf() {
+            const form = document.getElementById('add-offtaker-form-staf');
+            form.classList.remove('hidden');
+            
+            // Populate kategori internal dropdown
+            const catSelect = document.getElementById('new-offtaker-cat-internal');
+            catSelect.innerHTML = '<option value="">-- Pilih Kategori --</option>' + 
+                masterItems.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+            
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAddOfftakerFormStaf() { 
+            document.getElementById('add-offtaker-form-staf').classList.add('hidden'); 
+            document.getElementById('add-offtaker-form-staf').reset(); 
+        }
+
+        function renderOfftakerListStaf() {
+            const container = document.getElementById('offtaker-list-container-staf');
+            
+            if(offtakersData.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400"><i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i><p class="text-xs">Belum ada data offtaker. Klik "Tambah Offtaker Baru" untuk mulai.</p></div>';
+                lucide.createIcons();
+                return;
+            }
+
+            // Group by Nama Offtaker
+            const grouped = {};
+            offtakersData.forEach(o => {
+                if(!grouped[o.Nama_Offtaker]) grouped[o.Nama_Offtaker] = { ...o, items: [] };
+                grouped[o.Nama_Offtaker].items.push(o);
+            });
+
+            container.innerHTML = Object.values(grouped).map(o => `
+                <div class="p-4 bg-white border border-slate-200 rounded-xl hover:border-purple-300 hover:shadow-md transition cursor-pointer group">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-bold text-sm text-slate-800">${o.Nama_Offtaker}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3"></i> ${o.No_Telp || '-'}</p>
+                        </div>
+                        <span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-bold">${o.items.length} Item</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 line-clamp-2 mb-2">${o.Alamat || '-'}</p>
+                    <div class="border-t border-slate-100 pt-2 mt-2">
+                        <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Item & Harga:</p>
+                        ${o.items.map(item => `
+                            <div class="flex justify-between items-center text-[10px] py-0.5">
+                                <span class="text-slate-600 truncate flex-1">${item.Kode_Item_Offtaker} <span class="text-slate-400">(${item.Kategori_Internal})</span></span>
+                                <span class="font-bold text-emerald-600 ml-2">${formatIDR(item.Harga_Beli_Rp)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        document.getElementById('add-offtaker-form-staf').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-new-offtaker-staf');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; 
+            btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
+
+            const newData = {
+                nama_offtaker: document.getElementById('new-offtaker-name').value.trim(),
+                no_telp: document.getElementById('new-offtaker-phone').value.trim(),
+                alamat: document.getElementById('new-offtaker-address').value.trim(),
+                link_map: document.getElementById('new-offtaker-map').value.trim(),
+                kategori_internal: document.getElementById('new-offtaker-cat-internal').value,
+                kode_item_offtaker: document.getElementById('new-offtaker-code-external').value.trim(),
+                harga_beli_rp: parseInputNumber(document.getElementById('new-offtaker-price').value),
+                status: 'Aktif'
+            };
+
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'saveOfftaker', ...newData }) 
+                });
+                
+                showToast("Offtaker berhasil ditambahkan!");
+                hideAddOfftakerFormStaf();
+                
+                // Refresh data offtaker
+                const res = await fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json());
+                if(res.status === 'success') {
+                    offtakersData = res.data;
+                    populateOfftakerDropdown();
+                    renderOfftakerListStaf();
+                }
+            } catch(err) { showToast("Gagal menyimpan offtaker.", true); }
+            finally { 
+                btn.disabled = false; 
+                btn.innerHTML = originalText; 
+                lucide.createIcons(); 
+            }
+        });
+
+        // Modifikasi fungsi submit transaksi untuk menyertakan info offtaker
+        document.getElementById('transaksi-form').addEventListener('submit', async(e) => {
+            e.preventDefault(); 
+            const btn=document.getElementById('btn-save-trx'); 
+            btn.disabled=true; 
+            btn.innerHTML='<div class="loader w-5 h-5 border-2 border-white border-t-transparent"></div>';
+            
+            const type=document.getElementById('trx-type').value;
+            const date=document.getElementById('trx-date').value; 
+            const vendor=document.getElementById('trx-vendor').value; 
+            const item=document.getElementById('trx-item').value; 
+            const qty=parseFloat(document.getElementById('trx-qty').value); 
+            const price=parseFloat(document.getElementById('trx-price').value); 
+            const total=qty*price;
+            
+            let targetSheet='', rowData=[], id=`${type.substring(0,3)}-${Date.now()}`;
+            const status=(type==='PEMBELIAN')?'Pending':'Paid'; 
+            
+            // Tambahkan info offtaker ke keterangan jika ini penjualan
+            let timestampNote=`Input ${new Date().toISOString()}`;
+            if (type === 'PENJUALAN') {
+                const offtakerSelect = document.getElementById('trx-offtaker');
+                const offtakerOption = offtakerSelect.options[offtakerSelect.selectedIndex];
+                if (offtakerOption && offtakerOption.value) {
+                    const offtakerName = offtakerOption.dataset.nama || offtakerOption.text;
+                    timestampNote += ` | Offtaker: ${offtakerName}`;
+                }
+            }
+
+            if(type==='PEMBELIAN') { 
+                targetSheet='PEMBELIAN'; 
+                rowData=[id, date, 'Material', item, qty, price, total, vendor, status, timestampNote]; 
+            }
+            else if(type==='PENJUALAN') { 
+                targetSheet='PENJUALAN'; 
+                rowData=[id, date, vendor, item, qty, price, total, status, timestampNote]; 
+            }
+            else if(type==='OPERASIONAL') { 
+                targetSheet='OPERASIONAL_BIAYA'; 
+                rowData=[id, date, 'Ops', item, qty, price, total, vendor, 'Paid', timestampNote]; 
+            }
+            
+            try { 
+                await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({targetSheet:targetSheet, rowData:rowData})}); 
+                showToast("Transaksi disimpan!"); 
+                document.getElementById('transaksi-form').reset(); 
+                document.getElementById('trx-date').value=new Date().toISOString().split('T')[0]; 
+                setTimeout(loadAllData, 1000); 
+            }
+            catch(err) { showToast("Gagal menyimpan.", true); }
+            finally { 
+                btn.disabled=false; 
+                btn.innerHTML='<i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi'; 
+                lucide.createIcons(); 
+            }
+        });
+
+
         function autoFillPrice() { const select=document.getElementById('trx-item'); if(select.value) { document.getElementById('trx-price').value=select.options[select.selectedIndex].dataset.price; calcTrxTotal(); } }
         function calcTrxTotal() { const qty=parseFloat(document.getElementById('trx-qty').value)||0; const price=parseFloat(document.getElementById('trx-price').value)||0; }
         
-        document.getElementById('transaksi-form').addEventListener('submit', async(e) => {
-            e.preventDefault(); const btn=document.getElementById('btn-save-trx'); btn.disabled=true; btn.innerHTML='<div class="loader w-5 h-5 border-2 border-white border-t-transparent"></div>';
-            const type=document.getElementById('trx-type').value, date=document.getElementById('trx-date').value, vendor=document.getElementById('trx-vendor').value, item=document.getElementById('trx-item').value, qty=parseFloat(document.getElementById('trx-qty').value), price=parseFloat(document.getElementById('trx-price').value), total=qty*price;
-            let targetSheet='', rowData=[], id=`${type.substring(0,3)}-${Date.now()}`;
-            const status=(type==='PEMBELIAN')?'Pending':'Paid'; const timestampNote=`Input ${new Date().toISOString()}`;
-            if(type==='PEMBELIAN') { targetSheet='PEMBELIAN'; rowData=[id, date, 'Material', item, qty, price, total, vendor, status, timestampNote]; }
-            else if(type==='PENJUALAN') { targetSheet='PENJUALAN'; rowData=[id, date, vendor, item, qty, price, total, status, timestampNote]; }
-            else if(type==='OPERASIONAL') { targetSheet='OPERASIONAL_BIAYA'; rowData=[id, date, 'Ops', item, qty, price, total, vendor, 'Paid', timestampNote]; }
-            try { await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify({targetSheet:targetSheet, rowData:rowData})}); showToast("Transaksi disimpan!"); document.getElementById('transaksi-form').reset(); document.getElementById('trx-date').value=new Date().toISOString().split('T')[0]; setTimeout(loadAllData, 1000); }
-            catch(err) { showToast("Gagal menyimpan.", true); }
-            finally { btn.disabled=false; btn.innerHTML='<i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi'; lucide.createIcons(); }
-        });
 
         function getClientDetails(name) { const found=cachedClients.find(c => c.name===name); return found||{name:name, address:'-', npwp:'-', phone:'-'}; }
 

@@ -119,7 +119,12 @@
                 <div class="hidden sm:flex items-center space-x-2 text-xs bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span id="status-text" class="text-slate-600 font-medium">Terhubung</span></div>
                 
                 <button onclick="openMasterDataModal()" class="hidden sm:flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-full border border-indigo-200 transition">
-                    <i data-lucide="settings" class="w-4 h-4"></i> Master Data
+                    <i data-lucide="database" class="w-4 h-4"></i> Master Data
+                </button>
+
+                <!-- TOMBOL BARU: MANAJEMEN OFFTAKER -->
+                <button onclick="openOfftakerModal()" class="hidden sm:flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full border border-purple-200 transition">
+                    <i data-lucide="handshake" class="w-4 h-4"></i> Offtaker
                 </button>
 
                 <button id="logout-btn" class="bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs px-3.5 py-1.5 rounded-lg transition border border-slate-200 hover:border-red-200 flex items-center gap-1.5 shadow-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> Keluar</button>
@@ -210,10 +215,26 @@
 
             <!-- Tabs: Transaksi, Buku Besar, & Log Aktivitas -->
             <div class="glass-card rounded-2xl overflow-hidden bg-white/80">
-                <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex gap-2">
-                    <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white transition shadow-md shadow-emerald-500/20">Transaksi</button>
-                    <button onclick="switchTab('ledger')" id="tab-ledger" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Buku Besar</button>
-                    <button onclick="switchTab('logs')" id="tab-logs" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Log Aktivitas</button>
+                <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex justify-between items-center">
+                    <div class="flex gap-2">
+                        <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white transition shadow-md shadow-emerald-500/20">Transaksi</button>
+                        <button onclick="switchTab('ledger')" id="tab-ledger" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Buku Besar</button>
+                        <button onclick="switchTab('logs')" id="tab-logs" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Log Aktivitas</button>
+                    </div>
+                    
+                    <!-- FILTER & SEARCH BARU -->
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                            <input type="text" id="table-search-input" onkeyup="handleTableSearch()" placeholder="Cari ID, vendor, item..." class="pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none w-48 bg-white">
+                        </div>
+                        <select id="row-limit-select" onchange="renderTable(); renderLedger();" class="py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                            <option value="10">Tampil 10</option>
+                            <option value="50">Tampil 50</option>
+                            <option value="100">Tampil 100</option>
+                            <option value="all">Semua Data</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <!-- Tab Transaksi -->
@@ -439,6 +460,84 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL BARU: MANAJEMEN OFFTAKER             -->
+    <!-- ========================================== -->
+    <div id="offtaker-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4 no-print">
+        <div class="glass-card rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-purple-200 modal-enter max-h-[90vh] flex flex-col bg-white">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="handshake" class="w-5 h-5 text-purple-600"></i> Manajemen Offtaker & Harga Jual</h3>
+                <button onclick="closeOfftakerModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                <!-- Kolom Kiri: Daftar Offtaker -->
+                <div class="lg:col-span-1 flex flex-col border-r border-slate-100 pr-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase">Daftar Offtaker</h4>
+                        <button onclick="showAddOfftakerForm()" class="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Baru</button>
+                    </div>
+                    
+                    <!-- Form Tambah Offtaker (Hidden by default) -->
+                    <form id="add-offtaker-form" class="hidden space-y-3 mb-4 p-3 bg-purple-50 rounded-xl border border-purple-100">
+                        <input type="text" id="new-offtaker-name" required placeholder="Nama Offtaker" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
+                        <input type="text" id="new-offtaker-phone" placeholder="No. Telepon" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
+                        <input type="text" id="new-offtaker-address" placeholder="Alamat" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
+                        <input type="text" id="new-offtaker-map" placeholder="Link Google Maps" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
+                        <div class="flex gap-2">
+                            <button type="button" onclick="hideAddOfftakerForm()" class="flex-1 bg-slate-200 text-slate-600 py-1.5 rounded-lg text-xs">Batal</button>
+                            <button type="submit" class="flex-1 bg-purple-600 text-white py-1.5 rounded-lg text-xs">Simpan</button>
+                        </div>
+                    </form>
+
+                    <div id="offtaker-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1">
+                        <div class="text-center py-8"><div class="loader mx-auto"></div></div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Detail Item & Harga -->
+                <div class="lg:col-span-2 flex flex-col">
+                    <div id="offtaker-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-slate-400">
+                        <i data-lucide="mouse-pointer-click" class="w-10 h-10 mb-2 opacity-50"></i>
+                        <p class="text-sm">Pilih offtaker di sebelah kiri untuk mengelola harga item</p>
+                    </div>
+
+                    <div id="offtaker-detail-content" class="hidden flex-1 flex flex-col">
+                        <div class="mb-4">
+                            <h4 id="selected-offtaker-name" class="text-base font-bold text-slate-800">Nama Offtaker</h4>
+                            <p id="selected-offtaker-info" class="text-xs text-slate-500 mt-0.5">Info kontak...</p>
+                        </div>
+
+                        <form id="add-item-price-form" class="grid grid-cols-12 gap-3 mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 items-end">
+                            <div class="col-span-4">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kategori Internal</label>
+                                <select id="item-price-category" required class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white"></select>
+                            </div>
+                            <div class="col-span-4">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kode Item Offtaker</label>
+                                <input type="text" id="item-price-code" required placeholder="Misal: PET Flake" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Harga Beli (Rp)</label>
+                                <input type="number" id="item-price-value" required placeholder="0" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white font-mono">
+                            </div>
+                            <div class="col-span-1">
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg transition flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                            </div>
+                        </form>
+
+                        <div class="flex-1 overflow-y-auto pr-1">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Daftar Harga Item</p>
+                            <div id="offtaker-items-list" class="space-y-2">
+                                <!-- List item prices will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- CHATBOT AMI -->
     <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end no-print">
         <div id="bot-chat-window" class="hidden mb-3 w-80 sm:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[500px] transition-all bg-white">
@@ -567,10 +666,33 @@
         let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
         let currentDocNumberForPrint = "", currentClientNameForFile = ""; 
 
+        // Variabel Global untuk Offtaker
+        let offtakersData = [];
+        let selectedOfftakerId = null;
+
         // ==================== HELPER FUNCTIONS ====================
         function parseInputNumber(val) { if (!val) return 0; return parseFloat(String(val).replace(',', '.')) || 0; }
         function formatNumber(num) { return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num || 0); }
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v || 0); }
+        
+        // FUNGSI TOAST YANG SEBELUMNYA HILANG (FIXED)
+        function showToast(msg, isError=false) { 
+            // Cek apakah elemen toast sudah ada di HTML, jika belum buat dinamis
+            let toast = document.getElementById('toast');
+            if(!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-medium hidden z-[9999] flex items-center gap-2 transition-all duration-300 border border-slate-700 no-print';
+                toast.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil!</span>';
+                document.body.appendChild(toast);
+            }
+            
+            document.getElementById('toast-msg').innerText=msg; 
+            toast.className=`fixed bottom-6 left-1/2 -translate-x-1/2 ${isError?'bg-red-500 text-white border-red-600':'bg-slate-800 text-white border-slate-700'} px-5 py-3 rounded-full shadow-2xl text-xs font-medium z-[9999] flex items-center gap-2 transition-all duration-300 border`; 
+            toast.classList.remove('hidden'); 
+            setTimeout(()=>toast.classList.add('hidden'), 3000); 
+        }
+
         function generateAutoDocNumber(type, dateStr) {
             const dateObj = new Date(dateStr || new Date());
             const yyyy = dateObj.getFullYear(); const mm = String(dateObj.getMonth() + 1).padStart(2, '0'); const dd = String(dateObj.getDate()).padStart(2, '0');
@@ -800,10 +922,33 @@
             document.getElementById('stock-detail-modal').classList.add('hidden');
         }
 
+        // FUNGSI HANDLE PENCARIAN TABLE
+        function handleTableSearch() {
+            renderTable();
+            renderLedger();
+        }
+
+        // FUNGSI RENDER TABEL TRANSAKSI (DENGAN SEARCH & LIMIT)
         function renderTable() {
             const tb = document.getElementById('table-transactions-body');
-            if (!currentFilteredData.length) { tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data.</td></tr>'; return; }
-            tb.innerHTML = currentFilteredData.map(i => {
+            const searchQuery = document.getElementById('table-search-input').value.toLowerCase();
+            const limitVal = document.getElementById('row-limit-select').value;
+            const limit = limitVal === 'all' ? Infinity : parseInt(limitVal);
+
+            // Filter berdasarkan pencarian
+            let filtered = currentFilteredData.filter(i => {
+                const id = (i.ID_Penjualan || i.ID_Pembelian || i.ID_Operasional || '').toLowerCase();
+                const vendor = (i.vendor || '').toLowerCase();
+                const item = (i.Nama_Barang_Material || i.Deskripsi || '').toLowerCase();
+                return id.includes(searchQuery) || vendor.includes(searchQuery) || item.includes(searchQuery);
+            });
+
+            // Batasi jumlah baris (ambil N pertama karena sudah di-sort descending di loadDashboardData)
+            const limitedData = filtered.slice(0, limit);
+
+            if (limitedData.length === 0) { tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data yang cocok.</td></tr>'; return; }
+            
+            tb.innerHTML = limitedData.map(i => {
                 const id = i.ID_Penjualan || i.ID_Pembelian || i.ID_Operasional || '';
                 let acts = `<button onclick="openEditModal('${id}','${i.kategori.toLowerCase()}')" class="text-amber-600 hover:text-amber-700 p-1.5 rounded-lg hover:bg-amber-50 transition" title="Edit"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                             <button onclick="deleteTransaction('${id}','${i.kategori.toLowerCase()}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition" title="Hapus"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
@@ -814,10 +959,41 @@
             }).join('');
         }
 
+        // FUNGSI RENDER BUKU BESAR (DENGAN SEARCH & LIMIT)
         function renderLedger() {
-            const tb=document.getElementById('table-ledger-body'); let bal=0;
-            const sorted=[...currentFilteredData].sort((a,b)=>new Date(a.Tanggal)-new Date(b.Tanggal));
-            tb.innerHTML=sorted.map(i=>{ const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; bal+=(kre-deb); return `<tr class="border-b text-xs"><td class="p-2">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-2">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="p-2">${i.kategori}</td><td class="p-2 text-right text-red-600">${deb?formatIDR(deb):'-'}</td><td class="p-2 text-right text-emerald-600">${kre?formatIDR(kre):'-'}</td><td class="p-2 text-right font-bold">${formatIDR(bal)}</td></tr>`; }).join('');
+            const tb=document.getElementById('table-ledger-body'); 
+            const searchQuery = document.getElementById('table-search-input').value.toLowerCase();
+            const limitVal = document.getElementById('row-limit-select').value;
+            const limit = limitVal === 'all' ? Infinity : parseInt(limitVal);
+            
+            let bal=0;
+            // Sort ascending untuk buku besar (dari lama ke baru)
+            let sorted=[...currentFilteredData].sort((a,b)=>new Date(a.Tanggal)-new Date(b.Tanggal));
+
+            // Filter pencarian
+            sorted = sorted.filter(i => {
+                const desc = (i.Nama_Barang_Material || i.Deskripsi || '').toLowerCase();
+                const kat = (i.kategori || '').toLowerCase();
+                return desc.includes(searchQuery) || kat.includes(searchQuery);
+            });
+            
+            // Hitung saldo awal dari data sebelum limit (agar saldo tetap akurat meskipun ditampilkan terbatas)
+            const previousData = sorted.slice(0, sorted.length - limit);
+            previousData.forEach(i => {
+                const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; 
+                bal+=(kre-deb);
+            });
+
+            // Ambil hanya N terakhir untuk ditampilkan
+            const limitedSorted = sorted.slice(-limit); 
+            
+            if(limitedSorted.length === 0) { tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data yang cocok.</td></tr>'; return; }
+
+            tb.innerHTML=limitedSorted.map(i=>{ 
+                const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; 
+                bal+=(kre-deb); 
+                return `<tr class="border-b text-xs"><td class="p-2">${new Date(i.Tanggal).toLocaleDateString('id-ID')}</td><td class="p-2">${i.Nama_Barang_Material||i.Deskripsi}</td><td class="p-2">${i.kategori}</td><td class="p-2 text-right text-red-600">${deb?formatIDR(deb):'-'}</td><td class="p-2 text-right text-emerald-600">${kre?formatIDR(kre):'-'}</td><td class="p-2 text-right font-bold">${formatIDR(bal)}</td></tr>`; 
+            }).join('');
         }
 
         // FUNGSI BARU: RENDER LOG AKTIVITAS
@@ -1081,6 +1257,202 @@
             botMessages.innerHTML += `<div class="flex gap-2 chat-pop"><div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0"></div><div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">${reply}</div></div>`;
             botMessages.scrollTop = botMessages.scrollHeight;
         }
+
+        // ==========================================
+        // LOGIKA MANAJEMEN OFFTAKER (DIPERBAIKI)
+        // ==========================================
+        
+        // 1. Auto-setup sheet Offtakers via API call pertama kali
+        async function ensureOfftakerSheetExists() {
+            try {
+                await loadOfftakers();
+            } catch(e) { console.log("Offtaker sheet belum siap atau error loading"); }
+        }
+
+        async function loadOfftakers() {
+            try {
+                const res = await fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json());
+                if(res.status === 'success') {
+                    offtakersData = res.data;
+                    renderOfftakerList();
+                }
+            } catch(e) { 
+                console.error("Gagal load offtaker:", e); 
+                offtakersData = [];
+                renderOfftakerList();
+            }
+        }
+
+        function renderOfftakerList() {
+            const container = document.getElementById('offtaker-list-container');
+            if(offtakersData.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada offtaker.</p>';
+                return;
+            }
+
+            // Group by Nama Offtaker
+            const grouped = {};
+            offtakersData.forEach(o => {
+                if(!grouped[o.Nama_Offtaker]) grouped[o.Nama_Offtaker] = { ...o, items: [] };
+                grouped[o.Nama_Offtaker].items.push(o);
+            });
+
+            container.innerHTML = Object.values(grouped).map(o => `
+                <div class="p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition cursor-pointer ${selectedOfftakerId === o.ID_Offtaker ? 'ring-2 ring-purple-500 bg-purple-50' : ''}" onclick="selectOfftaker('${o.ID_Offtaker}', '${o.Nama_Offtaker}')">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-sm text-slate-800">${o.Nama_Offtaker}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${o.No_Telp || '-'}</p>
+                        </div>
+                        <span class="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">${o.items.length} Item</span>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function selectOfftaker(id, name) {
+            selectedOfftakerId = id;
+            document.getElementById('offtaker-detail-placeholder').classList.add('hidden');
+            document.getElementById('offtaker-detail-content').classList.remove('hidden');
+            
+            const offtaker = offtakersData.find(o => o.ID_Offtaker === id);
+            document.getElementById('selected-offtaker-name').innerText = name;
+            document.getElementById('selected-offtaker-info').innerText = `${offtaker.No_Telp || '-'} | ${offtaker.Alamat || '-'}`;
+            
+            // Populate kategori dropdown dari master data
+            const catSelect = document.getElementById('item-price-category');
+            catSelect.innerHTML = '<option value="">-- Pilih Kategori --</option>' + 
+                masterDataItems.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+            
+            renderOfftakerItemList(id);
+            renderOfftakerList(); // Refresh highlight
+        }
+
+        function renderOfftakerItemList(id) {
+            const container = document.getElementById('offtaker-items-list');
+            const items = offtakersData.filter(o => o.ID_Offtaker === id);
+            
+            if(items.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Belum ada item harga.</p>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="flex justify-between items-center p-3 bg-slate-50 border border-slate-200 rounded-lg group">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-700">${item.Kode_Item_Offtaker}</span>
+                            <span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">${item.Kategori_Internal}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Update: ${new Date(item.Terakhir_Update).toLocaleDateString('id-ID')}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-emerald-600 font-mono">${formatIDR(item.Harga_Beli_Rp)}</span>
+                        <button onclick="deleteOfftakerItem('${item.ID_Offtaker}', '${item.Kode_Item_Offtaker}')" class="text-red-400 hover:text-red-600 p-1 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Form Handlers for Offtaker
+        function showAddOfftakerForm() { 
+            document.getElementById('add-offtaker-form').classList.remove('hidden'); 
+            document.getElementById('add-offtaker-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        function hideAddOfftakerForm() { 
+            document.getElementById('add-offtaker-form').classList.add('hidden'); 
+            document.getElementById('add-offtaker-form').reset(); 
+        }
+
+        document.getElementById('add-offtaker-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true; btn.innerText = 'Menyimpan...';
+
+            const newData = {
+                nama_offtaker: document.getElementById('new-offtaker-name').value.trim(),
+                no_telp: document.getElementById('new-offtaker-phone').value.trim(),
+                alamat: document.getElementById('new-offtaker-address').value.trim(),
+                link_map: document.getElementById('new-offtaker-map').value.trim(),
+                kategori_internal: 'General', // Default category for new offtaker entry
+                kode_item_offtaker: 'General Contact',
+                harga_beli_rp: 0,
+                status: 'Aktif'
+            };
+
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'saveOfftaker', ...newData }) 
+                });
+                showToast("Offtaker berhasil ditambahkan!");
+                hideAddOfftakerForm();
+                await loadOfftakers();
+            } catch(err) { showToast("Gagal menyimpan offtaker.", true); }
+            finally { btn.disabled = false; btn.innerText = originalText; }
+        });
+
+        document.getElementById('add-item-price-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!selectedOfftakerId) return showToast("Pilih offtaker terlebih dahulu!", true);
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = '<div class="loader w-3 h-3 border-2 border-white border-t-transparent"></div>';
+
+            const offtakerBase = offtakersData.find(o => o.ID_Offtaker === selectedOfftakerId);
+            
+            const newItemData = {
+                id: selectedOfftakerId, // Use existing ID to group them
+                nama_offtaker: offtakerBase.Nama_Offtaker,
+                no_telp: offtakerBase.No_Telp,
+                alamat: offtakerBase.Alamat,
+                link_map: offtakerBase.Link_Map,
+                kategori_internal: document.getElementById('item-price-category').value,
+                kode_item_offtaker: document.getElementById('item-price-code').value.trim(),
+                harga_beli_rp: parseInputNumber(document.getElementById('item-price-value').value),
+                status: 'Aktif'
+            };
+
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'saveOfftaker', ...newItemData }) 
+                });
+                showToast("Harga item berhasil disimpan!");
+                e.target.reset();
+                await loadOfftakers();
+                selectOfftaker(selectedOfftakerId, offtakerBase.Nama_Offtaker); // Refresh detail view
+            } catch(err) { showToast("Gagal menyimpan harga item.", true); }
+            finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i>'; }
+        });
+
+        async function deleteOfftakerItem(id, code) {
+            if(!confirm(`Hapus harga untuk item "${code}" ini?`)) return;
+            
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ action: 'deleteOfftakerItem', id: id, kode_item_offtaker: code }) 
+                });
+                showToast("Item harga berhasil dihapus!");
+                await loadOfftakers();
+                if(selectedOfftakerId) {
+                    const offtaker = offtakersData.find(o => o.ID_Offtaker === selectedOfftakerId);
+                    if(offtaker) selectOfftaker(selectedOfftakerId, offtaker.Nama_Offtaker);
+                }
+            } catch(err) { showToast("Gagal menghapus item.", true); }
+        }
+
+        function openOfftakerModal() { 
+            document.getElementById('offtaker-modal').classList.remove('hidden'); 
+            ensureOfftakerSheetExists();
+            lucide.createIcons(); 
+        }
+        function closeOfftakerModal() { document.getElementById('offtaker-modal').classList.add('hidden'); selectedOfftakerId = null; }
+
     </script>
 </body>
 </html>
