@@ -497,9 +497,7 @@
         // Variabel Global untuk Offtaker di Staf
         let offtakersData = [];
 
-        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
-
-        // ==================== HELPER FUNCTIONS (FIXED) ====================
+        // ==================== HELPER FUNCTIONS (FIXED & MOVED TO TOP) ====================
         function parseInputNumber(val) { 
             if (!val) return 0; 
             // Hapus titik ribuan (jika ada) lalu ganti koma desimal dengan titik
@@ -509,6 +507,9 @@
 
         function formatNumber(num) { return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(num || 0); }
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
+        // ================================================================================
+
+        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
 
         async function checkAuthAndInit() {
             const params = new URLSearchParams(window.location.search);
@@ -1171,7 +1172,7 @@
                 link_map: document.getElementById('new-offtaker-map').value.trim(),
                 kategori_internal: document.getElementById('new-offtaker-cat-internal').value,
                 kode_item_offtaker: document.getElementById('new-offtaker-code-external').value.trim(),
-                harga_beli_rp: cleanPrice, // Gunakan variabel yang sudah diparsing
+                harga_beli_rp: cleanPrice, // Masukkan variabel yang sudah diparsing
                 status: 'Aktif'
             };
 
