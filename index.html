@@ -45,6 +45,7 @@
             display: none; opacity: 0; transition: opacity 1s ease;
         }
         #video-overlay.show { display: block; opacity: 1; }
+        #video-overlay iframe { width: 100%; height: 100%; border: none; }
 
         /* TRANSITIONS */
         #monitor-container { transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -129,8 +130,8 @@
 
         <!-- VIDEO FALLBACK OVERLAY -->
         <div id="video-overlay">
-            <!-- GANTI ID VIDEO DI BAWAH INI DENGAN LINK PREVIEW GOOGLE DRIVE ANDA -->
-            <iframe src="https://drive.google.com/file/d/YOUR_VIDEO_ID/preview" width="100%" height="100%" frameborder="0" allow="autoplay"></iframe>
+            <!-- PENTING: GANTI YOUR_VIDEO_ID DENGAN ID VIDEO GOOGLE DRIVE ASLI LU -->
+            <iframe src="https://drive.google.com/file/d/YOUR_REAL_VIDEO_ID_HERE/preview" allow="autoplay"></iframe>
             <div class="absolute bottom-10 left-1/2 -translate-x-1/2 monitor-glass px-6 py-3 rounded-full text-sm text-slate-300 flex items-center gap-2">
                 <i data-lucide="touchpad" class="w-4 h-4"></i> Sentuh layar untuk kembali ke Dashboard
             </div>
@@ -619,8 +620,8 @@
                 btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div>';
                 
                 try {
-                    // URL API SUDAH DIPASANG
-                    const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+                    // URL API BARU SUDAH DIPASANG
+                    const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
                     const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(document.getElementById('staf-username').value)}&password=${encodeURIComponent(document.getElementById('staf-password').value)}`).then(r=>r.json());
                     
                     if(res.status === 'success' && res.role === 'staf') {
@@ -656,8 +657,8 @@
                 btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div>';
                 
                 try {
-                    // URL API SUDAH DIPASANG
-                    const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+                    // URL API BARU SUDAH DIPASANG
+                    const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
                     const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(document.getElementById('driver-username').value)}&password=${encodeURIComponent(document.getElementById('driver-password').value)}`).then(r=>r.json());
                     
                     if(res.status === 'success' && res.role === 'driver') {
@@ -691,8 +692,8 @@
 
     <!-- App Logic -->
     <script>
-        // URL API SUDAH DIPASANG DI SINI JUGA
-        const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+        // URL API BARU SUDAH DIPASANG DI SINI JUGA
+        const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
         let currentDocNumberForPrint = "", currentClientNameForFile = ""; 
