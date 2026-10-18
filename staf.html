@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amanah Capital - Staf Operasional</title>
+    <!-- FIX: Chart.js dimuat di head agar tidak error -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        /* Light Futuristic Palette */
         :root {
             --bg-base: #f8fafc;
             --glass-bg: rgba(255, 255, 255, 0.85);
@@ -43,7 +43,6 @@
         @keyframes ring { 0%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-15deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(5deg)}60%{transform:rotate(-5deg)}100%{transform:rotate(0)} }
         .animate-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
 
-        /* Sidebar Animation */
         .sidebar-overlay { transition: opacity 0.3s ease; }
         .sidebar-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
@@ -68,7 +67,7 @@
 </head>
 <body class="antialiased flex flex-col relative pb-24">
 
-    <!-- LOGIN OVERLAY (DESAIN BARU: TERANG & GLASSMORPHISM) -->
+    <!-- LOGIN OVERLAY -->
     <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md no-print" style="background: linear-gradient(135deg, rgba(236, 253, 245, 0.95) 0%, rgba(248, 250, 252, 0.98) 50%, rgba(224, 242, 254, 0.95) 100%);">
         <div class="glass-card rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 animate-fade-in bg-white/90 border border-emerald-200">
             <div class="text-center">
@@ -95,10 +94,9 @@
         </div>
     </div>
 
-    <!-- HEADER STAF (RESPONSIVE) -->
+    <!-- HEADER STAF -->
     <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
-            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
             <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -109,7 +107,7 @@
         <div class="flex items-center gap-2">
             <div class="relative cursor-pointer hover:bg-white/50 p-2 rounded-lg transition" onclick="switchTab('approval')"><i data-lucide="bell" class="w-5 h-5 text-emerald-600 animate-ring" id="notif-bell"></i><span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span></div>
             <a href="index.html" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="home" class="w-4 h-4 text-slate-500"></i></a>
-            <button onclick="logout()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
+            <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
         </div>
     </header>
 
@@ -164,7 +162,7 @@
             </div>
         </div>
 
-        <!-- TAB BARU: MANAJEMEN OFFTAKER (KHUSUS STAF) -->
+        <!-- TAB MANAJEMEN OFFTAKER -->
         <div id="content-offtaker" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
@@ -172,7 +170,6 @@
                     <button onclick="showAddOfftakerFormStaf()" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-purple-500/20"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Offtaker Baru</button>
                 </div>
 
-                <!-- Form Tambah Offtaker (Hidden by default) -->
                 <form id="add-offtaker-form-staf" class="hidden space-y-4 mb-6 p-4 bg-purple-50 rounded-xl border border-purple-100">
                     <h3 class="text-xs font-bold text-purple-700 uppercase">Data Offtaker Baru</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,7 +205,6 @@
                     </div>
                 </form>
 
-                <!-- Daftar Offtaker -->
                 <div id="offtaker-list-container-staf" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div class="col-span-full text-center py-8 text-slate-400"><div class="loader mx-auto mb-2"></div><p class="text-xs">Memuat data offtaker...</p></div>
                 </div>
@@ -228,7 +224,7 @@
         <div id="content-timbang" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i data-lucide="scale" class="w-5 h-5 text-indigo-500"></i> Input Hasil Timbang Ulang</h2>
-                <p class="text-xs text-slate-500 mb-4">Gunakan ini jika ada selisih berat saat pengecekan gudang. Data ini hanya untuk koreksi visual stok fisik.</p>
+                <p class="text-xs text-slate-500 mb-4">Gunakan ini jika ada selisih berat saat pengecekan gudang. Data ini akan disimpan permanen di Spreadsheet.</p>
                 
                 <form id="timbang-form" class="space-y-4">
                     <div>
@@ -309,7 +305,7 @@
             </div>
         </div>
 
-        <!-- TAB INPUT (DENGAN INTEGRASI OFFTAKER SEDERHANA) -->
+        <!-- TAB INPUT -->
         <div id="content-input" class="tab-content hidden space-y-4">
             <form id="transaksi-form" class="glass-card p-5 rounded-2xl bg-white/80 space-y-5">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100"><i data-lucide="edit-3" class="w-5 h-5 text-emerald-500"></i> Form Input Baru</h2>
@@ -335,7 +331,6 @@
 
                 <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Nama Barang</label><select id="trx-item" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white"><option value="">-- Pilih dari Master Data --</option></select></div>
                 
-                <!-- BAGIAN BARU: PILIHAN OFFTAKER (HANYA MUNCUL SAAT PENJUALAN) -->
                 <div id="offtaker-section" class="hidden space-y-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
                     <div class="flex justify-between items-end mb-1.5">
                         <label class="block text-[10px] font-bold uppercase text-purple-700">Pilih Offtaker / Pembeli</label>
@@ -496,30 +491,26 @@
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl text-xs font-medium hidden z-50 flex items-center gap-2 transition-all duration-300 border border-slate-700 no-print"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span id="toast-msg">Berhasil!</span></div>
 
     <script>
-        // URL API YANG SUDAH DIPERBARUI SESUAI PERMINTAAN ANDA
-        const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         
         let masterItems = [], cachedClients = [], allTransactions = [], currentStock = {}; 
         let stockChartInstance = null, currentDocNumberForPrint = "", currentClientNameForFile = "";
         let reminderInterval = null, selectedFile = null, currentApproveNoteKey = null;
-        let physicalCorrections = {}; // Variabel global untuk menyimpan koreksi timbang ulang
-        let pressHistory = []; // Variabel global untuk menyimpan riwayat press lokal
         
-        // Variabel Global untuk Offtaker di Staf
+        // Variabel global untuk koreksi fisik (dimuat dari backend)
+        let physicalCorrections = {}; 
+        let pressHistory = []; 
         let offtakersData = [];
 
-        // ==================== HELPER FUNCTIONS (FIXED & MOVED TO TOP) ====================
         function parseInputNumber(val) { 
             if (!val) return 0; 
-            // Hapus titik ribuan (jika ada) lalu ganti koma desimal dengan titik
             let cleanVal = String(val).replace(/\./g, '').replace(',', '.');
             return parseFloat(cleanVal) || 0; 
         }
 
         function formatNumber(num) { return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(num || 0); }
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
-        // ================================================================================
 
         document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
 
@@ -544,11 +535,9 @@
                 });
             }
         }
-        function logout() { window.location.href = 'staf.html'; }
-
+        
         async function loadAllData() {
             try {
-                // OPTIMASI: Load data kritis dulu, data sekunder di background
                 const [masterRes, trxRes] = await Promise.all([
                     fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()), 
                     fetch(`${API_URL}?action=getTransactions`).then(r=>r.json())
@@ -563,18 +552,17 @@
                     processTransactions(trxRes); 
                     renderApprovalTable(); 
                     renderHistoryTable(); 
-                    // Jangan render chart dulu, tunggu tab diklik
                     updateNotifBadge(); 
                     populateTimbangDropdown(); 
                     populatePressDropdown(); 
                 }
 
-                // Load data sekunder di background agar UI tidak freeze
                 setTimeout(async () => {
                     try {
-                        const [clientRes, offtakerRes] = await Promise.all([
+                        const [clientRes, offtakerRes, correctionRes] = await Promise.all([
                             fetch(`${API_URL}?action=getClients`).then(r=>r.json()),
-                            fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json())
+                            fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json()),
+                            fetch(`${API_URL}?action=getPhysicalCorrections`).then(r=>r.json())
                         ]);
                         
                         if(clientRes.status === 'success') { 
@@ -586,6 +574,20 @@
                             offtakersData = offtakerRes.data || [];
                             populateOfftakerDropdown();
                             renderOfftakerListStaf();
+                        }
+
+                        // Load koreksi fisik dari backend
+                        if(correctionRes.status === 'success' && correctionRes.data) {
+                            physicalCorrections = {};
+                            correctionRes.data.forEach(c => {
+                                physicalCorrections[c.Nama_Item] = parseFloat(c.Selisih);
+                            });
+                            
+                            // Refresh tampilan stok jika sedang aktif
+                            if(!document.getElementById('content-stok').classList.contains('hidden')) {
+                                renderStockTable();
+                                renderStockChart(); // FIX: Refresh chart juga saat load data
+                            }
                         }
                     } catch(e) { console.log("Gagal load data sekunder:", e); }
                 }, 500);
@@ -616,7 +618,6 @@
             });
         }
 
-        // --- FUNGSI SIDEBAR MOBILE ---
         function toggleSidebar() {
             const overlay = document.getElementById('sidebar-overlay');
             const menu = document.getElementById('sidebar-menu');
@@ -640,7 +641,6 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`content-${tabName}`).classList.remove('hidden');
             
-            // Update active state for desktop tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.className = "tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap");
             const activeBtn = document.getElementById(`tab-${tabName}`);
             if(activeBtn) activeBtn.className = tabName === 'approval' ? "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap" : "tab-btn active flex-1 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 whitespace-nowrap";
@@ -666,7 +666,6 @@
             }); 
         }
 
-        // --- LOGIKA TAMBAH CLIENT/VENDOR ---
         function openAddClientModal() { document.getElementById('add-client-modal').classList.remove('hidden'); lucide.createIcons(); }
         function closeAddClientModal() { document.getElementById('add-client-modal').classList.add('hidden'); document.getElementById('add-client-form').reset(); }
         
@@ -695,7 +694,6 @@
             finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client'; lucide.createIcons(); }
         });
 
-        // --- LOGIKA HISTORI TRANSAKSI (OPTIMIZED: MAX 50 ROWS) ---
         function renderHistoryTable() {
             const container = document.getElementById('history-table-body');
             const statusFilter = document.getElementById('history-status-filter').value;
@@ -710,8 +708,6 @@
             });
 
             filtered.sort((a, b) => new Date(b.Tanggal || b.timestamp) - new Date(a.Tanggal || a.timestamp));
-
-            // BATASI RENDER MAKSIMAL 50 BARIS AGAR TIDAK LEMOT
             const limitedFiltered = filtered.slice(0, 50);
 
             if (limitedFiltered.length === 0) { 
@@ -754,7 +750,7 @@
             });
             const notesArray = Object.values(groupedNotes).sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('pending-count').innerText = notesArray.length;
-            document.getElementById('pending-count-sidebar').innerText = notesArray.length; // Update sidebar count too
+            document.getElementById('pending-count-sidebar').innerText = notesArray.length;
             updateNotifBadge(notesArray.length);
             if(notesArray.length === 0) { container.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400"> Tidak ada transaksi yang menunggu verifikasi.</td></tr>'; return; }
             container.innerHTML = notesArray.map(note => {
@@ -813,19 +809,52 @@
         function closeReminder() { document.getElementById('reminder-popup').classList.add('hidden'); }
         function goToApproval() { closeReminder(); switchTab('approval'); }
 
-        // OPTIMASI: Chart hanya dirender saat dibutuhkan
-        function renderStockDashboard() { 
-            if(!stockChartInstance) renderStockChart();
-            renderStockTable(); 
-        }
+        // FIX: Render Stock Chart dengan data koreksi fisik
         function renderStockChart() {
-            const ctx=document.getElementById('stockChart').getContext('2d');
-            const sortedStock=Object.keys(currentStock).map(name => ({name, physical:currentStock[name].qtyIn-currentStock[name].qtyOutPaid, unit:currentStock[name].unit})).filter(s => s.physical>0).sort((a,b) => b.physical-a.physical).slice(0,10);
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            
+            // Ambil data realtime dari currentStock + physicalCorrections
+            const sortedStock = Object.keys(currentStock)
+                .map(name => {
+                    const sysQty = currentStock[name].qtyIn - currentStock[name].qtyOutPaid;
+                    const correction = physicalCorrections[name] || 0;
+                    return {
+                        name: name, 
+                        physical: sysQty + correction, // Gunakan stok real
+                        unit: currentStock[name].unit
+                    };
+                })
+                .filter(s => s.physical > 0) 
+                .sort((a,b) => b.physical - a.physical)
+                .slice(0, 10); 
+
             if(stockChartInstance) stockChartInstance.destroy();
-            stockChartInstance=new Chart(ctx, {type:'bar', data:{labels:sortedStock.map(s => s.name), datasets:[{label:'Sisa Stok Fisik', data:sortedStock.map(s => s.physical), backgroundColor:'#10b981', borderRadius:6, barThickness:20}]}, options:{responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true, grid:{color:'#f1f5f9'}}, y:{grid:{display:false}}}}});
+            
+            stockChartInstance = new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: sortedStock.map(s => s.name), 
+                    datasets: [{
+                        label: 'Sisa Stok Fisik', 
+                        data: sortedStock.map(s => s.physical), 
+                        backgroundColor: '#10b981', 
+                        borderRadius: 6, 
+                        barThickness: 20
+                    }]
+                }, 
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    indexAxis: 'y', 
+                    plugins: { legend: { display: false } }, 
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: '#f1f5f9' } }, 
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
-        // --- FUNGSI TIMBANG ULANG ---
         function populateTimbangDropdown() {
             const select = document.getElementById('timbang-item');
             select.innerHTML = '<option value="">-- Pilih Item --</option>';
@@ -868,7 +897,7 @@
                 display.innerText = '✅ Sesuai dengan sistem';
             } else if (diff > 0) {
                 display.className = 'p-3 rounded-xl border border-blue-200 bg-blue-50 text-center text-sm font-bold text-blue-700';
-                display.innerText = `⬆️ Lebih ${formatNumber(diff)} ${currentStock[itemName].unit}`;
+                display.innerText = `️ Lebih ${formatNumber(diff)} ${currentStock[itemName].unit}`;
             } else {
                 display.className = 'p-3 rounded-xl border border-red-200 bg-red-50 text-center text-sm font-bold text-red-700';
                 display.innerText = `⬇️ Susut ${formatNumber(Math.abs(diff))} ${currentStock[itemName].unit}`;
@@ -886,19 +915,29 @@
             btn.disabled = true; btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
             
             try {
+                const sysQty = currentStock[itemName].qtyIn - currentStock[itemName].qtyOutPaid;
+                
                 await fetch(API_URL, { 
                     method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ action: 'savePhysicalCorrection', itemName, actualQty, timestamp: new Date().toISOString() }) 
+                    body: JSON.stringify({ 
+                        action: 'savePhysicalCorrection', 
+                        itemName, 
+                        actualQty, 
+                        systemQty: sysQty,
+                        user: document.getElementById('staf-name-display').innerText.replace('STAF: ', ''),
+                        timestamp: new Date().toISOString() 
+                    }) 
                 });
                 
-                const sysQty = currentStock[itemName].qtyIn - currentStock[itemName].qtyOutPaid;
                 physicalCorrections[itemName] = actualQty - sysQty;
                 
                 showToast("Koreksi fisik berhasil disimpan!");
                 document.getElementById('timbang-form').reset();
                 document.getElementById('timbang-diff-display').classList.add('hidden');
                 
+                // FIX: Refresh tabel DAN chart setelah simpan
                 renderStockTable();
+                renderStockChart();
                 renderTimbangHistory();
                 
             } catch (err) { showToast("Gagal menyimpan koreksi.", true); }
@@ -938,6 +977,7 @@
                 if(name.toLowerCase().includes(search)) { 
                     const data = currentStock[name]; 
                     const systemPhysical = data.qtyIn - data.qtyOutPaid;
+                    
                     const correction = physicalCorrections[name] || 0;
                     const realPhysical = systemPhysical + correction;
                     
@@ -949,7 +989,6 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
-                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
@@ -966,7 +1005,6 @@
             container.innerHTML = html || '<tr><td colspan="5" class="py-8 text-center text-slate-400">Tidak ada data ditemukan.</td></tr>';
         }
 
-        // --- FUNGSI PRESS / PEMADATAN ---
         function populatePressDropdown() {
             const select = document.getElementById('press-loose-item');
             select.innerHTML = '<option value="">-- Pilih Item Curah --</option>';
@@ -1077,49 +1115,40 @@
             }).join('');
         }
 
-        // ==========================================
-        // LOGIKA BARU: MANAJEMEN OFFTAKER KHUSUS STAF
-        // ==========================================
-        
-        // Populate dropdown offtaker berdasarkan data dari admin
         function populateOfftakerDropdown() {
             const select = document.getElementById('trx-offtaker');
             select.innerHTML = '<option value="">-- Pilih Offtaker --</option>';
             
-            // Group by nama offtaker agar tidak duplikat
             const uniqueOfftakers = [...new Map(offtakersData.map(item => [item.Nama_Offtaker, item])).values()];
             
             uniqueOfftakers.sort((a,b) => a.Nama_Offtaker.localeCompare(b.Nama_Offtaker)).forEach(o => {
                 const opt = document.createElement('option');
-                opt.value = o.ID_Offtaker; // Gunakan ID sebagai value
+                opt.value = o.ID_Offtaker;
                 opt.text = o.Nama_Offtaker;
-                opt.dataset.nama = o.Nama_Offtaker; // Simpan nama untuk referensi
+                opt.dataset.nama = o.Nama_Offtaker;
                 select.appendChild(opt);
             });
         }
 
-        // Tampilkan/sembunyikan section offtaker berdasarkan jenis transaksi
         document.getElementById('trx-type').addEventListener('change', function() {
             const offtakerSection = document.getElementById('offtaker-section');
             if (this.value === 'PENJUALAN') {
                 offtakerSection.classList.remove('hidden');
             } else {
                 offtakerSection.classList.add('hidden');
-                document.getElementById('trx-offtaker').value = ""; // Reset pilihan
+                document.getElementById('trx-offtaker').value = "";
             }
         });
 
-        // Auto-fill harga saat offtaker DAN item dipilih
         function updatePriceFromOfftaker() {
             const itemType = document.getElementById('trx-type').value;
-            if (itemType !== 'PENJUALAN') return; // Hanya untuk penjualan
+            if (itemType !== 'PENJUALAN') return;
             
             const itemId = document.getElementById('trx-item').value;
             const offtakerId = document.getElementById('trx-offtaker').value;
             const priceInput = document.getElementById('trx-price');
             
             if (itemId && offtakerId) {
-                // Cari data offtaker yang cocok dengan item dan offtaker yang dipilih
                 const matchedOfftaker = offtakersData.find(o => 
                     o.ID_Offtaker === offtakerId && 
                     o.Kategori_Internal === itemId
@@ -1129,22 +1158,18 @@
                     priceInput.value = matchedOfftaker.Harga_Beli_Rp;
                     showToast(`Harga auto-fill dari ${matchedOfftaker.Nama_Offtaker}`);
                 } else {
-                    // Jika tidak ada mapping spesifik, kosongkan atau biarkan manual
                     priceInput.value = '';
                 }
             }
         }
 
-        // Event listeners untuk trigger auto-fill
         document.getElementById('trx-item').addEventListener('change', updatePriceFromOfftaker);
         document.getElementById('trx-offtaker').addEventListener('change', updatePriceFromOfftaker);
 
-        // --- FUNGSI MANAJEMEN OFFTAKER DI STAF ---
         function showAddOfftakerFormStaf() {
             const form = document.getElementById('add-offtaker-form-staf');
             form.classList.remove('hidden');
             
-            // Populate kategori internal dropdown
             const catSelect = document.getElementById('new-offtaker-cat-internal');
             catSelect.innerHTML = '<option value="">-- Pilih Kategori --</option>' + 
                 masterItems.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
@@ -1166,7 +1191,6 @@
                 return;
             }
 
-            // Group by Nama Offtaker
             const grouped = {};
             offtakersData.forEach(o => {
                 if(!grouped[o.Nama_Offtaker]) grouped[o.Nama_Offtaker] = { ...o, items: [] };
@@ -1204,7 +1228,6 @@
             btn.disabled = true; 
             btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
 
-            // Ambil nilai dan pastikan harga diubah menjadi angka yang valid menggunakan parseInputNumber
             const priceVal = document.getElementById('new-offtaker-price').value;
             const cleanPrice = parseInputNumber(priceVal); 
 
@@ -1215,7 +1238,7 @@
                 link_map: document.getElementById('new-offtaker-map').value.trim(),
                 kategori_internal: document.getElementById('new-offtaker-cat-internal').value,
                 kode_item_offtaker: document.getElementById('new-offtaker-code-external').value.trim(),
-                harga_beli_rp: cleanPrice, // Masukkan variabel yang sudah diparsing
+                harga_beli_rp: cleanPrice,
                 status: 'Aktif'
             };
 
@@ -1228,7 +1251,6 @@
                 showToast("Offtaker berhasil ditambahkan!");
                 hideAddOfftakerFormStaf();
                 
-                // Refresh data offtaker
                 const res = await fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json());
                 if(res.status === 'success') {
                     offtakersData = res.data;
@@ -1246,7 +1268,6 @@
             }
         });
 
-        // Modifikasi fungsi submit transaksi untuk menyertakan info offtaker
         document.getElementById('transaksi-form').addEventListener('submit', async(e) => {
             e.preventDefault(); 
             const btn=document.getElementById('btn-save-trx'); 
@@ -1264,7 +1285,6 @@
             let targetSheet='', rowData=[], id=`${type.substring(0,3)}-${Date.now()}`;
             const status=(type==='PEMBELIAN')?'Pending':'Paid'; 
             
-            // Tambahkan info offtaker ke keterangan jika ini penjualan
             let timestampNote=`Input ${new Date().toISOString()}`;
             if (type === 'PENJUALAN') {
                 const offtakerSelect = document.getElementById('trx-offtaker');
