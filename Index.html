@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amanah Capital - Financial Portal</title>
     
     <!-- FIX: Chart.js DI SINI agar tidak error "Chart is not defined" -->
@@ -25,6 +25,7 @@
             font-family: 'Inter', system-ui, sans-serif;
             overflow: hidden;
             transition: background 0.8s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* MONITORING MODE STYLES */
@@ -34,9 +35,10 @@
         }
         .monitor-glass {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         
         /* VIDEO OVERLAY */
@@ -45,6 +47,7 @@
             display: none; opacity: 0; transition: opacity 1s ease;
         }
         #video-overlay.show { display: block; opacity: 1; }
+        #video-overlay iframe { width: 100%; height: 100%; border: none; }
 
         /* TRANSITIONS */
         #monitor-container { transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -57,6 +60,7 @@
         body.dashboard-mode {
             background: linear-gradient(135deg, #ecfdf5 0%, #f8fafc 50%, #e0f2fe 100%);
             color: #0f172a;
+            overflow-y: auto;
         }
         .glass-card { 
             background: var(--glass-bg-light); 
@@ -65,9 +69,17 @@
             border: 1px solid var(--glass-border-light); 
             box-shadow: 0 10px 40px -10px rgba(16, 185, 129, 0.1);
         }
+        
+        /* Custom Scrollbar for Monitoring */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
         @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .animate-bounce-subtle { animation: bounce-subtle 3s infinite ease-in-out; }
         .modal-enter { animation: modalFadeIn 0.3s ease-out; }
@@ -80,7 +92,7 @@
         .login-tab { background-color: transparent; color: #64748b; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
 
         @media print {
-            header, main, .no-print, body > *:not(#print-modal) { display: none !important; visibility: hidden !important; }
+            header, main, .no-print, body > *:not(#print-modal), #bot-chat-window, .fixed.bottom-5 { display: none !important; visibility: hidden !important; }
             #print-modal { position: static !important; inset: auto !important; background: white !important; padding: 0 !important; margin: 0 !important; height: auto !important; overflow: visible !important; display: block !important; visibility: visible !important; }
             #print-area { display: block !important; visibility: visible !important; position: static !important; width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; padding: 15mm 20mm !important; box-shadow: none !important; background: white !important; min-height: auto !important; height: auto !important; overflow: visible !important; }
             tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
@@ -88,39 +100,52 @@
             thead tr { background-color: var(--accent) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             tfoot tr { background-color: #ecfdf5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             body, html { overflow: visible !important; height: auto !important; background: white !important; }
+            
+            /* Khusus Print Daftar Harga Futuristik */
+            .price-list-print-only { display: block !important; }
+            .price-list-print-only th { background-color: #10b981 !important; color: white !important; font-weight: bold; }
+            .price-list-print-only tr:nth-child(even) { background-color: #f1f5f9 !important; }
+        }
+        
+        .price-list-print-only { display: none; }
+
+        /* RESPONSIVE UTILITIES FOR MONITORING */
+        @media (max-width: 768px) {
+            .monitor-glass { backdrop-filter: blur(8px); }
         }
     </style>
 </head>
 <body class="h-screen w-screen monitor-mode" onclick="wakeFromVideo()">
 
-    <!-- ==================== MONITORING DASHBOARD (HANYA STOK) ==================== -->
-    <div id="monitor-container" class="h-full w-full p-6 flex flex-col gap-6 relative z-10">
+    <!-- ==================== MONITORING DASHBOARD (HANYA STOK - RESPONSIVE) ==================== -->
+    <div id="monitor-container" class="h-full w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-6 lg:gap-8 relative z-10">
         
         <!-- HEADER: JAM & STATUS -->
-        <header class="flex justify-between items-end pb-2 border-b border-white/10 cursor-pointer" onclick="switchToDashboard()">
+        <header class="flex justify-between items-end pb-2 sm:pb-4 border-b border-white/10 cursor-pointer" onclick="switchToDashboard()">
             <div>
-                <h1 class="text-2xl font-bold text-emerald-400 uppercase tracking-widest">Amanah Capital Monitoring</h1>
-                <p class="text-sm text-slate-400 mt-1">Live Data • <span id="last-update">Memuat...</span></p>
-                <p class="text-xs text-slate-500 mt-1">(Sentuh layar untuk Login)</p>
+                <h1 class="text-lg sm:text-2xl lg:text-3xl font-bold text-emerald-400 uppercase tracking-widest drop-shadow-lg leading-tight">Amanah Capital Monitoring</h1>
+                <p class="text-xs sm:text-base text-slate-300 mt-1 sm:mt-2 font-medium">Live Data • <span id="last-update" class="text-emerald-300">Memuat...</span></p>
+                <p class="text-[10px] sm:text-sm text-slate-500 mt-0.5 sm:mt-1">(Sentuh layar untuk Login)</p>
             </div>
             <div class="text-right">
-                <div id="clock-time" class="text-6xl font-mono font-bold tabular-nums leading-none">--:--</div>
-                <div id="clock-date" class="text-xl text-slate-400 mt-2 font-medium">-- --- ----</div>
+                <div id="clock-time" class="text-4xl sm:text-6xl lg:text-7xl font-mono font-bold tabular-nums leading-none text-white drop-shadow-md">--:--</div>
+                <div id="clock-date" class="text-xs sm:text-xl text-slate-300 mt-1 sm:mt-2 font-medium">-- --- ----</div>
             </div>
         </header>
 
-        <!-- MAIN SLIDESHOW AREA - HANYA STOK -->
-        <main class="flex-1 relative overflow-hidden">
+        <!-- MAIN CONTENT AREA - HANYA STOK -->
+        <main class="flex-1 relative overflow-hidden min-h-0">
             
-            <!-- SLIDE 1: STOK FISIK GUDANG (FULL SCREEN) -->
+            <!-- SLIDE 1: STOK FISIK GUDANG (FULL SCREEN - RESPONSIVE GRID) -->
             <div id="slide-1" class="slide active h-full flex flex-col">
-                <div class="monitor-glass rounded-3xl p-8 flex flex-col h-full">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="p-3 bg-blue-500/20 rounded-2xl"><i data-lucide="package" class="w-8 h-8 text-blue-400"></i></div>
-                        <h2 class="text-3xl font-bold">Stok Fisik Gudang (Realtime)</h2>
+                <div class="monitor-glass rounded-2xl sm:rounded-[2rem] p-4 sm:p-8 lg:p-10 flex flex-col h-full shadow-2xl">
+                    <div class="flex items-center gap-3 sm:gap-5 mb-4 sm:mb-8">
+                        <div class="p-2 sm:p-4 bg-blue-500/20 rounded-xl sm:rounded-2xl border border-blue-500/30"><i data-lucide="package" class="w-6 h-6 sm:w-10 sm:h-10 text-blue-400"></i></div>
+                        <h2 class="text-xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">Stok Fisik Gudang</h2>
                     </div>
-                    <div id="stock-container" class="flex-1 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-4">
-                        <div class="col-span-full text-center text-slate-500 py-20"><i data-lucide="loader" class="w-12 h-12 animate-spin mx-auto mb-4"></i>Memuat data stok...</div>
+                    <!-- Grid Responsif: 1 Kolom (HP) -> 2 Kolom (Tablet) -> 3 Kolom (Laptop) -> 4 Kolom (TV) -->
+                    <div id="stock-container" class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
+                        <div class="col-span-full text-center text-slate-400 py-10 sm:py-20 text-base sm:text-xl"><i data-lucide="loader" class="w-8 h-8 sm:w-12 sm:h-12 animate-spin mx-auto mb-3 sm:mb-4 text-emerald-500"></i>Sedang memuat data stok...</div>
                     </div>
                 </div>
             </div>
@@ -129,10 +154,10 @@
 
         <!-- VIDEO FALLBACK OVERLAY -->
         <div id="video-overlay">
-            <!-- GANTI ID VIDEO DI BAWAH INI DENGAN LINK PREVIEW GOOGLE DRIVE ANDA -->
-            <iframe src="https://drive.google.com/file/d/YOUR_VIDEO_ID/preview" width="100%" height="100%" frameborder="0" allow="autoplay"></iframe>
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 monitor-glass px-6 py-3 rounded-full text-sm text-slate-300 flex items-center gap-2">
-                <i data-lucide="touchpad" class="w-4 h-4"></i> Sentuh layar untuk kembali ke Dashboard
+            <!-- PENTING: GANTI YOUR_VIDEO_ID DENGAN ID VIDEO GOOGLE DRIVE ASLI LU -->
+            <iframe src="https://drive.google.com/file/d/YOUR_REAL_VIDEO_ID_HERE/preview" allow="autoplay"></iframe>
+            <div class="absolute bottom-6 sm:bottom-12 left-1/2 -translate-x-1/2 monitor-glass px-4 sm:px-8 py-2 sm:py-4 rounded-full text-xs sm:text-base text-slate-200 flex items-center gap-2 sm:gap-3 shadow-xl border border-white/10 whitespace-nowrap">
+                <i data-lucide="touchpad" class="w-3 h-3 sm:w-5 sm:h-5"></i> Sentuh layar untuk kembali
             </div>
         </div>
     </div>
@@ -142,8 +167,8 @@
     <div id="dashboard-wrapper" class="dashboard-mode">
         
         <!-- ==================== LAYAR LOGIN UNIFIED ==================== -->
-        <div id="login-screen" class="min-h-screen flex items-center justify-center px-4" style="background: linear-gradient(135deg, #ecfdf5 0%, #f8fafc 50%, #e0f2fe 100%);">
-            <div class="max-w-md w-full glass-card rounded-2xl shadow-2xl p-8 space-y-6 border border-emerald-200 bg-white/90">
+        <div id="login-screen" class="min-h-screen flex items-center justify-center px-4 py-8" style="background: linear-gradient(135deg, #ecfdf5 0%, #f8fafc 50%, #e0f2fe 100%);">
+            <div class="max-w-md w-full glass-card rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 border border-emerald-200 bg-white/90">
                 <div class="text-center space-y-3">
                     <div class="inline-flex p-3 bg-emerald-50 rounded-2xl mb-1 border border-emerald-100 mx-auto">
                         <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Logo" class="w-16 h-16 object-contain hidden">
@@ -187,13 +212,13 @@
 
         <!-- ==================== UTAMA DASHBOARD ADMIN (HIDDEN BY DEFAULT) ==================== -->
         <div id="dashboard-screen" class="hidden">
-            <header class="sticky top-0 z-40 px-5 py-4 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
-                <div class="flex items-center space-x-3">
-                    <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" class="w-10 h-10 object-contain rounded-full bg-white p-1 shadow-sm">
-                    <div class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold hidden shadow-lg shadow-emerald-500/30">AC</div>
-                    <div><h1 class="text-xl font-bold tracking-wide leading-tight text-slate-800">Amanah Capital</h1><p class="text-[10px] text-emerald-600 uppercase tracking-widest font-bold">Enterprise Financial Hub</p></div>
+            <header class="sticky top-0 z-40 px-4 sm:px-5 py-3 sm:py-4 glass-card border-b-0 rounded-b-2xl mx-0 sm:mx-2 mt-0 sm:mt-2 flex justify-between items-center no-print">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" class="w-8 h-8 sm:w-10 sm:h-10 object-contain rounded-full bg-white p-1 shadow-sm">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold hidden shadow-lg shadow-emerald-500/30">AC</div>
+                    <div><h1 class="text-base sm:text-xl font-bold tracking-wide leading-tight text-slate-800">Amanah Capital</h1><p class="text-[8px] sm:text-[10px] text-emerald-600 uppercase tracking-widest font-bold">Enterprise Financial Hub</p></div>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1 sm:space-x-3">
                     <button onclick="toggleTutorialModal()" class="hidden sm:flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs px-3 py-1.5 rounded-full border border-emerald-200 transition"><i data-lucide="help-circle" class="w-4 h-4"></i> Panduan</button>
                     <div class="hidden sm:flex items-center space-x-2 text-xs bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><span id="status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span id="status-text" class="text-slate-600 font-medium">Terhubung</span></div>
                     
@@ -205,78 +230,80 @@
                         <i data-lucide="handshake" class="w-4 h-4"></i> Offtaker
                     </button>
 
-                    <button id="logout-btn" class="bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs px-3.5 py-1.5 rounded-lg transition border border-slate-200 hover:border-red-200 flex items-center gap-1.5 shadow-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> Keluar</button>
+                    <button id="logout-btn" class="bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs px-2 sm:px-3.5 py-1.5 rounded-lg transition border border-slate-200 hover:border-red-200 flex items-center gap-1.5 shadow-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Keluar</span></button>
                 </div>
             </header>
 
-            <main class="max-w-7xl mx-auto px-4 py-8 space-y-8 pb-24 no-print">
+            <main class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8 pb-24 no-print">
                 <!-- Filter Periode Tanggal -->
-                <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center gap-4 bg-white/80">
-                    <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-5 h-5 text-emerald-500"></i><label class="text-sm font-bold text-slate-700">Periode Transaksi:</label></div>
-                    <div class="flex items-center gap-2">
-                        <input type="date" id="filter-start-date" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
-                        <span class="text-slate-400">s/d</span>
-                        <input type="date" id="filter-end-date" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                <div class="glass-card p-3 sm:p-4 rounded-2xl flex flex-wrap items-center gap-3 sm:gap-4 bg-white/80">
+                    <div class="flex items-center gap-2"><i data-lucide="calendar-range" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500"></i><label class="text-xs sm:text-sm font-bold text-slate-700">Periode Transaksi:</label></div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="date" id="filter-start-date" class="border border-slate-200 rounded-xl px-2 sm:px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white flex-1">
+                        <span class="text-slate-400 text-xs sm:text-sm">s/d</span>
+                        <input type="date" id="filter-end-date" class="border border-slate-200 rounded-xl px-2 sm:px-3 py-2 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white flex-1">
                     </div>
-                    <button onclick="loadDashboardData()" class="ml-auto text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"><i data-lucide="search" class="w-3.5 h-3.5"></i> Terapkan Filter</button>
-                    <button onclick="resetFilter()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-2 rounded-lg transition flex items-center gap-1.5 border border-slate-200"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset</button>
+                    <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <button onclick="loadDashboardData()" class="flex-1 sm:flex-none text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-4 py-2 rounded-lg transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"><i data-lucide="search" class="w-3.5 h-3.5"></i> Terapkan</button>
+                        <button onclick="resetFilter()" class="flex-1 sm:flex-none text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 sm:px-3 py-2 rounded-lg transition flex items-center justify-center gap-1.5 border border-slate-200"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reset</button>
+                    </div>
                 </div>
 
                 <!-- Metrics Overview Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500 bg-white/80"><p class="text-[11px] font-bold text-slate-400 uppercase">Total Penjualan</p><h3 id="card-penjualan" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-blue-500 bg-white/80"><p class="text-[11px] font-bold text-slate-400 uppercase">HPP Pembelian</p><h3 id="card-pembelian" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-amber-500 bg-white/80"><p class="text-[11px] font-bold text-slate-400 uppercase">Biaya Operasional</p><h3 id="card-operasional" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-500 bg-white/80"><p class="text-[11px] font-bold text-slate-400 uppercase">Bagi Hasil Investor</p><h3 id="card-bagi-hasil" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-indigo-500 bg-white/80"><p class="text-[11px] font-bold text-slate-400 uppercase">Laba Bersih (Nett)</p><h3 id="card-laba" class="text-2xl font-bold text-slate-800 mt-2">Rp 0</h3></div>
-                    <div class="glass-card p-6 rounded-2xl border-l-4 border-l-cyan-500 cursor-pointer hover:bg-white transition bg-white/80" onclick="openClientModal()">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6">
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-emerald-500 bg-white/80"><p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">Total Penjualan</p><h3 id="card-penjualan" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">Rp 0</h3></div>
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-blue-500 bg-white/80"><p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">HPP Pembelian</p><h3 id="card-pembelian" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">Rp 0</h3></div>
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-amber-500 bg-white/80"><p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">Biaya Operasional</p><h3 id="card-operasional" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">Rp 0</h3></div>
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-purple-500 bg-white/80"><p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">Bagi Hasil Investor</p><h3 id="card-bagi-hasil" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">Rp 0</h3></div>
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-indigo-500 bg-white/80"><p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">Laba Bersih (Nett)</p><h3 id="card-laba" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">Rp 0</h3></div>
+                    <div class="glass-card p-3 sm:p-6 rounded-2xl border-l-4 border-l-cyan-500 cursor-pointer hover:bg-white transition bg-white/80" onclick="openClientModal()">
                         <div class="flex justify-between items-start">
-                            <p class="text-[11px] font-bold text-slate-400 uppercase">Client / Vendor Aktif</p>
-                            <i data-lucide="users" class="w-5 h-5 text-cyan-500"></i>
+                            <p class="text-[9px] sm:text-[11px] font-bold text-slate-400 uppercase">Client / Vendor Aktif</p>
+                            <i data-lucide="users" class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-500"></i>
                         </div>
-                        <h3 id="card-client-count" class="text-2xl font-bold text-slate-800 mt-2">0</h3>
-                        <p class="text-[10px] text-cyan-600 mt-1 font-medium">Klik untuk kelola data</p>
+                        <h3 id="card-client-count" class="text-lg sm:text-2xl font-bold text-slate-800 mt-1 sm:mt-2">0</h3>
+                        <p class="text-[8px] sm:text-[10px] text-cyan-600 mt-1 font-medium">Klik untuk kelola data</p>
                     </div>
                 </div>
 
                 <!-- Section: Charts & Stock Visualization -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 glass-card p-6 rounded-2xl bg-white/80">
-                        <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-emerald-500"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
-                        <div class="relative h-64"><canvas id="financialChart"></canvas></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+                    <div class="lg:col-span-2 glass-card p-4 sm:p-6 rounded-2xl bg-white/80">
+                        <div class="flex justify-between items-center mb-4 sm:mb-6"><h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500"></i> Performa Keuangan</h2><div id="chart-loader" class="loader hidden"></div></div>
+                        <div class="relative h-48 sm:h-64"><canvas id="financialChart"></canvas></div>
                     </div>
-                    <div class="glass-card p-6 rounded-2xl bg-white/80">
-                        <div class="flex justify-between items-center mb-6"><h2 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="package" class="w-5 h-5 text-emerald-500"></i> Stok Fisik (Semua Item)</h2></div>
-                        <div class="relative h-64"><canvas id="stockChart"></canvas></div>
-                        <p class="text-[10px] text-slate-400 mt-3 text-center">*Klik batang grafik untuk lihat detail</p>
+                    <div class="glass-card p-4 sm:p-6 rounded-2xl bg-white/80">
+                        <div class="flex justify-between items-center mb-4 sm:mb-6"><h2 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500"></i> Stok Fisik</h2></div>
+                        <div class="relative h-48 sm:h-64"><canvas id="stockChart"></canvas></div>
+                        <p class="text-[8px] sm:text-[10px] text-slate-400 mt-2 sm:mt-3 text-center">*Klik batang grafik untuk lihat detail</p>
                     </div>
                 </div>
 
                 <!-- MENU CETAK MASSAL & EXPORT REKAP -->
-                <div class="glass-card p-6 rounded-2xl border-l-4 border-l-cyan-500 bg-white/80">
-                    <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="printer" class="w-5 h-5 text-cyan-500"></i> Cetak Dokumen & Export Rekap</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-4">
-                        <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor</label><select id="mass-client-select" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"><option value="">-- Pilih Client --</option></select></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Dari Tanggal</label><input type="date" id="mass-start-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"></div>
-                        <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Sampai Tanggal</label><input type="date" id="mass-end-date" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"></div>
-                        <div class="flex gap-2">
-                            <button onclick="generateMassPrint('invoice')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20"><i data-lucide="file-check" class="w-4 h-4"></i> Invoice</button>
-                            <button onclick="generateMassPrint('nota')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="file-text" class="w-4 h-4"></i> Nota</button>
+                <div class="glass-card p-4 sm:p-6 rounded-2xl border-l-4 border-l-cyan-500 bg-white/80">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-800 mb-3 sm:mb-4 flex items-center gap-2"><i data-lucide="printer" class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-500"></i> Cetak Dokumen & Export Rekap</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-end mb-4">
+                        <div class="sm:col-span-2 lg:col-span-1"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Pilih Client / Vendor</label><select id="mass-client-select" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white"><option value="">-- Pilih Client --</option></select></div>
+                        <div><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Dari Tanggal</label><input type="date" id="mass-start-date" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white"></div>
+                        <div><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Sampai Tanggal</label><input type="date" id="mass-end-date" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white"></div>
+                        <div class="flex gap-2 sm:col-span-2 lg:col-span-1">
+                            <button onclick="generateMassPrint('invoice')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition flex items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-indigo-500/20"><i data-lucide="file-check" class="w-3 h-3 sm:w-4 sm:h-4"></i> Invoice</button>
+                            <button onclick="generateMassPrint('nota')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition flex items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="file-text" class="w-3 h-3 sm:w-4 sm:h-4"></i> Nota</button>
                         </div>
                     </div>
-                    <div class="pt-4 border-t border-slate-100">
-                        <button onclick="exportToSheets()" id="btn-export-rekap" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20">
-                            <i data-lucide="database" class="w-4 h-4"></i> Export Rekap Pembelian ke Sheets
+                    <div class="pt-3 sm:pt-4 border-t border-slate-100">
+                        <button onclick="exportToSheets()" id="btn-export-rekap" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-2 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20">
+                            <i data-lucide="database" class="w-3 h-3 sm:w-4 sm:h-4"></i> Export Rekap Pembelian ke Sheets
                         </button>
                     </div>
-                    <div class="pt-6 border-t border-slate-100 mt-6">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2"><i data-lucide="table" class="w-4 h-4"></i> Export Format Matrix Harian</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                            <div><label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">Dari Tanggal</label><input type="date" id="matrix-start-date" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                            <div><label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">Sampai Tanggal</label><input type="date" id="matrix-end-date" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
+                    <div class="pt-4 sm:pt-6 border-t border-slate-100 mt-4 sm:mt-6">
+                        <h3 class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-2 sm:mb-3 flex items-center gap-2"><i data-lucide="table" class="w-3 h-3 sm:w-4 sm:h-4"></i> Export Format Matrix Harian</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-3">
+                            <div><label class="block text-[8px] sm:text-[10px] font-semibold uppercase text-slate-400 mb-1">Dari Tanggal</label><input type="date" id="matrix-start-date" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                            <div><label class="block text-[8px] sm:text-[10px] font-semibold uppercase text-slate-400 mb-1">Sampai Tanggal</label><input type="date" id="matrix-end-date" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
                             <div class="flex items-end">
-                                <button onclick="exportMatrixDaily()" id="btn-export-matrix" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20">
-                                    <i data-lucide="grid-3x3" class="w-4 h-4"></i> Generate Matrix Excel
+                                <button onclick="exportMatrixDaily()" id="btn-export-matrix" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-xs sm:text-sm font-medium transition flex items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-purple-500/20">
+                                    <i data-lucide="grid-3x3" class="w-3 h-3 sm:w-4 sm:h-4"></i> Generate Matrix Excel
                                 </button>
                             </div>
                         </div>
@@ -285,18 +312,22 @@
 
                 <!-- Tabs: Transaksi, Buku Besar, & Log Aktivitas -->
                 <div class="glass-card rounded-2xl overflow-hidden bg-white/80">
-                    <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-3 flex justify-between items-center">
-                        <div class="flex gap-2">
-                            <button onclick="switchTab('transactions')" id="tab-transactions" class="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white transition shadow-md shadow-emerald-500/20">Transaksi</button>
-                            <button onclick="switchTab('ledger')" id="tab-ledger" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Buku Besar</button>
-                            <button onclick="switchTab('logs')" id="tab-logs" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">Log Aktivitas</button>
+                    <div class="border-b border-slate-100 bg-slate-50/50 px-3 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="flex gap-1 sm:gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+                            <button onclick="switchTab('transactions')" id="tab-transactions" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 text-white transition shadow-md shadow-emerald-500/20 whitespace-nowrap">Transaksi</button>
+                            <button onclick="switchTab('ledger')" id="tab-ledger" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">Buku Besar</button>
+                            <button onclick="switchTab('logs')" id="tab-logs" class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">Log Aktivitas</button>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                                <input type="text" id="table-search-input" onkeyup="handleTableSearch()" placeholder="Cari ID, vendor, item..." class="pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none w-48 bg-white">
+                        
+                        <!-- FILTER & SEARCH BAR DENGAN LIMIT DROPDOWN -->
+                        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                            <div class="relative flex-1 sm:flex-none">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-slate-400"></i>
+                                <input type="text" id="table-search-input" onkeyup="handleTableSearch()" placeholder="Cari ID, vendor..." class="pl-8 sm:pl-9 pr-2 sm:pr-3 py-1.5 rounded-lg border border-slate-200 text-[10px] sm:text-xs focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-48 bg-white">
                             </div>
-                            <select id="row-limit-select" onchange="renderTable(); renderLedger();" class="py-1.5 px-3 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                            
+                            <!-- DROPDOWN LIMIT BARIS BARU -->
+                            <select id="row-limit-select" onchange="renderTable(); renderLedger();" class="py-1.5 px-2 sm:px-3 rounded-lg border border-slate-200 text-[10px] sm:text-xs focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
                                 <option value="10">Tampil 10</option>
                                 <option value="50">Tampil 50</option>
                                 <option value="100">Tampil 100</option>
@@ -305,35 +336,35 @@
                         </div>
                     </div>
                     
-                    <div id="content-transactions" class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-base font-bold text-slate-800">Daftar Transaksi Detail</h2>
-                            <span id="data-status" class="text-xs text-slate-500 flex items-center gap-1"><div class="loader w-3 h-3 border-2"></div> Memuat...</span>
+                    <div id="content-transactions" class="p-3 sm:p-6">
+                        <div class="flex justify-between items-center mb-3 sm:mb-4">
+                            <h2 class="text-sm sm:text-base font-bold text-slate-800">Daftar Transaksi Detail</h2>
+                            <span id="data-status" class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-1"><div class="loader w-2 h-2 sm:w-3 sm:h-3 border-2"></div> Memuat...</span>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-[11px] text-slate-400 uppercase bg-slate-50/70">
-                                    <tr><th class="px-6 py-3">ID</th><th class="px-6 py-3">Tanggal</th><th class="px-6 py-3">Vendor / Buyer</th><th class="px-6 py-3">Item</th><th class="px-6 py-3">Total</th><th class="px-6 py-3 text-center">Aksi</th></tr>
+                        <div class="overflow-x-auto -mx-3 sm:mx-0">
+                            <table class="w-full text-[10px] sm:text-sm text-left text-slate-600 min-w-[600px]">
+                                <thead class="text-[9px] sm:text-[11px] text-slate-400 uppercase bg-slate-50/70">
+                                    <tr><th class="px-3 sm:px-6 py-2 sm:py-3">ID</th><th class="px-3 sm:px-6 py-2 sm:py-3">Tanggal</th><th class="px-3 sm:px-6 py-2 sm:py-3">Vendor / Buyer</th><th class="px-3 sm:px-6 py-2 sm:py-3">Item</th><th class="px-3 sm:px-6 py-2 sm:py-3">Total</th><th class="px-3 sm:px-6 py-2 sm:py-3 text-center">Aksi</th></tr>
                                 </thead>
-                                <tbody id="table-transactions-body"><tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">Menunggu filter...</td></tr></tbody>
+                                <tbody id="table-transactions-body"><tr><td colspan="6" class="px-3 sm:px-6 py-6 sm:py-8 text-center text-slate-400">Menunggu filter...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div id="content-ledger" class="p-6 hidden">
-                        <div class="flex justify-between items-center mb-4"><h2 class="text-base font-bold text-slate-800">Buku Besar</h2><button onclick="exportLedgerToCSV()" class="text-xs bg-cyan-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg shadow-cyan-500/20"><i data-lucide="download" class="w-3.5 h-3.5"></i> CSV</button></div>
-                        <div class="overflow-x-auto"><table class="w-full text-sm text-left text-slate-600"><thead class="text-[11px] text-slate-400 uppercase bg-slate-50/70"><tr><th>Tanggal</th><th>Ket</th><th>Kat</th><th class="text-right">Debit</th><th class="text-right">Kredit</th><th class="text-right">Saldo</th></tr></thead><tbody id="table-ledger-body"></tbody></table></div>
+                    <div id="content-ledger" class="p-3 sm:p-6 hidden">
+                        <div class="flex justify-between items-center mb-3 sm:mb-4"><h2 class="text-sm sm:text-base font-bold text-slate-800">Buku Besar</h2><button onclick="exportLedgerToCSV()" class="text-[10px] sm:text-xs bg-cyan-600 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex items-center gap-1 sm:gap-1.5 shadow-lg shadow-cyan-500/20"><i data-lucide="download" class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5"></i> CSV</button></div>
+                        <div class="overflow-x-auto -mx-3 sm:mx-0"><table class="w-full text-[10px] sm:text-sm text-left text-slate-600 min-w-[600px]"><thead class="text-[9px] sm:text-[11px] text-slate-400 uppercase bg-slate-50/70"><tr><th class="px-2 sm:px-4 py-1 sm:py-2">Tanggal</th><th class="px-2 sm:px-4 py-1 sm:py-2">Ket</th><th class="px-2 sm:px-4 py-1 sm:py-2">Kat</th><th class="px-2 sm:px-4 py-1 sm:py-2 text-right">Debit</th><th class="px-2 sm:px-4 py-1 sm:py-2 text-right">Kredit</th><th class="px-2 sm:px-4 py-1 sm:py-2 text-right">Saldo</th></tr></thead><tbody id="table-ledger-body"></tbody></table></div>
                     </div>
 
-                    <div id="content-logs" class="p-6 hidden">
-                        <div class="flex justify-between items-center mb-4"><h2 class="text-base font-bold text-slate-800">Log Aktivitas Operasional & Staf</h2></div>
-                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-[11px] text-slate-400 uppercase bg-slate-50/70 sticky top-0">
-                                    <tr><th class="px-6 py-3">Waktu</th><th class="px-6 py-3">Aktivitas</th><th class="px-6 py-3">Detail</th><th class="px-6 py-3">Pelaku</th></tr>
+                    <div id="content-logs" class="p-3 sm:p-6 hidden">
+                        <div class="flex justify-between items-center mb-3 sm:mb-4"><h2 class="text-sm sm:text-base font-bold text-slate-800">Log Aktivitas Operasional & Staf</h2></div>
+                        <div class="overflow-x-auto -mx-3 sm:mx-0 max-h-[300px] sm:max-h-[500px] overflow-y-auto">
+                            <table class="w-full text-[10px] sm:text-sm text-left text-slate-600 min-w-[600px]">
+                                <thead class="text-[9px] sm:text-[11px] text-slate-400 uppercase bg-slate-50/70 sticky top-0">
+                                    <tr><th class="px-3 sm:px-6 py-2 sm:py-3">Waktu</th><th class="px-3 sm:px-6 py-2 sm:py-3">Aktivitas</th><th class="px-3 sm:px-6 py-2 sm:py-3">Detail</th><th class="px-3 sm:px-6 py-2 sm:py-3">Pelaku</th></tr>
                                 </thead>
                                 <tbody id="table-logs-body" class="divide-y divide-slate-100">
-                                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-400">Memuat log aktivitas...</td></tr>
+                                    <tr><td colspan="4" class="px-3 sm:px-6 py-6 sm:py-8 text-center text-slate-400">Memuat log aktivitas...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -343,40 +374,40 @@
         </div>
 
         <!-- MODALS (Client, Edit, Print, Stock, Tutorial, Master Data, Offtaker, Chatbot) -->
-        <div id="client-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-emerald-500"></i> Manajemen Client / Vendor</h3>
-                    <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <div id="client-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-2xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500"></i> Manajemen Client / Vendor</h3>
+                    <button onclick="closeClientModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
                 </div>
-                <form id="client-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Nama Perusahaan / Client</label><input type="text" id="client-name" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                    <div class="md:col-span-2"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Alamat Lengkap</label><textarea id="client-address" rows="2" required class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></textarea></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">NPWP (Opsional)</label><input type="text" id="client-npwp" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                    <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">No. Telepon</label><input type="text" id="client-phone" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                    <div class="md:col-span-2"><button type="submit" id="btn-save-client" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="save" class="w-4 h-4"></i> Simpan Client Baru</button></div>
+                <form id="client-form" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200">
+                    <div class="md:col-span-2"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Nama Perusahaan / Client</label><input type="text" id="client-name" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div class="md:col-span-2"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Alamat Lengkap</label><textarea id="client-address" rows="2" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></textarea></div>
+                    <div><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">NPWP (Opsional)</label><input type="text" id="client-npwp" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">No. Telepon</label><input type="text" id="client-phone" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div class="md:col-span-2"><button type="submit" id="btn-save-client" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="save" class="w-3 h-3 sm:w-4 sm:h-4"></i> Simpan Client Baru</button></div>
                 </form>
                 <div class="flex-1 overflow-y-auto pr-1">
-                    <p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan di Database</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-2">Daftar Client Tersimpan di Database</p>
                     <div id="client-list-container" class="space-y-2"><div class="text-center py-4"><div class="loader mx-auto"></div></div></div>
                 </div>
             </div>
         </div>
 
-        <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-emerald-200 modal-enter bg-white">
-                <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <h3 class="text-lg font-bold text-slate-800">Edit Transaksi</h3>
-                <form id="edit-form" class="space-y-4">
+        <div id="edit-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-md w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl border border-emerald-200 modal-enter bg-white">
+                <button onclick="closeEditModal()" class="absolute top-3 sm:top-4 right-3 sm:right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+                <h3 class="text-base sm:text-lg font-bold text-slate-800">Edit Transaksi</h3>
+                <form id="edit-form" class="space-y-3 sm:space-y-4">
                     <input type="hidden" id="edit-id"><input type="hidden" id="edit-original-type"><input type="hidden" id="edit-original-vendor">
-                    <input type="date" id="edit-date" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white">
-                    <div><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Client / Vendor</label><select id="edit-vendor" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-yellow-50" required><option value="">-- Pilih Client --</option></select><p class="text-[10px] text-slate-400 mt-1">*Pilih vendor yang benar agar tidak berubah ke "Umum"</p></div>
-                    <input type="text" id="edit-desc" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white">
-                    <div class="grid grid-cols-2 gap-3"><input type="text" id="edit-qty" inputmode="decimal" placeholder="Qty" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"><input type="text" id="edit-price" inputmode="numeric" placeholder="Harga" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none bg-white"></div>
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center"><span id="edit-total" class="font-bold text-slate-800">Rp 0</span></div>
+                    <input type="date" id="edit-date" required class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white">
+                    <div><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Client / Vendor</label><select id="edit-vendor" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-yellow-50" required><option value="">-- Pilih Client --</option></select><p class="text-[8px] sm:text-[10px] text-slate-400 mt-1">*Pilih vendor yang benar agar tidak berubah ke "Umum"</p></div>
+                    <input type="text" id="edit-desc" required class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white">
+                    <div class="grid grid-cols-2 gap-2 sm:gap-3"><input type="text" id="edit-qty" inputmode="decimal" placeholder="Qty" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white"><input type="text" id="edit-price" inputmode="numeric" placeholder="Harga" class="w-full border border-slate-200 rounded-xl p-2 sm:p-2.5 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div class="p-2 sm:p-3 bg-slate-50 rounded-xl border border-slate-200 text-center"><span id="edit-total" class="font-bold text-slate-800 text-xs sm:text-sm">Rp 0</span></div>
                     <div class="flex gap-2 pt-2">
-                        <button type="button" onclick="deleteFromEditModal()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-red-500/20"><i data-lucide="trash-2" class="w-4 h-4"></i> Hapus Transaksi Ini</button>
-                        <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2.5 rounded-xl font-medium text-sm transition shadow-lg shadow-amber-500/20">Simpan Perubahan</button>
+                        <button type="button" onclick="deleteFromEditModal()" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 sm:py-2.5 rounded-xl font-medium text-xs sm:text-sm transition flex items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-red-500/20"><i data-lucide="trash-2" class="w-3 h-3 sm:w-4 sm:h-4"></i> Hapus</button>
+                        <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 sm:py-2.5 rounded-xl font-medium text-xs sm:text-sm transition shadow-lg shadow-amber-500/20">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -384,7 +415,7 @@
 
         <div id="print-modal" class="hidden fixed inset-0 z-[9999] bg-slate-900/95 flex flex-col items-center justify-start no-print">
             <div class="flex-1 w-full overflow-y-auto bg-white flex justify-center">
-                <div id="print-area" class="relative text-slate-900 my-8" style="width: 210mm; min-height: 297mm; padding: 15mm 20mm; box-sizing: border-box; font-family: sans-serif; display: flex; flex-direction: column;">
+                <div id="print-area" class="relative text-slate-900 my-4 sm:my-8" style="width: 210mm; min-height: 297mm; padding: 15mm 20mm; box-sizing: border-box; font-family: sans-serif; display: flex; flex-direction: column;">
                     <div id="kop-surat-container" style="margin-bottom: 20px; text-align: center;"></div>
                     <div id="document-content" class="flex-grow"></div>
                     <div style="margin-top: auto; padding-top: 30px; border-top: 1px solid #e2e8f0; text-align: center; page-break-inside: avoid;">
@@ -396,59 +427,160 @@
                     </div>
                 </div>
             </div>
-            <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[10000] flex gap-3 bg-white/90 backdrop-blur-md p-2 pr-3 rounded-full shadow-2xl border border-slate-200/50">
-                <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2"><i data-lucide="x" class="w-4 h-4"></i> Tutup Preview</button>
-                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-full font-bold text-sm transition flex items-center gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="printer" class="w-4 h-4"></i> Print</button>
+            <div class="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-[10000] flex gap-2 sm:gap-3 bg-white/90 backdrop-blur-md p-2 pr-3 rounded-full shadow-2xl border border-slate-200/50">
+                <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm transition flex items-center gap-1 sm:gap-2"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i> Tutup Preview</button>
+                <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm transition flex items-center gap-1 sm:gap-2 shadow-lg shadow-emerald-500/20"><i data-lucide="printer" class="w-3 h-3 sm:w-4 sm:h-4"></i> Print</button>
             </div>
         </div>
 
-        <div id="stock-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-200 animate-enter bg-white">
-                <button onclick="closeStockDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <div class="text-center mb-6"><div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 border border-emerald-200"><i data-lucide="package" class="w-8 h-8 text-emerald-600"></i></div><h3 id="modal-stock-name" class="text-xl font-bold text-slate-800">Nama Item</h3><p id="modal-stock-unit" class="text-xs text-slate-500 uppercase tracking-widest mt-1">Satuan</p></div>
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between items-center p-3 bg-emerald-50 rounded-xl border border-emerald-100"><span class="text-xs font-bold text-emerald-700 uppercase">Total Masuk (Paid)</span><span id="modal-stock-in" class="text-lg font-bold text-emerald-600 font-mono">0</span></div>
-                    <div class="flex justify-between items-center p-3 bg-red-50 rounded-xl border border-red-100"><span class="text-xs font-bold text-red-700 uppercase">Total Terjual/Keluar (Paid)</span><span id="modal-stock-out" class="text-lg font-bold text-red-600 font-mono">0</span></div>
-                    <div class="flex justify-between items-center p-3 bg-blue-50 rounded-xl border border-blue-100"><span class="text-xs font-bold text-blue-700 uppercase">Sisa Stok Fisik</span><span id="modal-stock-physical" class="text-xl font-bold text-blue-600 font-mono">0</span></div>
+        <div id="stock-detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl border border-emerald-200 animate-enter bg-white">
+                <button onclick="closeStockDetailModal()" class="absolute top-3 sm:top-4 right-3 sm:right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+                <div class="text-center mb-4 sm:mb-6"><div class="w-12 h-12 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-emerald-200"><i data-lucide="package" class="w-6 h-6 sm:w-8 sm:h-8 text-emerald-600"></i></div><h3 id="modal-stock-name" class="text-lg sm:text-xl font-bold text-slate-800">Nama Item</h3><p id="modal-stock-unit" class="text-[10px] sm:text-xs text-slate-500 uppercase tracking-widest mt-1">Satuan</p></div>
+                <div class="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                    <div class="flex justify-between items-center p-2 sm:p-3 bg-emerald-50 rounded-xl border border-emerald-100"><span class="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase">Total Masuk (Paid)</span><span id="modal-stock-in" class="text-base sm:text-lg font-bold text-emerald-600 font-mono">0</span></div>
+                    <div class="flex justify-between items-center p-2 sm:p-3 bg-red-50 rounded-xl border border-red-100"><span class="text-[10px] sm:text-xs font-bold text-red-700 uppercase">Total Terjual/Keluar (Paid)</span><span id="modal-stock-out" class="text-base sm:text-lg font-bold text-red-600 font-mono">0</span></div>
+                    <div class="flex justify-between items-center p-2 sm:p-3 bg-blue-50 rounded-xl border border-blue-100"><span class="text-[10px] sm:text-xs font-bold text-blue-700 uppercase">Sisa Stok Fisik</span><span id="modal-stock-physical" class="text-lg sm:text-xl font-bold text-blue-600 font-mono">0</span></div>
                 </div>
-                <button onclick="closeStockDetailModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 border border-slate-200"><i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Dashboard</button>
+                <button onclick="closeStockDetailModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1 sm:gap-2 border border-slate-200"><i data-lucide="arrow-left" class="w-3 h-3 sm:w-4 sm:h-4"></i> Kembali ke Dashboard</button>
             </div>
         </div>
 
-        <div id="tutorial-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-emerald-200 bg-white">
-                <button onclick="toggleTutorialModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <h3 class="text-lg font-bold text-slate-800">Panduan Aplikasi</h3>
-                <div class="space-y-3 text-xs text-slate-600 max-h-80 overflow-y-auto pr-1">
+        <div id="tutorial-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-lg w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl border border-emerald-200 bg-white">
+                <button onclick="toggleTutorialModal()" class="absolute top-3 sm:top-4 right-3 sm:right-4 text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+                <h3 class="text-base sm:text-lg font-bold text-slate-800">Panduan Aplikasi</h3>
+                <div class="space-y-2 sm:space-y-3 text-[10px] sm:text-xs text-slate-600 max-h-60 sm:max-h-80 overflow-y-auto pr-1">
                     <p>1. Gunakan menu "Manajemen Client" untuk menyimpan data alamat & NPWP ke database.</p>
                     <p>2. Gunakan "Export Rekap Pembelian" atau "Export Matrix Harian" untuk laporan detail.</p>
                     <p>3. Cek tab "Log Aktivitas" untuk memantau siapa saja yang melakukan input/approve transaksi.</p>
                     <p>4. Klik grafik stok fisik untuk melihat detail perhitungan masuk/keluar per item.</p>
                 </div>
-                <button onclick="toggleTutorialModal()" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-medium text-xs shadow-lg shadow-emerald-500/20">Tutup</button>
+                <button onclick="toggleTutorialModal()" class="w-full bg-emerald-600 text-white py-2 sm:py-2.5 rounded-xl font-medium text-xs shadow-lg shadow-emerald-500/20">Tutup</button>
             </div>
         </div>
 
-        <div id="master-data-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-3xl w-full p-6 space-y-5 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-3"><h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-purple-500"></i> Master Data Harga & Jenis Sampah</h3><button onclick="closeMasterDataModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <div class="bg-purple-50 p-4 rounded-xl border border-purple-200"><p class="text-xs text-purple-800 font-medium mb-2">💡 Info Penting:</p><p class="text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi.</p></div>
-                <form id="master-data-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <div class="md:col-span-1"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Nama Jenis Sampah</label><input type="text" id="md-item-name" required placeholder="Misal: Bodong Bersih" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                    <div class="md:col-span-1"><label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan (Rp/Kg)</label><input type="number" id="md-item-price" required placeholder="5000" class="w-full border border-slate-200 rounded-lg p-2 text-sm outline-none bg-white"></div>
-                    <div class="md:col-span-1 flex items-end"><button type="submit" id="btn-save-master" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"><i data-lucide="plus" class="w-4 h-4"></i> Tambah Item</button></div>
+        <!-- MODAL MASTER DATA DENGAN FITUR PRINT DAFTAR HARGA -->
+        <div id="master-data-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-4xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 sm:w-5 sm:h-5 text-purple-500"></i> Master Data Harga & Jenis Sampah</h3>
+                    <div class="flex gap-2">
+                        <button onclick="openPricePreview()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview & Cetak Harga
+                        </button>
+                        <button onclick="closeMasterDataModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+                    </div>
+                </div>
+                
+                <div class="bg-purple-50 p-3 sm:p-4 rounded-xl border border-purple-200"><p class="text-[10px] sm:text-xs text-purple-800 font-medium mb-1 sm:mb-2">💡 Info Penting:</p><p class="text-[10px] sm:text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi.</p></div>
+                
+                <form id="master-data-form" class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200">
+                    <div class="md:col-span-1"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Nama Jenis Sampah</label><input type="text" id="md-item-name" required placeholder="Misal: Bodong Bersih" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div class="md:col-span-1"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Harga Satuan (Rp/Kg)</label><input type="number" id="md-item-price" required placeholder="5000" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
+                    <div class="md:col-span-1 flex items-end"><button type="submit" id="btn-save-master" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium text-xs sm:text-sm transition flex items-center justify-center gap-1 sm:gap-2 shadow-lg shadow-purple-500/20"><i data-lucide="plus" class="w-3 h-3 sm:w-4 sm:h-4"></i> Tambah Item</button></div>
                 </form>
-                <div class="flex-1 overflow-y-auto pr-1"><p class="text-xs font-bold text-slate-500 uppercase mb-2">Daftar Master Harga Tersimpan</p><div id="master-data-list" class="space-y-2"><div class="text-center py-4"><div class="loader mx-auto"></div></div></div></div>
+                
+                <div class="flex-1 overflow-y-auto pr-1">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-2">Daftar Master Harga Tersimpan</p>
+                    <div id="master-data-list" class="space-y-2"><div class="text-center py-4"><div class="loader mx-auto"></div></div></div>
+                </div>
             </div>
         </div>
 
-        <div id="offtaker-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4 no-print">
-            <div class="glass-card rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-purple-200 modal-enter max-h-[90vh] flex flex-col bg-white">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4"><h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="handshake" class="w-5 h-5 text-purple-600"></i> Manajemen Offtaker & Harga Jual</h3><button onclick="closeOfftakerModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-                    <div class="lg:col-span-1 flex flex-col border-r border-slate-100 pr-4">
-                        <div class="flex justify-between items-center mb-3"><h4 class="text-xs font-bold text-slate-500 uppercase">Daftar Offtaker</h4><button onclick="showAddOfftakerForm()" class="text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Baru</button></div>
-                        <form id="add-offtaker-form" class="hidden space-y-3 mb-4 p-3 bg-purple-50 rounded-xl border border-purple-100">
+        <!-- MODAL PREVIEW DAFTAR HARGA FUTURISTIK -->
+        <div id="price-preview-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 no-print">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col overflow-hidden animate-enter">
+                <!-- Header Modal -->
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="eye" class="w-5 h-5 text-emerald-600"></i> Preview Daftar Harga
+                    </h3>
+                    <button onclick="closePricePreview()" class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-200 transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <!-- Area Preview (Scrollable) -->
+                <div class="flex-1 overflow-y-auto p-8 bg-slate-100">
+                    <div class="bg-white shadow-lg rounded-xl p-8 mx-auto max-w-[210mm] min-h-[297mm] print-shadow-none">
+                        <!-- Konten yang sama dengan tampilan cetak -->
+                        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                            <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
+                            <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">CV. REZEKI AMANAH JAYA</h1>
+                            <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">DAFTAR HARGA SAMPAH TERBARU</p>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Dicetak pada: <span id="preview-date"></span></p>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">NO</th>
+                                    <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">NAMA JENIS SAMPAH</th>
+                                    <th style="padding: 12px 15px; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">SATUAN</th>
+                                    <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">HARGA (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-price-table-body">
+                                <!-- Data diisi via JS -->
+                            </tbody>
+                        </table>
+                        
+                        <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <p>Harga dapat berubah sewaktu-waktu sesuai kondisi pasar. Dokumen ini sah sebagai referensi internal.</p>
+                            <p style="margin-top: 5px; font-weight: bold; color: #10b981;">Amanah Capital - Enterprise Financial Hub</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Modal (Tombol Aksi) -->
+                <div class="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+                    <button onclick="closePricePreview()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition flex items-center gap-2">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i> Batal
+                    </button>
+                    <button onclick="confirmPrintPrice()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition flex items-center gap-2 shadow-lg shadow-emerald-500/30">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAMPILAN PRINT DAFTAR HARGA FUTURISTIK (Hidden by default, only visible when printing) -->
+        <div id="price-list-print-view" class="price-list-print-only">
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
+                <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">CV. REZEKI AMANAH JAYA</h1>
+                <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">DAFTAR HARGA SAMPAH TERBARU</p>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Dicetak pada: <span id="print-date"></span></p>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0;">NO</th>
+                        <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0;">NAMA JENIS SAMPAH</th>
+                        <th style="padding: 12px 15px; text-align: center; border-bottom: 2px solid #e2e8f0;">SATUAN</th>
+                        <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0;">HARGA (RP)</th>
+                    </tr>
+                </thead>
+                <tbody id="print-price-table-body">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                <p>Harga dapat berubah sewaktu-waktu sesuai kondisi pasar. Dokumen ini sah sebagai referensi internal.</p>
+                <p style="margin-top: 5px; font-weight: bold; color: #10b981;">Amanah Capital - Enterprise Financial Hub</p>
+            </div>
+        </div>
+
+        <div id="offtaker-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl border border-purple-200 modal-enter max-h-[90vh] flex flex-col bg-white">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3 mb-3 sm:mb-4"><h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="handshake" class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600"></i> Manajemen Offtaker & Harga Jual</h3><button onclick="closeOfftakerModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 h-full">
+                    <div class="lg:col-span-1 flex flex-col border-r border-slate-100 pr-0 lg:pr-4">
+                        <div class="flex justify-between items-center mb-2 sm:mb-3"><h4 class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase">Daftar Offtaker</h4><button onclick="showAddOfftakerForm()" class="text-[8px] sm:text-[10px] bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition flex items-center gap-1"><i data-lucide="plus" class="w-2 h-2 sm:w-3 sm:h-3"></i> Baru</button></div>
+                        <form id="add-offtaker-form" class="hidden space-y-2 sm:space-y-3 mb-3 sm:mb-4 p-2 sm:p-3 bg-purple-50 rounded-xl border border-purple-100">
                             <input type="text" id="new-offtaker-name" required placeholder="Nama Offtaker" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
                             <input type="text" id="new-offtaker-phone" placeholder="No. Telepon" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
                             <input type="text" id="new-offtaker-address" placeholder="Alamat" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white">
@@ -458,38 +590,44 @@
                         <div id="offtaker-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1"><div class="text-center py-8"><div class="loader mx-auto"></div></div></div>
                     </div>
                     <div class="lg:col-span-2 flex flex-col">
-                        <div id="offtaker-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-slate-400"><i data-lucide="mouse-pointer-click" class="w-10 h-10 mb-2 opacity-50"></i><p class="text-sm">Pilih offtaker di sebelah kiri untuk mengelola harga item</p></div>
+                        <div id="offtaker-detail-placeholder" class="flex-1 flex flex-col items-center justify-center text-slate-400"><i data-lucide="mouse-pointer-click" class="w-8 h-8 sm:w-10 sm:h-10 mb-2 opacity-50"></i><p class="text-xs sm:text-sm">Pilih offtaker di sebelah kiri untuk mengelola harga item</p></div>
                         <div id="offtaker-detail-content" class="hidden flex-1 flex flex-col">
-                            <div class="mb-4"><h4 id="selected-offtaker-name" class="text-base font-bold text-slate-800">Nama Offtaker</h4><p id="selected-offtaker-info" class="text-xs text-slate-500 mt-0.5">Info kontak...</p></div>
-                            <form id="add-item-price-form" class="grid grid-cols-12 gap-3 mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 items-end">
-                                <div class="col-span-4"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kategori Internal</label><select id="item-price-category" required class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white"></select></div>
-                                <div class="col-span-4"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kode Item Offtaker</label><input type="text" id="item-price-code" required placeholder="Misal: PET Flake" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white"></div>
-                                <div class="col-span-3"><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Harga Beli (Rp)</label><input type="number" id="item-price-value" required placeholder="0" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white font-mono"></div>
-                                <div class="col-span-1"><button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg transition flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+                            <div class="mb-3 sm:mb-4"><h4 id="selected-offtaker-name" class="text-base font-bold text-slate-800">Nama Offtaker</h4><p id="selected-offtaker-info" class="text-xs text-slate-500 mt-0.5">Info kontak...</p></div>
+                            <form id="add-item-price-form" class="grid grid-cols-12 gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 bg-slate-50 rounded-xl border border-slate-200 items-end">
+                                <div class="col-span-4"><label class="block text-[8px] sm:text-[10px] font-bold uppercase text-slate-400 mb-1">Kategori Internal</label><select id="item-price-category" required class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white"></select></div>
+                                <div class="col-span-4"><label class="block text-[8px] sm:text-[10px] font-bold uppercase text-slate-400 mb-1">Kode Item Offtaker</label><input type="text" id="item-price-code" required placeholder="Misal: PET Flake" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white"></div>
+                                <div class="col-span-3"><label class="block text-[8px] sm:text-[10px] font-bold uppercase text-slate-400 mb-1">Harga Beli (Rp)</label><input type="number" id="item-price-value" required placeholder="0" class="w-full border border-slate-200 rounded-lg p-2 text-xs bg-white font-mono"></div>
+                                <div class="col-span-1"><button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-lg transition flex items-center justify-center"><i data-lucide="plus" class="w-3 h-3 sm:w-4 sm:h-4"></i></button></div>
                             </form>
-                            <div class="flex-1 overflow-y-auto pr-1"><p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Daftar Harga Item</p><div id="offtaker-items-list" class="space-y-2"></div></div>
+                            <div class="flex-1 overflow-y-auto pr-1"><p class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase mb-2">Daftar Harga Item</p><div id="offtaker-items-list" class="space-y-2"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end no-print">
-            <div id="bot-chat-window" class="hidden mb-3 w-80 sm:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[500px] transition-all bg-white">
-                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-3.5 text-white flex justify-between items-center">
-                    <div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center font-bold text-sm">🤖</div><div><h4 class="font-bold text-xs">Ami - Asisten Amanah</h4><p class="text-[10px] text-emerald-100 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Online & Siap Nyolot!</p></div></div>
-                    <button onclick="toggleBotChat()" class="text-emerald-100 hover:text-white p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div class="fixed bottom-4 sm:bottom-5 right-4 sm:right-5 z-50 flex flex-col items-end no-print">
+            <div id="bot-chat-window" class="hidden mb-3 w-[calc(100vw-2rem)] sm:w-80 md:w-96 glass-card rounded-2xl shadow-2xl border border-emerald-200 overflow-hidden flex flex-col h-[60vh] sm:h-[500px] transition-all bg-white">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-3 sm:p-3.5 text-white flex justify-between items-center">
+                    <div class="flex items-center gap-2 sm:gap-2.5">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center font-bold text-sm"></div>
+                        <div>
+                            <h4 class="font-bold text-xs">Ami - Asisten Amanah</h4>
+                            <p class="text-[8px] sm:text-[10px] text-emerald-100 flex items-center gap-1"><span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-white animate-pulse"></span> Online & Siap Nyolot!</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleBotChat()" class="text-emerald-100 hover:text-white p-1"><i data-lucide="x" class="w-3 h-3 sm:w-4 sm:h-4"></i></button>
                 </div>
-                <div id="bot-messages" class="flex-1 p-3.5 space-y-3 overflow-y-auto bg-slate-50 text-xs"><div class="flex gap-2 chat-pop"><div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0"></div><div class="bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">Halo! Aku <b>Ami</b>. Jangan tanya hal yang sudah ada tombolnya ya, malas aku jawabnya. 😒<br><br>Tapi kalau butuh bantuan serius, klik menu di bawah ini aja</div></div></div>
-                <div class="px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
-                    <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm">️ Cara Cetak</button>
-                    <button onclick="sendQuickQuestion('bagi_hasil')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm"> Rumus Bagi Hasil</button>
-                    <button onclick="sendQuickQuestion('export_rekap')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm"> Export Rekap</button>
-                    <button onclick="sendQuickQuestion('siapa_ami')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-3 py-1.5 rounded-full transition font-medium shadow-sm"> Siapa Ami?</button>
+                <div id="bot-messages" class="flex-1 p-3 sm:p-3.5 space-y-2 sm:space-y-3 overflow-y-auto bg-slate-50 text-xs"><div class="flex gap-2 chat-pop"><div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0"></div><div class="bg-white p-2 sm:p-3 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm max-w-[85%] text-slate-700 leading-relaxed">Halo! Aku <b>Ami</b>. Jangan tanya hal yang sudah ada tombolnya ya, malas aku jawabnya. 😒<br><br>Tapi kalau butuh bantuan serius, klik menu di bawah ini aja</div></div></div>
+                <div class="px-2 sm:px-3 py-2 bg-slate-100 flex gap-2 overflow-x-auto text-[8px] sm:text-[10px] whitespace-nowrap border-t border-slate-200 no-scrollbar">
+                    <button onclick="sendQuickQuestion('cara_cetak')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition font-medium shadow-sm">️ Cara Cetak</button>
+                    <button onclick="sendQuickQuestion('bagi_hasil')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition font-medium shadow-sm"> Rumus Bagi Hasil</button>
+                    <button onclick="sendQuickQuestion('export_rekap')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition font-medium shadow-sm"> Export Rekap</button>
+                    <button onclick="sendQuickQuestion('siapa_ami')" class="bg-white border border-slate-300 hover:bg-emerald-50 text-slate-600 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition font-medium shadow-sm"> Siapa Ami?</button>
                 </div>
-                <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-2"><input type="text" id="bot-input" placeholder="Tanya Ami sesuatu..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none"><button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl transition shadow-lg shadow-emerald-500/20"><i data-lucide="send" class="w-4 h-4"></i></button></form>
+                <form id="bot-form" class="p-2 bg-white border-t border-slate-200 flex gap-2"><input type="text" id="bot-input" placeholder="Tanya Ami sesuatu..." required class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 outline-none"><button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-xl transition shadow-lg shadow-emerald-500/20"><i data-lucide="send" class="w-3 h-3 sm:w-4 sm:h-4"></i></button></form>
             </div>
-            <button onclick="toggleBotChat()" class="relative group bg-emerald-600 hover:bg-emerald-700 text-white p-3.5 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center animate-bounce-subtle border-2 border-white shadow-emerald-500/30"><span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white rounded-full border-2 border-emerald-600 animate-ping"></span><i data-lucide="bot" class="w-6 h-6"></i></button>
+            <button onclick="toggleBotChat()" class="relative group bg-emerald-600 hover:bg-emerald-700 text-white p-3 sm:p-3.5 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center animate-bounce-subtle border-2 border-white shadow-emerald-500/30"><span class="absolute -top-1 -right-1 w-3 h-3 sm:w-3.5 sm:h-3.5 bg-white rounded-full border-2 border-emerald-600 animate-ping"></span><i data-lucide="bot" class="w-5 h-5 sm:w-6 sm:h-6"></i></button>
         </div>
     </div>
 
@@ -619,7 +757,7 @@
                 btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div>';
                 
                 try {
-                    // URL API SUDAH DIPASANG
+                    // URL API BARU SUDAH DIPASANG
                     const API_URL = "https://script.google.com/macros/s/AKfycbylgW2dzHDG51D9qHtDJ0K5cwmidBgwK9Y7a1lPEoYRskK0kXRrEUYSbjjAFeOyi-Dz/exec";
                     const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(document.getElementById('staf-username').value)}&password=${encodeURIComponent(document.getElementById('staf-password').value)}`).then(r=>r.json());
                     
@@ -656,8 +794,8 @@
                 btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent mx-auto"></div>';
                 
                 try {
-                    // URL API SUDAH DIPASANG
-                    const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+                    // URL API BARU SUDAH DIPASANG
+                    const API_URL = "https://script.google.com/macros/s/AKfycbylgW2dzHDG51D9qHtDJ0K5cwmidBgwK9Y7a1lPEoYRskK0kXRrEUYSbjjAFeOyi-Dz/exec";
                     const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(document.getElementById('driver-username').value)}&password=${encodeURIComponent(document.getElementById('driver-password').value)}`).then(r=>r.json());
                     
                     if(res.status === 'success' && res.role === 'driver') {
@@ -691,15 +829,16 @@
 
     <!-- App Logic -->
     <script>
-        // URL API SUDAH DIPASANG DI SINI JUGA
-        const API_URL = "https://script.google.com/macros/s/AKfycbzytUMm5QHJcabvSGb__5Fl8R4bEoiGtwXsKFnbti80EM8ci7_jrKPTRr_LD7nWiMKM/exec";
+        // URL API BARU SUDAH DIPASANG DI SINI JUGA
+        const API_URL = "https://script.google.com/macros/s/AKfycbylgW2dzHDG51D9qHtDJ0K5cwmidBgwK9Y7a1lPEoYRskK0kXRrEUYSbjjAFeOyi-Dz/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
         let currentDocNumberForPrint = "", currentClientNameForFile = ""; 
 
-        // Variabel Global untuk Offtaker
+        // Variabel Global untuk Offtaker & Koreksi Fisik
         let offtakersData = [];
         let selectedOfftakerId = null;
+        let physicalCorrections = {}; // Menyimpan data koreksi dari backend
 
         // ==================== HELPER FUNCTIONS ====================
         function parseInputNumber(val) { if (!val) return 0; return parseFloat(String(val).replace(',', '.')) || 0; }
@@ -800,7 +939,13 @@
 
         // ==================== MASTER DATA MANAGEMENT ====================
         async function loadMasterData() {
-            try { const res = await fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()); if(res.status === 'success') { masterDataItems = res.items; renderMasterDataList(); } } 
+            try { 
+                const res = await fetch(`${API_URL}?action=getMasterData`).then(r=>r.json()); 
+                if(res.status === 'success') { 
+                    masterDataItems = res.items; 
+                    renderMasterDataList(); 
+                } 
+            } 
             catch(e) { console.error("Gagal load master data:", e); }
         }
         function renderMasterDataList() {
@@ -818,6 +963,50 @@
         async function deleteMasterItem(itemId) { if(!confirm('Hapus item ini?')) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ action: 'deleteMasterItem', itemId: itemId }) }); await loadMasterData(); } catch(err) { alert('Gagal menghapus item.'); } }
         function openMasterDataModal() { document.getElementById('master-data-modal').classList.remove('hidden'); renderMasterDataList(); lucide.createIcons(); }
         function closeMasterDataModal() { document.getElementById('master-data-modal').classList.add('hidden'); }
+
+        // FUNGSI BARU: PREVIEW & PRINT DAFTAR HARGA FUTURISTIK
+        function openPricePreview() {
+            if(masterDataItems.length === 0) return showToast("Belum ada data master harga!", true);
+            
+            // Set tanggal preview/cetak
+            const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('preview-date').innerText = dateStr;
+            document.getElementById('print-date').innerText = dateStr;
+            
+            // Isi tabel preview DAN tabel print sekaligus
+            const previewBody = document.getElementById('preview-price-table-body');
+            const printBody = document.getElementById('print-price-table-body');
+            
+            const rowsHTML = masterDataItems
+                .sort((a,b) => a.name.localeCompare(b.name))
+                .map((item, index) => `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px 15px; color: #64748b;">${index + 1}</td>
+                        <td style="padding: 12px 15px; font-weight: 600; color: #0f172a;">${item.name.toUpperCase()}</td>
+                        <td style="padding: 12px 15px; text-align: center; color: #475569;">${item.satuan || 'Kg'}</td>
+                        <td style="padding: 12px 15px; text-align: right; font-weight: 700; color: #10b981;">${formatIDR(item.price)}</td>
+                    </tr>
+                `).join('');
+            
+            previewBody.innerHTML = rowsHTML;
+            printBody.innerHTML = rowsHTML;
+            
+            // Tampilkan modal preview
+            document.getElementById('price-preview-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closePricePreview() {
+            document.getElementById('price-preview-modal').classList.add('hidden');
+        }
+
+        function confirmPrintPrice() {
+            // Sembunyikan modal preview dulu agar tidak ikut tercetak
+            closePricePreview();
+            
+            // Trigger print browser
+            window.print();
+        }
 
         // ==================== CORE APP LOGIC ====================
         document.addEventListener("DOMContentLoaded", () => { 
@@ -873,14 +1062,26 @@
             if(dataStatus) dataStatus.innerHTML = '<div class="loader w-3 h-3 border-2"></div> Loading...';
             
             try {
-                const res = await fetch(`${API_URL}?action=getTransactions`).then(r => r.json());
+                // Load transaksi DAN koreksi fisik sekaligus
+                const [trxRes, correctionRes] = await Promise.all([
+                    fetch(`${API_URL}?action=getTransactions`).then(r => r.json()),
+                    fetch(`${API_URL}?action=getPhysicalCorrections`).then(r => r.json())
+                ]);
                 
-                if(res.status === "success") {
+                // Update data koreksi fisik global
+                if(correctionRes.status === 'success' && correctionRes.data) {
+                    physicalCorrections = {};
+                    correctionRes.data.forEach(c => {
+                        physicalCorrections[c.Nama_Item] = parseFloat(c.Selisih);
+                    });
+                }
+
+                if(trxRes.status === "success") {
                     let raw = [];
                     
                     // Proses data penjualan
-                    if(res.penjualan) {
-                        res.penjualan.forEach(i => raw.push({
+                    if(trxRes.penjualan) {
+                        trxRes.penjualan.forEach(i => raw.push({
                             ...i, 
                             kategori: 'Penjualan', 
                             total: i.Total_Penjualan, 
@@ -890,8 +1091,8 @@
                     }
                     
                     // Proses data pembelian
-                    if(res.pembelian) { 
-                        res.pembelian.forEach(i => { 
+                    if(trxRes.pembelian) { 
+                        trxRes.pembelian.forEach(i => { 
                             raw.push({
                                 ...i, 
                                 kategori: 'Pembelian', 
@@ -903,8 +1104,8 @@
                     }
                     
                     // Proses data operasional
-                    if(res.operasional) {
-                        res.operasional.forEach(i => raw.push({
+                    if(trxRes.operasional) {
+                        trxRes.operasional.forEach(i => raw.push({
                             ...i, 
                             kategori: 'Operasional', 
                             total: i.Jumlah_Nominal, 
@@ -954,7 +1155,7 @@
                         financialChart.update();
                     }
                     
-                    // Render Grafik Stok Fisik
+                    // Render Grafik Stok Fisik (dengan koreksi)
                     renderStockChart(currentFilteredData);
                     
                     // Render Tables
@@ -972,7 +1173,7 @@
                     }
                     
                 } else { 
-                    throw new Error("Response status not success: " + JSON.stringify(res)); 
+                    throw new Error("Response status not success: " + JSON.stringify(trxRes)); 
                 }
                 
             } catch(e) { 
@@ -986,7 +1187,7 @@
             }
         }
 
-        // FUNGSI RENDER GRAFIK STOK (MENAMPILKAN SEMUA ITEM DARI MASTER DATA)
+        // FUNGSI RENDER GRAFIK STOK (MENAMPILKAN SEMUA ITEM DARI MASTER DATA + KOREKSI)
         function renderStockChart(filteredData) {
             const ctx = document.getElementById('stockChart').getContext('2d');
             const stockMap = {};
@@ -1014,7 +1215,8 @@
             const sortedStock = Object.entries(stockMap)
                 .map(([name, data]) => ({
                     name, 
-                    physical: data.qtyIn - data.qtyOut, 
+                    // TAMBAHKAN NILAI KOREKSI FISIK DI SINI
+                    physical: (data.qtyIn - data.qtyOut) + (physicalCorrections[name] || 0), 
                     qtyIn: data.qtyIn,
                     qtyOut: data.qtyOut,
                     unit: data.unit
@@ -1093,7 +1295,9 @@
             renderLedger();
         }
 
-        // FUNGSI RENDER TABEL TRANSAKSI (DENGAN SEARCH & LIMIT)
+        // ==========================================
+        // FUNGSI RENDER TABEL TRANSAKSI (DENGAN SEARCH & LIMIT BARIS)
+        // ==========================================
         function renderTable() {
             const tb = document.getElementById('table-transactions-body');
             const searchQuery = document.getElementById('table-search-input').value.toLowerCase();
@@ -1108,7 +1312,7 @@
                 return id.includes(searchQuery) || vendor.includes(searchQuery) || item.includes(searchQuery);
             });
 
-            // Batasi jumlah baris (ambil N pertama karena sudah di-sort descending di loadDashboardData)
+            // Batasi jumlah baris yang di-render (ambil N pertama karena sudah di-sort descending)
             const limitedData = filtered.slice(0, limit);
 
             if (limitedData.length === 0) { tb.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada data yang cocok.</td></tr>'; return; }
@@ -1124,7 +1328,9 @@
             }).join('');
         }
 
-        // FUNGSI RENDER BUKU BESAR (DENGAN SEARCH & LIMIT)
+        // ==========================================
+        // FUNGSI RENDER BUKU BESAR (DENGAN LIMIT BARIS & SALDO AKURAT)
+        // ==========================================
         function renderLedger() {
             const tb=document.getElementById('table-ledger-body'); 
             const searchQuery = document.getElementById('table-search-input').value.toLowerCase();
@@ -1142,7 +1348,7 @@
                 return desc.includes(searchQuery) || kat.includes(searchQuery);
             });
             
-            // Hitung saldo awal dari data sebelum limit (agar saldo tetap akurat meskipun ditampilkan terbatas)
+            // Hitung saldo awal dari data SEBELUM limit (agar saldo tetap akurat meskipun ditampilkan terbatas)
             const previousData = sorted.slice(0, sorted.length - limit);
             previousData.forEach(i => {
                 const deb=i.type==='expense'?i.total:0, kre=i.type==='income'?i.total:0; 
@@ -1619,7 +1825,7 @@
         function closeOfftakerModal() { document.getElementById('offtaker-modal').classList.add('hidden'); selectedOfftakerId = null; }
 
 
-        // ==================== MONITORING SYSTEM LOGIC ====================
+        // ==================== MONITORING SYSTEM LOGIC (UPDATED FOR RESPONSIVE & CORRECTIONS) ====================
         let lastDataHash = "";
         let videoTimer;
         let isMonitoring = true;
@@ -1677,32 +1883,94 @@
             } catch(err) { console.error("Fetch error:", err); }
         }
 
+        // FUNGSI RENDER STOK MONITORING (RESPONSIVE & SAMA DENGAN DASHBOARD + KOREKSI)
         function renderStock(data) {
             const stockMap = {};
-            [...(data.pembelian||[]), ...(data.penjualan||[])].forEach(t => {
+            
+            // Inisialisasi semua item dari master data agar tetap muncul meski stok 0
+            masterDataItems.forEach(m => {
+                stockMap[m.name] = { qtyIn: 0, qtyOut: 0, unit: m.satuan || 'Kg' };
+            });
+
+            // Gunakan ALL DATA (bukan filtered data) agar monitoring menampilkan stok TOTAL keseluruhan
+            // FIX: Tambahkan validasi agar tidak error jika data.pembelian/penjualan undefined
+            const purchases = Array.isArray(data.pembelian) ? data.pembelian : [];
+            const sales = Array.isArray(data.penjualan) ? data.penjualan : [];
+
+            [...purchases, ...sales].forEach(t => {
                 if(t.Status !== 'Paid') return;
                 const item = t.Nama_Barang_Material || 'Unknown';
                 const qty = parseFloat(t.Jumlah_Kg_Unit) || 0;
-                if(!stockMap[item]) stockMap[item] = 0;
-                if(t.ID_Pembelian) stockMap[item] += qty;
-                else stockMap[item] -= qty;
+                
+                // Jika item tidak ada di master data, tambahkan secara dinamis
+                if (!stockMap[item]) stockMap[item] = { qtyIn: 0, qtyOut: 0, unit: 'Kg' };
+                
+                if (t.ID_Pembelian) stockMap[item].qtyIn += qty;
+                else stockMap[item].qtyOut += qty;
             });
 
-            const sorted = Object.entries(stockMap).sort((a,b) => b[1] - a[1]); // Tampilkan SEMUA item
-            const maxVal = Math.max(...sorted.map(s => s[1]), 1);
+            // Konversi ke array dan urutkan berdasarkan sisa stok (terbanyak dulu)
+            const sorted = Object.entries(stockMap)
+                .map(([name, val]) => ({
+                    name, 
+                    // TAMBAHKAN KOREKSI FISIK DI MONITORING JUGA
+                    physical: (val.qtyIn - val.qtyOut) + (physicalCorrections[name] || 0),
+                    qtyIn: val.qtyIn,
+                    qtyOut: val.qtyOut,
+                    unit: val.unit
+                }))
+                .sort((a, b) => b.physical - a.physical); // Urutkan descending
+            
+            const maxVal = Math.max(...sorted.map(s => Math.max(0, s.physical)), 1);
 
             const container = document.getElementById('stock-container');
+            // Desain Kartu Baru: Lebih Besar, Font Tebal, Progress Bar Halus
             container.innerHTML = sorted.map(([name, val]) => `
-                <div class="flex flex-col justify-center p-4 bg-slate-800/50 rounded-2xl border border-white/5 hover:bg-slate-800 transition cursor-pointer" onclick="wakeFromVideo()">
-                    <div class="flex justify-between items-end mb-2">
-                        <div class="text-lg font-bold truncate">${name}</div>
-                        <div class="text-2xl font-mono font-bold text-emerald-300">${val.toLocaleString('id-ID')} Kg</div>
+                <div class="flex flex-col justify-center p-4 sm:p-6 bg-slate-800/60 rounded-2xl border border-white/10 hover:bg-slate-800/80 transition cursor-pointer group" onclick="wakeFromVideo()">
+                    <div class="flex justify-between items-end mb-2 sm:mb-4">
+                        <div class="text-base sm:text-xl font-bold text-slate-200 truncate pr-2 group-hover:text-white transition">${name}</div>
+                        <div class="text-xl sm:text-3xl font-mono font-bold ${val.physical <= 0 ? 'text-red-400' : 'text-emerald-400'} drop-shadow-sm">${val.physical.toLocaleString('id-ID')} <span class="text-sm sm:text-lg ${val.physical <= 0 ? 'text-red-500/70' : 'text-emerald-500/70'}">Kg</span></div>
                     </div>
-                    <div class="w-full h-4 bg-slate-700/50 rounded-full overflow-hidden relative">
-                        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-1000" style="width: ${(val/maxVal)*100}%"></div>
+                    <div class="w-full h-2 sm:h-3 bg-slate-700/50 rounded-full overflow-hidden relative">
+                        <div class="absolute top-0 left-0 h-full ${val.physical <= 0 ? 'bg-gradient-to-r from-red-500 to-orange-400' : 'bg-gradient-to-r from-emerald-500 to-teal-400'} rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: ${(Math.max(0, val.physical)/maxVal)*100}%"></div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        // ==========================================
+        // FUNGSI TIMBANG ULANG / SUSUT BARU
+        // ==========================================
+        async function handleTimbangUlang(idTransaksi, beratBaru, hargaPerKg) {
+            if (!idTransaksi || !beratBaru) return alert("Data timbang ulang tidak lengkap!");
+            
+            const konfirmasi = confirm(`Yakin ingin menimbang ulang?\n\nID: ${idTransaksi}\nBerat Baru: ${beratBaru} Kg\n\nStok gudang akan otomatis disesuaikan dengan selisihnya.`);
+            if (!konfirmasi) return;
+
+            try {
+                // Kirim request ke backend
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ 
+                        action: 'updateWeighing', 
+                        id: idTransaksi, 
+                        newWeight: parseFloat(beratBaru), 
+                        price: parseFloat(hargaPerKg) 
+                    }) 
+                });
+                
+                showToast("✅ Timbang ulang berhasil! Stok telah disesuaikan.");
+                
+                // Refresh semua tampilan agar stok terbaru muncul
+                await loadDashboardData(); 
+                fetchData(); // Refresh monitoring juga
+                
+            } catch(err) { 
+                console.error(err);
+                showToast(" Gagal melakukan timbang ulang.", true); 
+            }
         }
 
     </script>
