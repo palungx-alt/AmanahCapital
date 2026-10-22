@@ -466,8 +466,8 @@
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3">
                     <h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 sm:w-5 sm:h-5 text-purple-500"></i> Master Data Harga & Jenis Sampah</h3>
                     <div class="flex gap-2">
-                        <button onclick="printPriceList()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition">
-                            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Daftar Harga
+                        <button onclick="openPricePreview()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Preview & Cetak Harga
                         </button>
                         <button onclick="closeMasterDataModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
                     </div>
@@ -484,6 +484,63 @@
                 <div class="flex-1 overflow-y-auto pr-1">
                     <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-2">Daftar Master Harga Tersimpan</p>
                     <div id="master-data-list" class="space-y-2"><div class="text-center py-4"><div class="loader mx-auto"></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PREVIEW DAFTAR HARGA FUTURISTIK -->
+        <div id="price-preview-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4 no-print">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col overflow-hidden animate-enter">
+                <!-- Header Modal -->
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="eye" class="w-5 h-5 text-emerald-600"></i> Preview Daftar Harga
+                    </h3>
+                    <button onclick="closePricePreview()" class="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-200 transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <!-- Area Preview (Scrollable) -->
+                <div class="flex-1 overflow-y-auto p-8 bg-slate-100">
+                    <div class="bg-white shadow-lg rounded-xl p-8 mx-auto max-w-[210mm] min-h-[297mm] print-shadow-none">
+                        <!-- Konten yang sama dengan tampilan cetak -->
+                        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                            <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
+                            <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">CV. REZEKI AMANAH JAYA</h1>
+                            <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">DAFTAR HARGA SAMPAH TERBARU</p>
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Dicetak pada: <span id="preview-date"></span></p>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">NO</th>
+                                    <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">NAMA JENIS SAMPAH</th>
+                                    <th style="padding: 12px 15px; text-align: center; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">SATUAN</th>
+                                    <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0; background-color: #10b981; color: white;">HARGA (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-price-table-body">
+                                <!-- Data diisi via JS -->
+                            </tbody>
+                        </table>
+                        
+                        <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <p>Harga dapat berubah sewaktu-waktu sesuai kondisi pasar. Dokumen ini sah sebagai referensi internal.</p>
+                            <p style="margin-top: 5px; font-weight: bold; color: #10b981;">Amanah Capital - Enterprise Financial Hub</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Modal (Tombol Aksi) -->
+                <div class="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+                    <button onclick="closePricePreview()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition flex items-center gap-2">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i> Batal
+                    </button>
+                    <button onclick="confirmPrintPrice()" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition flex items-center gap-2 shadow-lg shadow-emerald-500/30">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak Sekarang
+                    </button>
                 </div>
             </div>
         </div>
@@ -738,7 +795,7 @@
                 
                 try {
                     // URL API BARU SUDAH DIPASANG
-                    const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
+                    const API_URL = "https://script.google.com/macros/s/AKfycbylgW2dzHDG51D9qHtDJ0K5cwmidBgwK9Y7a1lPEoYRskK0kXRrEUYSbjjAFeOyi-Dz/exec";
                     const res = await fetch(`${API_URL}?action=validateDriver&username=${encodeURIComponent(document.getElementById('driver-username').value)}&password=${encodeURIComponent(document.getElementById('driver-password').value)}`).then(r=>r.json());
                     
                     if(res.status === 'success' && res.role === 'driver') {
@@ -773,7 +830,7 @@
     <!-- App Logic -->
     <script>
         // URL API BARU SUDAH DIPASANG DI SINI JUGA
-        const API_URL = "https://script.google.com/macros/s/AKfycbx3t3fbhwykEIVI0EyZWSSNxS1g7KfLaEc0RJhnzTkz_MnukZx_9MyVJY-1g_vSTyU/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbylgW2dzHDG51D9qHtDJ0K5cwmidBgwK9Y7a1lPEoYRskK0kXRrEUYSbjjAFeOyi-Dz/exec";
         const CONFIG = { KOP_SURAT_URL: './assets/kop-surat.png', TTD_DIRUT_URL: './assets/TTD Raj Dirut.png' };
         let financialChart, stockChartInstance, allTransactionsData = [], currentFilteredData = [], cachedClients = [], masterDataItems = [];
         let currentDocNumberForPrint = "", currentClientNameForFile = ""; 
@@ -907,28 +964,48 @@
         function openMasterDataModal() { document.getElementById('master-data-modal').classList.remove('hidden'); renderMasterDataList(); lucide.createIcons(); }
         function closeMasterDataModal() { document.getElementById('master-data-modal').classList.add('hidden'); }
 
-        // FUNGSI BARU: PRINT DAFTAR HARGA FUTURISTIK
-        function printPriceList() {
+        // FUNGSI BARU: PREVIEW & PRINT DAFTAR HARGA FUTURISTIK
+        function openPricePreview() {
             if(masterDataItems.length === 0) return showToast("Belum ada data master harga!", true);
             
-            // Set tanggal cetak
-            document.getElementById('print-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            // Set tanggal preview/cetak
+            const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('preview-date').innerText = dateStr;
+            document.getElementById('print-date').innerText = dateStr;
             
-            // Isi tabel print
-            const tbody = document.getElementById('print-price-table-body');
-            tbody.innerHTML = masterDataItems.sort((a,b) => a.name.localeCompare(b.name)).map((item, index) => `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 10px 15px; color: #64748b;">${index + 1}</td>
-                    <td style="padding: 10px 15px; font-weight: 600; color: #0f172a;">${item.name.toUpperCase()}</td>
-                    <td style="padding: 10px 15px; text-align: center; color: #475569;">${item.satuan || 'Kg'}</td>
-                    <td style="padding: 10px 15px; text-align: right; font-weight: 700; color: #10b981;">${formatIDR(item.price)}</td>
-                </tr>
-            `).join('');
+            // Isi tabel preview DAN tabel print sekaligus
+            const previewBody = document.getElementById('preview-price-table-body');
+            const printBody = document.getElementById('print-price-table-body');
             
-            // Trigger print browser dengan delay agar DOM siap
-            setTimeout(() => {
-                window.print();
-            }, 300);
+            const rowsHTML = masterDataItems
+                .sort((a,b) => a.name.localeCompare(b.name))
+                .map((item, index) => `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px 15px; color: #64748b;">${index + 1}</td>
+                        <td style="padding: 12px 15px; font-weight: 600; color: #0f172a;">${item.name.toUpperCase()}</td>
+                        <td style="padding: 12px 15px; text-align: center; color: #475569;">${item.satuan || 'Kg'}</td>
+                        <td style="padding: 12px 15px; text-align: right; font-weight: 700; color: #10b981;">${formatIDR(item.price)}</td>
+                    </tr>
+                `).join('');
+            
+            previewBody.innerHTML = rowsHTML;
+            printBody.innerHTML = rowsHTML;
+            
+            // Tampilkan modal preview
+            document.getElementById('price-preview-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closePricePreview() {
+            document.getElementById('price-preview-modal').classList.add('hidden');
+        }
+
+        function confirmPrintPrice() {
+            // Sembunyikan modal preview dulu agar tidak ikut tercetak
+            closePricePreview();
+            
+            // Trigger print browser
+            window.print();
         }
 
         // ==================== CORE APP LOGIC ====================
@@ -1110,7 +1187,7 @@
             }
         }
 
-        // FUNGSI RENDER GRAFIK STOK FUTURISTIK & INFORMATIF
+        // FUNGSI RENDER GRAFIK STOK (MENAMPILKAN SEMUA ITEM DARI MASTER DATA + KOREKSI)
         function renderStockChart(filteredData) {
             const ctx = document.getElementById('stockChart').getContext('2d');
             const stockMap = {};
@@ -1155,54 +1232,30 @@
                     datasets: [{
                         label: 'Sisa Stok Fisik',
                         data: sortedStock.map(s => s.physical),
-                        backgroundColor: sortedStock.map(s => {
-                            if (s.physical <= 0) return '#ef4444'; // Merah jika habis/negatif
-                            return 'rgba(16, 185, 129, 0.8)'; // Emerald transparan
-                        }),
-                        borderRadius: 6,
-                        barThickness: 18,
-                        hoverBackgroundColor: '#10b981'
+                        backgroundColor: sortedStock.map(s => s.physical <= 0 ? '#ef4444' : '#10b981'), // Merah jika 0/negatif, Hijau jika positif
+                        borderRadius: 4,
+                        barThickness: 15
                     }]
                 },
                 options: {
-                    indexAxis: 'y', // Horizontal bar
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: {
-                        duration: 800,
-                        easing: 'easeOutQuart'
-                    },
-                    onClick: (e, elements) => openStockDetailFromChart(elements, sortedStock),
+                    onClick: (e, elements) => openStockDetailFromChart(elements, sortedStock), // Kirim data sortedStock ke fungsi klik
                     plugins: { 
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            padding: 12,
-                            cornerRadius: 8,
                             callbacks: {
                                 label: (ctx) => {
                                     const item = sortedStock[ctx.dataIndex];
-                                    return [
-                                        ` Sisa Stok: ${formatNumber(item.physical)} ${item.unit}`,
-                                        ` Total Masuk: ${formatNumber(item.qtyIn)} ${item.unit}`,
-                                        ` Total Keluar: ${formatNumber(item.qtyOut)} ${item.unit}`
-                                    ];
+                                    return ` Sisa: ${formatNumber(item.physical)} ${item.unit} (Masuk: ${formatNumber(item.qtyIn)}, Keluar: ${formatNumber(item.qtyOut)})`;
                                 }
                             }
                         }
                     },
                     scales: { 
-                        x: { 
-                            beginAtZero: true, 
-                            grid: { color: '#f1f5f9' },
-                            ticks: { font: { size: 11 } }
-                        }, 
-                        y: { 
-                            grid: { display: false },
-                            ticks: { font: { size: 12, weight: '500' } }
-                        } 
+                        x: { beginAtZero: true, grid: { color: '#f1f5f9' } }, 
+                        y: { grid: { display: false } } 
                     }
                 }
             });
