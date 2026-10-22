@@ -230,6 +230,11 @@
                         <i data-lucide="handshake" class="w-4 h-4"></i> Offtaker
                     </button>
 
+                    <!-- TOMBOL BARU: SURAT JALAN -->
+                    <button onclick="openSuratJalanModal()" class="hidden sm:flex items-center gap-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs px-3 py-1.5 rounded-full border border-teal-200 transition">
+                        <i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan
+                    </button>
+
                     <button id="logout-btn" class="bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 text-xs px-2 sm:px-3.5 py-1.5 rounded-lg transition border border-slate-200 hover:border-red-200 flex items-center gap-1.5 shadow-sm"><i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Keluar</span></button>
                 </div>
             </header>
@@ -373,7 +378,7 @@
             </main>
         </div>
 
-        <!-- MODALS (Client, Edit, Print, Stock, Tutorial, Master Data, Offtaker, Chatbot) -->
+        <!-- MODALS (Client, Edit, Print, Stock, Tutorial, Master Data, Offtaker, Chatbot, Surat Jalan) -->
         <div id="client-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 no-print">
             <div class="glass-card rounded-2xl max-w-2xl w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3">
@@ -473,7 +478,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-purple-50 p-3 sm:p-4 rounded-xl border border-purple-200"><p class="text-[10px] sm:text-xs text-purple-800 font-medium mb-1 sm:mb-2">💡 Info Penting:</p><p class="text-[10px] sm:text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi.</p></div>
+                <div class="bg-purple-50 p-3 sm:p-4 rounded-xl border border-purple-200"><p class="text-[10px] sm:text-xs text-purple-800 font-medium mb-1 sm:mb-2"> Info Penting:</p><p class="text-[10px] sm:text-xs text-purple-700">Data di sini akan menjadi patokan otomatis untuk dropdown driver dan auto-fill harga saat admin input transaksi.</p></div>
                 
                 <form id="master-data-form" class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200">
                     <div class="md:col-span-1"><label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Nama Jenis Sampah</label><input type="text" id="md-item-name" required placeholder="Misal: Bodong Bersih" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white"></div>
@@ -571,6 +576,98 @@
             <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                 <p>Harga dapat berubah sewaktu-waktu sesuai kondisi pasar. Dokumen ini sah sebagai referensi internal.</p>
                 <p style="margin-top: 5px; font-weight: bold; color: #10b981;">Amanah Capital - Enterprise Financial Hub</p>
+            </div>
+        </div>
+
+        <!-- MODAL SURAT JALAN BARU -->
+        <div id="surat-jalan-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-3 sm:p-4 no-print">
+            <div class="glass-card rounded-2xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl border border-emerald-200 modal-enter max-h-[90vh] flex flex-col bg-white">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-2 sm:pb-3 mb-3 sm:mb-4">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600"></i> Buat Surat Jalan</h3>
+                    <button onclick="closeSuratJalanModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i></button>
+                </div>
+
+                <form id="surat-jalan-form" class="space-y-4 overflow-y-auto pr-1 flex-1">
+                    <!-- Baris 1: No SJ & Tanggal -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">No. Surat Jalan</label>
+                            <input type="text" id="sj-number" readonly class="w-full border border-slate-200 bg-slate-50 rounded-lg p-2 text-xs sm:text-sm outline-none text-slate-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Tanggal Terbit</label>
+                            <input type="date" id="sj-date" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Baris 2: Tujuan & Kendaraan -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Tujuan / Penerima</label>
+                            <input type="text" id="sj-destination" required placeholder="Contoh: PT. Daur Ulang Jaya" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">No. Polisi / Kendaraan</label>
+                            <input type="text" id="sj-vehicle" placeholder="B 1234 XYZ" class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Daftar Barang (Free Text) -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-2">Daftar Barang</label>
+                        <div id="sj-items-container" class="space-y-2">
+                            <div class="sj-item-row grid grid-cols-12 gap-2 items-end">
+                                <div class="col-span-7">
+                                    <input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-name">
+                                </div>
+                                <div class="col-span-3">
+                                    <input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-weight">
+                                </div>
+                                <div class="col-span-2">
+                                    <button type="button" onclick="removeSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addSjItem()" class="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1 hover:text-emerald-700 transition">
+                            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Tambah Item Lain
+                        </button>
+                    </div>
+
+                    <!-- Opsi Tanda Tangan -->
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-2">Opsi Tanda Tangan</label>
+                        <div class="flex gap-4 mb-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="sj-signature-type" value="digital" checked onchange="toggleSjSignature()" class="accent-emerald-600">
+                                <span class="text-xs sm:text-sm text-slate-700">Dengan TTD Digital</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="sj-signature-type" value="manual" onchange="toggleSjSignature()" class="accent-emerald-600">
+                                <span class="text-xs sm:text-sm text-slate-700">Tanpa TTD (Nama PJ)</span>
+                            </label>
+                        </div>
+                        
+                        <div id="sj-digital-sig" class="flex items-center gap-3">
+                            <img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 40px; object-contain;">
+                            <div>
+                                <p class="text-xs font-bold text-slate-800">SIDIK DWI KUNCAHYO</p>
+                                <p class="text-[10px] text-slate-500">Direktur Utama</p>
+                            </div>
+                        </div>
+
+                        <div id="sj-manual-sig" class="hidden">
+                            <label class="block text-[10px] sm:text-xs font-semibold uppercase text-slate-500 mb-1">Nama Penanggung Jawab</label>
+                            <input type="text" id="sj-pj-name" placeholder="Masukkan nama lengkap..." class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
+                        </div>
+                    </div>
+                </form>
+
+                <div class="flex gap-2 pt-4 mt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeSuratJalanModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition">Batal</button>
+                    <button type="button" onclick="previewAndPrintSuratJalan()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-medium text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+                        <i data-lucide="printer" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Preview & Cetak
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1006,6 +1103,209 @@
             
             // Trigger print browser
             window.print();
+        }
+
+        // ==========================================
+        // LOGIKA BARU: SURAT JALAN
+        // ==========================================
+        function openSuratJalanModal() {
+            // Generate nomor otomatis SJ-YYYYMMDD-RANDOM
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const random = Math.floor(1000 + Math.random() * 9000);
+            
+            document.getElementById('sj-number').value = `SJ-${yyyy}${mm}${dd}-${random}`;
+            document.getElementById('sj-date').value = now.toISOString().split('T')[0];
+            
+            // Reset form
+            document.getElementById('surat-jalan-form').reset();
+            document.getElementById('sj-items-container').innerHTML = `
+                <div class="sj-item-row grid grid-cols-12 gap-2 items-end">
+                    <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
+                    <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
+                    <div class="col-span-2"><button type="button" onclick="removeSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></button></div>
+                </div>
+            `;
+            
+            // Set default signature view
+            toggleSjSignature();
+            
+            document.getElementById('surat-jalan-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeSuratJalanModal() {
+            document.getElementById('surat-jalan-modal').classList.add('hidden');
+        }
+
+        function addSjItem() {
+            const container = document.getElementById('sj-items-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'sj-item-row grid grid-cols-12 gap-2 items-end mt-2';
+            newRow.innerHTML = `
+                <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
+                <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
+                <div class="col-span-2"><button type="button" onclick="removeSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></button></div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeSjItem(btn) {
+            const rows = document.querySelectorAll('.sj-item-row');
+            if (rows.length > 1) {
+                btn.closest('.sj-item-row').remove();
+            } else {
+                showToast("Minimal harus ada 1 item!", true);
+            }
+        }
+
+        function toggleSjSignature() {
+            const type = document.querySelector('input[name="sj-signature-type"]:checked').value;
+            const digitalDiv = document.getElementById('sj-digital-sig');
+            const manualDiv = document.getElementById('sj-manual-sig');
+            
+            if (type === 'digital') {
+                digitalDiv.classList.remove('hidden');
+                manualDiv.classList.add('hidden');
+            } else {
+                digitalDiv.classList.add('hidden');
+                manualDiv.classList.remove('hidden');
+            }
+        }
+
+        function previewAndPrintSuratJalan() {
+            const form = document.getElementById('surat-jalan-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const sjNumber = document.getElementById('sj-number').value;
+            const sjDate = new Date(document.getElementById('sj-date').value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            const destination = document.getElementById('sj-destination').value.toUpperCase();
+            const vehicle = document.getElementById('sj-vehicle').value || '-';
+            
+            // Ambil semua item
+            let totalWeight = 0;
+            const itemRows = document.querySelectorAll('.sj-item-row');
+            let itemsHtml = '';
+            
+            itemRows.forEach((row, index) => {
+                const name = row.querySelector('.sj-item-name').value;
+                const weight = parseFloat(row.querySelector('.sj-item-weight').value) || 0;
+                totalWeight += weight;
+                
+                itemsHtml += `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 10px 15px; text-align: center;">${index + 1}</td>
+                        <td style="padding: 10px 15px;">${name.toUpperCase()}</td>
+                        <td style="padding: 10px 15px; text-align: right; font-family: monospace;">${formatNumber(weight)} Kg</td>
+                    </tr>
+                `;
+            });
+
+            // Total Row
+            itemsHtml += `
+                <tr style="background-color: #f8fafc; font-weight: bold;">
+                    <td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 2px solid #cbd5e1;">TOTAL BERAT</td>
+                    <td style="padding: 12px 15px; text-align: right; font-family: monospace; border-top: 2px solid #cbd5e1;">${formatNumber(totalWeight)} Kg</td>
+                </tr>
+            `;
+
+            // Handle Signature
+            let signatureHtml = '';
+            const sigType = document.querySelector('input[name="sj-signature-type"]:checked').value;
+            
+            if (sigType === 'digital') {
+                signatureHtml = `
+                    <div style="text-align: center; margin-top: 40px;">
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Hormat Kami,</p>
+                        <img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 50px; margin: 0 auto 5px; display: block; object-contain;">
+                        <p style="font-size: 13px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p>
+                        <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Direktur Utama</p>
+                    </div>
+                `;
+            } else {
+                const pjName = document.getElementById('sj-pj-name').value || '...........................';
+                signatureHtml = `
+                    <div style="text-align: center; margin-top: 60px;">
+                        <p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p>
+                        <p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p>
+                    </div>
+                `;
+            }
+
+            // Generate Full Print HTML
+            const printContent = `
+                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #10b981; padding-bottom: 20px; margin-bottom: 30px;">
+                        <div>
+                            <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 120px; margin-bottom: 10px;">
+                            <h1 style="font-size: 24px; font-weight: 800; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
+                            <p style="font-size: 12px; color: #64748b; margin-top: 5px;">CV. REZEKI AMANAH JAYA</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 11px; color: #64748b; margin: 0;">No. Dokumen</p>
+                            <p style="font-size: 18px; font-weight: bold; font-family: monospace; margin: 5px 0;">${sjNumber}</p>
+                            <p style="font-size: 11px; color: #64748b; margin: 0;">Tanggal Terbit</p>
+                            <p style="font-size: 14px; font-weight: 600; margin: 5px 0;">${sjDate}</p>
+                        </div>
+                    </div>
+
+                    <!-- Info Pengiriman -->
+                    <div style="display: flex; gap: 30px; margin-bottom: 30px; font-size: 13px;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Dikirim Kepada</p>
+                            <p style="font-weight: 700; font-size: 16px; color: #0f172a;">${destination}</p>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Kendaraan / No. Polisi</p>
+                            <p style="font-weight: 600; font-size: 14px;">${vehicle.toUpperCase()}</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Barang -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #10b981; color: white;">
+                                <th style="padding: 12px 15px; text-align: center; width: 50px;">NO</th>
+                                <th style="padding: 12px 15px; text-align: left;">NAMA BARANG</th>
+                                <th style="padding: 12px 15px; text-align: right; width: 120px;">BERAT (KG)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHtml}
+                        </tbody>
+                    </table>
+
+                    <!-- Catatan -->
+                    <div style="margin-bottom: 40px; padding: 15px; background-color: #f8fafc; border-left: 4px solid #10b981; font-size: 12px; color: #475569;">
+                        <p style="margin: 0; font-weight: bold;">Catatan:</p>
+                        <p style="margin: 5px 0 0 0;">Barang telah diperiksa dan diterima dalam keadaan baik oleh penerima. Surat jalan ini merupakan bukti sah pengiriman.</p>
+                    </div>
+
+                    <!-- Tanda Tangan -->
+                    ${signatureHtml}
+
+                    <!-- Footer -->
+                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                        <p>Dokumen ini dicetak secara otomatis oleh Sistem Amanah Capital. Tidak memerlukan tanda tangan basah jika menggunakan TTD Digital.</p>
+                    </div>
+                </div>
+            `;
+
+            // Inject to print area and trigger
+            const printArea = document.getElementById('print-area');
+            // Sembunyikan kop surat standar untuk SJ
+            document.getElementById('kop-surat-container').style.display = 'none';
+            document.getElementById('document-content').innerHTML = printContent;
+            document.getElementById('ttd-date').innerText = sjDate;
+            
+            document.getElementById('print-modal').classList.remove('hidden');
+            lucide.createIcons();
         }
 
         // ==================== CORE APP LOGIC ====================
