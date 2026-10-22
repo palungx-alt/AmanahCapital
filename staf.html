@@ -69,7 +69,7 @@
 </head>
 <body class="antialiased flex flex-col relative pb-24">
 
-    <!-- LOGIN OVERLAY -->
+    <!-- LOGIN OVERLAY (DESAIN BARU: TERANG & GLASSMORPHISM) -->
     <div id="login-overlay" class="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md no-print" style="background: linear-gradient(135deg, rgba(236, 253, 245, 0.95) 0%, rgba(248, 250, 252, 0.98) 50%, rgba(224, 242, 254, 0.95) 100%);">
         <div class="glass-card rounded-2xl max-w-sm w-full p-8 shadow-2xl space-y-6 animate-fade-in bg-white/90 border border-emerald-200">
             <div class="text-center">
@@ -96,9 +96,10 @@
         </div>
     </div>
 
-    <!-- HEADER STAF -->
+    <!-- HEADER STAF (RESPONSIVE) -->
     <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
+            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
             <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -109,6 +110,7 @@
         <div class="flex items-center gap-2">
             <div class="relative cursor-pointer hover:bg-white/50 p-2 rounded-lg transition" onclick="switchTab('approval')"><i data-lucide="bell" class="w-5 h-5 text-emerald-600 animate-ring" id="notif-bell"></i><span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span></div>
             <a href="index.html" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="home" class="w-4 h-4 text-slate-500"></i></a>
+            <!-- PERBAIKAN LOGOUT: ARAHKAN KE INDEX.HTML -->
             <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
         </div>
     </header>
@@ -127,8 +129,6 @@
             <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
-            <!-- TAB BARU: SURAT JALAN -->
-            <button onclick="switchTab('surat-jalan'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
             <button onclick="switchTab('history'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="history" class="w-4 h-4"></i> Riwayat</button>
@@ -148,8 +148,6 @@
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input')" id="tab-input" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input</button>
-            <!-- TAB BARU: SURAT JALAN -->
-            <button onclick="switchTab('surat-jalan')" id="tab-surat-jalan" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice')" id="tab-invoice" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota')" id="tab-nota" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
             <button onclick="switchTab('history')" id="tab-history" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="history" class="w-4 h-4"></i> Riwayat</button>
@@ -168,7 +166,7 @@
             </div>
         </div>
 
-        <!-- TAB MANAJEMEN OFFTAKER -->
+        <!-- TAB BARU: MANAJEMEN OFFTAKER (KHUSUS STAF) -->
         <div id="content-offtaker" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
@@ -176,6 +174,7 @@
                     <button onclick="showAddOfftakerFormStaf()" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-purple-500/20"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Tambah Offtaker Baru</button>
                 </div>
 
+                <!-- Form Tambah Offtaker (Hidden by default) -->
                 <form id="add-offtaker-form-staf" class="hidden space-y-4 mb-6 p-4 bg-purple-50 rounded-xl border border-purple-100">
                     <h3 class="text-xs font-bold text-purple-700 uppercase">Data Offtaker Baru</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -211,6 +210,7 @@
                     </div>
                 </form>
 
+                <!-- Daftar Offtaker -->
                 <div id="offtaker-list-container-staf" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div class="col-span-full text-center py-8 text-slate-400"><div class="loader mx-auto mb-2"></div><p class="text-xs">Memuat data offtaker...</p></div>
                 </div>
@@ -230,7 +230,7 @@
         <div id="content-timbang" class="tab-content hidden space-y-4">
             <div class="glass-card p-5 rounded-2xl bg-white/80">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i data-lucide="scale" class="w-5 h-5 text-indigo-500"></i> Input Hasil Timbang Ulang</h2>
-                <p class="text-xs text-slate-500 mb-4">Gunakan ini jika ada selisih berat saat pengecekan gudang. Data ini akan disimpan permanen di Spreadsheet.</p>
+                <p class="text-xs text-slate-500 mb-4">Gunakan ini jika ada selisih berat saat pengecekan gudang. Data ini hanya untuk koreksi visual stok fisik.</p>
                 
                 <form id="timbang-form" class="space-y-4">
                     <div>
@@ -311,7 +311,7 @@
             </div>
         </div>
 
-        <!-- TAB INPUT -->
+        <!-- TAB INPUT (DENGAN INTEGRASI OFFTAKER SEDERHANA) -->
         <div id="content-input" class="tab-content hidden space-y-4">
             <form id="transaksi-form" class="glass-card p-5 rounded-2xl bg-white/80 space-y-5">
                 <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 pb-2 border-b border-slate-100"><i data-lucide="edit-3" class="w-5 h-5 text-emerald-500"></i> Form Input Baru</h2>
@@ -337,6 +337,7 @@
 
                 <div><label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Nama Barang</label><select id="trx-item" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs outline-none bg-white"><option value="">-- Pilih dari Master Data --</option></select></div>
                 
+                <!-- BAGIAN BARU: PILIHAN OFFTAKER (HANYA MUNCUL SAAT PENJUALAN) -->
                 <div id="offtaker-section" class="hidden space-y-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
                     <div class="flex justify-between items-end mb-1.5">
                         <label class="block text-[10px] font-bold uppercase text-purple-700">Pilih Offtaker / Pembeli</label>
@@ -356,69 +357,6 @@
                 </div>
                 <button type="submit" id="btn-save-trx" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="save" class="w-5 h-5"></i> Simpan Transaksi</button>
             </form>
-        </div>
-
-        <!-- TAB BARU: SURAT JALAN -->
-        <div id="content-surat-jalan" class="tab-content hidden space-y-4">
-            <div class="glass-card p-5 rounded-2xl bg-white/80">
-                <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i data-lucide="truck" class="w-5 h-5 text-emerald-500"></i> Buat Surat Jalan Baru</h2>
-                
-                <form id="staf-surat-jalan-form" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">No. Surat Jalan (Otomatis)</label>
-                            <input type="text" id="staf-sj-number" readonly class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none text-slate-500 font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Tanggal Terbit</label>
-                            <input type="date" id="staf-sj-date" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Tujuan / Penerima</label>
-                            <input type="text" id="staf-sj-destination" required placeholder="Contoh: PT. Daur Ulang Jaya" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">No. Polisi / Kendaraan</label>
-                            <input type="text" id="staf-sj-vehicle" placeholder="B 1234 XYZ" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Daftar Barang (Free Text)</label>
-                        <div id="staf-sj-items-container" class="space-y-2">
-                            <div class="sj-item-row grid grid-cols-12 gap-2 items-end">
-                                <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
-                                <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
-                                <div class="col-span-2"><button type="button" onclick="removeStafSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>
-                            </div>
-                        </div>
-                        <button type="button" onclick="addStafSjItem()" class="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1 hover:text-emerald-700 transition"><i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Tambah Item Lain</button>
-                    </div>
-
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">Opsi Tanda Tangan</label>
-                        <div class="flex gap-4 mb-3">
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="staf-sj-signature-type" value="digital" checked onchange="toggleStafSjSignature()" class="accent-emerald-600"><span class="text-xs sm:text-sm text-slate-700">Dengan TTD Digital</span></label>
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="staf-sj-signature-type" value="manual" onchange="toggleStafSjSignature()" class="accent-emerald-600"><span class="text-xs sm:text-sm text-slate-700">Tanpa TTD (Nama PJ)</span></label>
-                        </div>
-                        
-                        <div id="staf-sj-digital-sig" class="flex items-center gap-3">
-                            <img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 40px; object-contain;">
-                            <div><p class="text-xs font-bold text-slate-800">SIDIK DWI KUNCAHYO</p><p class="text-[10px] text-slate-500">Direktur Utama</p></div>
-                        </div>
-
-                        <div id="staf-sj-manual-sig" class="hidden">
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Nama Penanggung Jawab</label>
-                            <input type="text" id="staf-sj-pj-name" placeholder="Masukkan nama lengkap..." class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="previewAndPrintStafSuratJalan()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="printer" class="w-5 h-5"></i> Preview & Cetak Surat Jalan</button>
-                </form>
-            </div>
         </div>
 
         <!-- TAB CETAK INVOICE & NOTA -->
@@ -469,7 +407,7 @@
         </div>
     </main>
 
-    <!-- MODAL PREVIEW DOKUMEN -->
+    <!-- MODAL PREVIEW DOKUMEN (DIGUNAKAN UNTUK NOTA, INVOICE, DAN SURAT JALAN) -->
     <div id="doc-preview-modal" class="hidden fixed inset-0 z-[9999] bg-slate-900/95 flex flex-col items-center justify-start no-print">
         <div class="flex-1 w-full overflow-y-auto bg-white flex justify-center">
             <div id="print-area" class="relative text-slate-900 my-8" style="width: 210mm; min-height: 297mm; padding: 15mm 20mm; box-sizing: border-box; font-family: sans-serif; display: flex; flex-direction: column;">
@@ -655,7 +593,7 @@
                             // Refresh tampilan stok jika sedang aktif
                             if(!document.getElementById('content-stok').classList.contains('hidden')) {
                                 renderStockTable();
-                                renderStockChart();
+                                renderStockChart(); // FIX: Refresh chart juga saat load data
                             }
                         }
                     } catch(e) { console.log("Gagal load data sekunder:", e); }
@@ -763,6 +701,7 @@
             finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Simpan Client'; lucide.createIcons(); }
         });
 
+        // --- LOGIKA HISTORI TRANSAKSI (OPTIMIZED: MAX 50 ROWS) ---
         function renderHistoryTable() {
             const container = document.getElementById('history-table-body');
             const statusFilter = document.getElementById('history-status-filter').value;
@@ -777,6 +716,8 @@
             });
 
             filtered.sort((a, b) => new Date(b.Tanggal || b.timestamp) - new Date(a.Tanggal || a.timestamp));
+
+            // BATASI RENDER MAKSIMAL 50 BARIS AGAR TIDAK LEMOT
             const limitedFiltered = filtered.slice(0, 50);
 
             if (limitedFiltered.length === 0) { 
@@ -819,7 +760,7 @@
             });
             const notesArray = Object.values(groupedNotes).sort((a,b) => new Date(b.date) - new Date(a.date));
             document.getElementById('pending-count').innerText = notesArray.length;
-            document.getElementById('pending-count-sidebar').innerText = notesArray.length;
+            document.getElementById('pending-count-sidebar').innerText = notesArray.length; // Update sidebar count too
             updateNotifBadge(notesArray.length);
             if(notesArray.length === 0) { container.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400"> Tidak ada transaksi yang menunggu verifikasi.</td></tr>'; return; }
             container.innerHTML = notesArray.map(note => {
@@ -877,6 +818,12 @@
         function showReminderPopup(count) { document.getElementById('reminder-count').innerText=count; document.getElementById('reminder-popup').classList.remove('hidden'); lucide.createIcons(); }
         function closeReminder() { document.getElementById('reminder-popup').classList.add('hidden'); }
         function goToApproval() { closeReminder(); switchTab('approval'); }
+
+        // OPTIMASI: Chart hanya dirender saat dibutuhkan
+        function renderStockDashboard() { 
+            if(!stockChartInstance) renderStockChart();
+            renderStockTable(); 
+        }
 
         // FIX: Render Stock Chart dengan data koreksi fisik
         function renderStockChart() {
@@ -1058,6 +1005,7 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
+                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
@@ -1074,6 +1022,7 @@
             container.innerHTML = html || '<tr><td colspan="5" class="py-8 text-center text-slate-400">Tidak ada data ditemukan.</td></tr>';
         }
 
+        // --- FUNGSI PRESS / PEMADATAN ---
         function populatePressDropdown() {
             const select = document.getElementById('press-loose-item');
             select.innerHTML = '<option value="">-- Pilih Item Curah --</option>';
@@ -1184,40 +1133,49 @@
             }).join('');
         }
 
+        // ==========================================
+        // LOGIKA BARU: MANAJEMEN OFFTAKER KHUSUS STAF
+        // ==========================================
+        
+        // Populate dropdown offtaker berdasarkan data dari admin
         function populateOfftakerDropdown() {
             const select = document.getElementById('trx-offtaker');
             select.innerHTML = '<option value="">-- Pilih Offtaker --</option>';
             
+            // Group by nama offtaker agar tidak duplikat
             const uniqueOfftakers = [...new Map(offtakersData.map(item => [item.Nama_Offtaker, item])).values()];
             
             uniqueOfftakers.sort((a,b) => a.Nama_Offtaker.localeCompare(b.Nama_Offtaker)).forEach(o => {
                 const opt = document.createElement('option');
-                opt.value = o.ID_Offtaker;
+                opt.value = o.ID_Offtaker; // Gunakan ID sebagai value
                 opt.text = o.Nama_Offtaker;
-                opt.dataset.nama = o.Nama_Offtaker;
+                opt.dataset.nama = o.Nama_Offtaker; // Simpan nama untuk referensi
                 select.appendChild(opt);
             });
         }
 
+        // Tampilkan/sembunyikan section offtaker berdasarkan jenis transaksi
         document.getElementById('trx-type').addEventListener('change', function() {
             const offtakerSection = document.getElementById('offtaker-section');
             if (this.value === 'PENJUALAN') {
                 offtakerSection.classList.remove('hidden');
             } else {
                 offtakerSection.classList.add('hidden');
-                document.getElementById('trx-offtaker').value = "";
+                document.getElementById('trx-offtaker').value = ""; // Reset pilihan
             }
         });
 
+        // Auto-fill harga saat offtaker DAN item dipilih
         function updatePriceFromOfftaker() {
             const itemType = document.getElementById('trx-type').value;
-            if (itemType !== 'PENJUALAN') return;
+            if (itemType !== 'PENJUALAN') return; // Hanya untuk penjualan
             
             const itemId = document.getElementById('trx-item').value;
             const offtakerId = document.getElementById('trx-offtaker').value;
             const priceInput = document.getElementById('trx-price');
             
             if (itemId && offtakerId) {
+                // Cari data offtaker yang cocok dengan item dan offtaker yang dipilih
                 const matchedOfftaker = offtakersData.find(o => 
                     o.ID_Offtaker === offtakerId && 
                     o.Kategori_Internal === itemId
@@ -1227,18 +1185,22 @@
                     priceInput.value = matchedOfftaker.Harga_Beli_Rp;
                     showToast(`Harga auto-fill dari ${matchedOfftaker.Nama_Offtaker}`);
                 } else {
+                    // Jika tidak ada mapping spesifik, kosongkan atau biarkan manual
                     priceInput.value = '';
                 }
             }
         }
 
+        // Event listeners untuk trigger auto-fill
         document.getElementById('trx-item').addEventListener('change', updatePriceFromOfftaker);
         document.getElementById('trx-offtaker').addEventListener('change', updatePriceFromOfftaker);
 
+        // --- FUNGSI MANAJEMEN OFFTAKER DI STAF ---
         function showAddOfftakerFormStaf() {
             const form = document.getElementById('add-offtaker-form-staf');
             form.classList.remove('hidden');
             
+            // Populate kategori internal dropdown
             const catSelect = document.getElementById('new-offtaker-cat-internal');
             catSelect.innerHTML = '<option value="">-- Pilih Kategori --</option>' + 
                 masterItems.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
@@ -1260,6 +1222,7 @@
                 return;
             }
 
+            // Group by Nama Offtaker
             const grouped = {};
             offtakersData.forEach(o => {
                 if(!grouped[o.Nama_Offtaker]) grouped[o.Nama_Offtaker] = { ...o, items: [] };
@@ -1297,6 +1260,7 @@
             btn.disabled = true; 
             btn.innerHTML = '<div class="loader w-4 h-4 border-2 border-white border-t-transparent"></div>';
 
+            // Ambil nilai dan pastikan harga diubah menjadi angka yang valid menggunakan parseInputNumber
             const priceVal = document.getElementById('new-offtaker-price').value;
             const cleanPrice = parseInputNumber(priceVal); 
 
@@ -1307,7 +1271,7 @@
                 link_map: document.getElementById('new-offtaker-map').value.trim(),
                 kategori_internal: document.getElementById('new-offtaker-cat-internal').value,
                 kode_item_offtaker: document.getElementById('new-offtaker-code-external').value.trim(),
-                harga_beli_rp: cleanPrice,
+                harga_beli_rp: cleanPrice, // Masukkan variabel yang sudah diparsing
                 status: 'Aktif'
             };
 
@@ -1320,6 +1284,7 @@
                 showToast("Offtaker berhasil ditambahkan!");
                 hideAddOfftakerFormStaf();
                 
+                // Refresh data offtaker
                 const res = await fetch(`${API_URL}?action=getOfftakers`).then(r=>r.json());
                 if(res.status === 'success') {
                     offtakersData = res.data;
@@ -1354,6 +1319,7 @@
             let targetSheet='', rowData=[], id=`${type.substring(0,3)}-${Date.now()}`;
             const status=(type==='PEMBELIAN')?'Pending':'Paid'; 
             
+            // Tambahkan info offtaker ke keterangan jika ini penjualan
             let timestampNote=`Input ${new Date().toISOString()}`;
             if (type === 'PENJUALAN') {
                 const offtakerSelect = document.getElementById('trx-offtaker');
@@ -1399,6 +1365,7 @@
 
         function getClientDetails(name) { const found=cachedClients.find(c => c.name===name); return found||{name:name, address:'-', npwp:'-', phone:'-'}; }
 
+        // PERBAIKAN UTAMA: FUNGSI PREVIEW DOKUMEN YANG BENAR
         function previewDocument(docType) {
             let clientFilter, startDate, endDate, filteredData;
             if(docType==='invoice') { clientFilter=document.getElementById('inv-client-filter').value; startDate=document.getElementById('inv-start-date').value; endDate=document.getElementById('inv-end-date').value; filteredData=allTransactions.filter(t => t.type==='PENJUALAN'); }
@@ -1423,6 +1390,7 @@
             
             document.getElementById('document-content').innerHTML=generatePrintHTML(isInvoice, filteredData, clientData, docNum, true);
             document.getElementById('doc-preview-modal').classList.remove('hidden');
+            lucide.createIcons();
         }
 
         function generatePrintHTML(isInvoice, items, clientData, docNum, excludeTtd=false) {
@@ -1480,103 +1448,6 @@
 
         function showToast(msg, isError=false) { const toast=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; toast.className=`fixed bottom-6 left-1/2 -translate-x-1/2 ${isError?'bg-red-500 text-white border-red-600':'bg-slate-800 text-white border-slate-700'} px-5 py-3 rounded-full shadow-2xl text-xs font-medium z-50 flex items-center gap-2 transition-all duration-300 border`; toast.classList.remove('hidden'); setTimeout(()=>toast.classList.add('hidden'), 3000); }
         document.getElementById('trx-qty').addEventListener('input', calcTrxTotal); document.getElementById('trx-price').addEventListener('input', calcTrxTotal); document.getElementById('trx-item').addEventListener('change', autoFillPrice);
-
-        // ==========================================
-        // LOGIKA BARU: SURAT JALAN KHUSUS STAF
-        // ==========================================
-        function addStafSjItem() {
-            const container = document.getElementById('staf-sj-items-container');
-            const newRow = document.createElement('div');
-            newRow.className = 'sj-item-row grid grid-cols-12 gap-2 items-end mt-2';
-            newRow.innerHTML = `
-                <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
-                <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
-                <div class="col-span-2"><button type="button" onclick="removeStafSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>
-            `;
-            container.appendChild(newRow);
-        }
-
-        function removeStafSjItem(btn) {
-            const rows = document.querySelectorAll('.sj-item-row');
-            if (rows.length > 1) btn.closest('.sj-item-row').remove();
-            else showToast("Minimal harus ada 1 item!", true);
-        }
-
-        function toggleStafSjSignature() {
-            const type = document.querySelector('input[name="staf-sj-signature-type"]:checked').value;
-            document.getElementById('staf-sj-digital-sig').classList.toggle('hidden', type !== 'digital');
-            document.getElementById('staf-sj-manual-sig').classList.toggle('hidden', type !== 'manual');
-        }
-
-        function previewAndPrintStafSuratJalan() {
-            // Generate Nomor SJ Otomatis
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            const random = Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('staf-sj-number').value = `SJ-${yyyy}${mm}${dd}-${random}`;
-            document.getElementById('staf-sj-date').value = now.toISOString().split('T')[0];
-
-            const form = document.getElementById('staf-surat-jalan-form');
-            if (!form.checkValidity()) { form.reportValidity(); return; }
-
-            const sjNumber = document.getElementById('staf-sj-number').value;
-            const sjDate = new Date(document.getElementById('staf-sj-date').value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            const destination = document.getElementById('staf-sj-destination').value.toUpperCase();
-            const vehicle = document.getElementById('staf-sj-vehicle').value || '-';
-            
-            let totalWeight = 0;
-            let itemsHtml = '';
-            document.querySelectorAll('.sj-item-row').forEach((row, index) => {
-                const name = row.querySelector('.sj-item-name').value;
-                const weight = parseFloat(row.querySelector('.sj-item-weight').value) || 0;
-                totalWeight += weight;
-                itemsHtml += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 15px; text-align: center;">${index + 1}</td><td style="padding: 10px 15px;">${name.toUpperCase()}</td><td style="padding: 10px 15px; text-align: right; font-family: monospace;">${formatNumber(weight)} Kg</td></tr>`;
-            });
-
-            itemsHtml += `<tr style="background-color: #f8fafc; font-weight: bold;"><td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 2px solid #cbd5e1;">TOTAL BERAT</td><td style="padding: 12px 15px; text-align: right; font-family: monospace; border-top: 2px solid #cbd5e1;">${formatNumber(totalWeight)} Kg</td></tr>`;
-
-            // Handle Signature
-            let signatureHtml = '';
-            const sigType = document.querySelector('input[name="staf-sj-signature-type"]:checked').value;
-            if (sigType === 'digital') {
-                signatureHtml = `<div style="text-align: center; margin-top: 40px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Hormat Kami,</p><img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 50px; margin: 0 auto 5px; display: block; object-contain;"><p style="font-size: 13px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p><p style="font-size: 11px; color: #64748b; margin-top: 2px;">Direktur Utama</p></div>`;
-            } else {
-                const pjName = document.getElementById('staf-sj-pj-name').value || '...........................';
-                signatureHtml = `<div style="text-align: center; margin-top: 60px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
-            }
-
-            // Inject to Print Area
-            document.getElementById('kop-surat-container').style.display = 'none';
-            document.getElementById('document-content').innerHTML = `
-                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
-                        <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
-                        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
-                        <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px;">
-                        <div><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">No. Dokumen</p><p style="font-size: 18px; font-weight: bold; font-family: monospace; margin: 5px 0;">${sjNumber}</p></div>
-                        <div style="text-align: right;"><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">Tanggal Terbit</p><p style="font-size: 14px; font-weight: 600; margin: 5px 0;">${sjDate}</p></div>
-                    </div>
-                    <div style="display: flex; gap: 30px; margin-bottom: 30px; font-size: 13px;">
-                        <div style="flex: 1;"><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Dikirim Kepada</p><p style="font-weight: 700; font-size: 16px; color: #0f172a;">${destination}</p></div>
-                        <div style="flex: 1;"><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Kendaraan / No. Polisi</p><p style="font-weight: 600; font-size: 14px;">${vehicle.toUpperCase()}</p></div>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px;">
-                        <thead><tr style="background-color: #10b981; color: white;"><th style="padding: 12px 15px; text-align: center; width: 50px;">NO</th><th style="padding: 12px 15px; text-align: left;">NAMA BARANG</th><th style="padding: 12px 15px; text-align: right; width: 120px;">BERAT (KG)</th></tr></thead>
-                        <tbody>${itemsHtml}</tbody>
-                    </table>
-                    ${signatureHtml}
-                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">Dokumen ini dicetak secara otomatis oleh Sistem Amanah Capital.</div>
-                </div>
-            `;
-            
-            document.getElementById('ttd-date').innerText = sjDate;
-            document.getElementById('print-modal').classList.remove('hidden');
-            lucide.createIcons();
-        }
     </script>
 </body>
 </html>
