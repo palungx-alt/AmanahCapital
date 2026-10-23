@@ -75,10 +75,10 @@
                 height: auto !important; overflow: visible !important; 
             }
 
-            /* Force semua elemen di dalam print area untuk terlihat */
+            /* FORCE SEMUA ELEMEN DI DALAM PRINT AREA UNTUK TERLIHAT */
             #print-area * {
                 visibility: visible !important;
-                display: block !important;
+                display: block !important; /* Atau sesuai aslinya, tapi jangan none */
                 color: black !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -87,7 +87,6 @@
             tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
             thead { display: table-header-group !important; }
             thead tr { background-color: #10b981 !important; color: white !important; }
-            tfoot tr { background-color: #ecfdf5 !important; }
             body, html { overflow: visible !important; height: auto !important; background: white !important; }
         }
     </style>
@@ -124,6 +123,7 @@
     <!-- HEADER STAF -->
     <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
+            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
             <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -134,6 +134,7 @@
         <div class="flex items-center gap-2">
             <div class="relative cursor-pointer hover:bg-white/50 p-2 rounded-lg transition" onclick="switchTab('approval')"><i data-lucide="bell" class="w-5 h-5 text-emerald-600 animate-ring" id="notif-bell"></i><span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span></div>
             <a href="index.html" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="home" class="w-4 h-4 text-slate-500"></i></a>
+            <!-- PERBAIKAN LOGOUT: ARAHKAN KE INDEX.HTML -->
             <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
         </div>
     </header>
@@ -152,7 +153,6 @@
             <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
-            <button onclick="switchTab('surat-jalan'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
             <button onclick="switchTab('history'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="history" class="w-4 h-4"></i> Riwayat</button>
@@ -172,7 +172,6 @@
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input')" id="tab-input" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input</button>
-            <button onclick="switchTab('surat-jalan')" id="tab-surat-jalan" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice')" id="tab-invoice" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota')" id="tab-nota" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
             <button onclick="switchTab('history')" id="tab-history" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="history" class="w-4 h-4"></i> Riwayat</button>
@@ -381,80 +380,6 @@
             </form>
         </div>
 
-        <!-- TAB BARU: SURAT JALAN -->
-        <div id="content-surat-jalan" class="tab-content hidden space-y-4">
-            <div class="glass-card p-5 rounded-2xl bg-white/80">
-                <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i data-lucide="truck" class="w-5 h-5 text-emerald-500"></i> Buat Surat Jalan Baru</h2>
-                
-                <form id="staf-surat-jalan-form" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">No. Surat Jalan (Otomatis)</label>
-                            <input type="text" id="staf-sj-number" readonly class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none text-slate-500 font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Tanggal Terbit</label>
-                            <input type="date" id="staf-sj-date" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Tujuan / Penerima (Client)</label>
-                            <select id="staf-sj-client-select" onchange="fillStafSjClientDetails()" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                                <option value="">-- Pilih Client --</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">No. Polisi / Kendaraan</label>
-                            <input type="text" id="staf-sj-vehicle" placeholder="B 1234 XYZ" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <!-- Detail Alamat Otomatis -->
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-                        <div><label class="block text-[9px] font-bold uppercase text-slate-400">Alamat Lengkap</label><p id="staf-sj-client-address" class="text-xs text-slate-700 font-medium min-h-[1.2rem]">-</p></div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[9px] font-bold uppercase text-slate-400">NPWP</label><p id="staf-sj-client-npwp" class="text-xs text-slate-700 font-mono">-</p></div>
-                            <div><label class="block text-[9px] font-bold uppercase text-slate-400">Telepon</label><p id="staf-sj-client-phone" class="text-xs text-slate-700">-</p></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1.5">Daftar Barang (Free Text)</label>
-                        <div id="staf-sj-items-container" class="space-y-2">
-                            <div class="sj-item-row grid grid-cols-12 gap-2 items-end">
-                                <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
-                                <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
-                                <div class="col-span-2"><button type="button" onclick="removeStafSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>
-                            </div>
-                        </div>
-                        <button type="button" onclick="addStafSjItem()" class="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1 hover:text-emerald-700 transition"><i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Tambah Item Lain</button>
-                    </div>
-
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">Opsi Tanda Tangan</label>
-                        <div class="flex gap-4 mb-3">
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="staf-sj-signature-type" value="digital" checked onchange="toggleStafSjSignature()" class="accent-emerald-600"><span class="text-xs sm:text-sm text-slate-700">Dengan TTD Digital</span></label>
-                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="staf-sj-signature-type" value="manual" onchange="toggleStafSjSignature()" class="accent-emerald-600"><span class="text-xs sm:text-sm text-slate-700">Tanpa TTD (Nama PJ)</span></label>
-                        </div>
-                        
-                        <div id="staf-sj-digital-sig" class="flex items-center gap-3">
-                            <img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 40px; object-contain;">
-                            <div><p class="text-xs font-bold text-slate-800">SIDIK DWI KUNCAHYO</p><p class="text-[10px] text-slate-500">Direktur Utama</p></div>
-                        </div>
-
-                        <div id="staf-sj-manual-sig" class="hidden">
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Nama Penanggung Jawab</label>
-                            <input type="text" id="staf-sj-pj-name" placeholder="Masukkan nama lengkap..." class="w-full border border-slate-200 rounded-lg p-2 text-xs sm:text-sm outline-none bg-white">
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="previewAndPrintStafSuratJalan()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"><i data-lucide="printer" class="w-5 h-5"></i> Preview & Cetak Surat Jalan</button>
-                </form>
-            </div>
-        </div>
-
         <!-- TAB CETAK INVOICE & NOTA -->
         <div id="content-invoice" class="tab-content hidden space-y-4">
              <div class="glass-card p-5 rounded-2xl bg-white/80 space-y-4">
@@ -503,7 +428,7 @@
         </div>
     </main>
 
-    <!-- MODAL PREVIEW DOKUMEN (DIGUNAKAN UNTUK NOTA, INVOICE, DAN SURAT JALAN) -->
+    <!-- MODAL PREVIEW DOKUMEN (DIGUNAKAN UNTUK NOTA DAN INVOICE) -->
     <div id="doc-preview-modal" class="hidden fixed inset-0 z-[9999] bg-slate-900/95 flex flex-col items-center justify-start no-print">
         <div class="flex-1 w-full overflow-y-auto bg-white flex justify-center">
             <!-- PERBAIKAN: ID print-area digunakan untuk menangkap semua konten saat print -->
@@ -680,7 +605,6 @@
                         if(clientRes.status === 'success') { 
                             cachedClients = clientRes.clients; 
                             populateClientDropdowns(); 
-                            populateStafSjClientDropdown(); // Populate dropdown SJ juga
                         }
                         
                         if(offtakerRes.status === 'success') {
@@ -779,41 +703,6 @@
             }); 
         }
 
-        // FUNGSI BARU: POPULATE DROPDOWN CLIENT DI SURAT JALAN STAF
-        function populateStafSjClientDropdown() {
-            const select = document.getElementById('staf-sj-client-select');
-            select.innerHTML = '<option value="">-- Pilih Client --</option>';
-            
-            if(cachedClients && cachedClients.length > 0) {
-                cachedClients.sort((a,b) => a.name.localeCompare(b.name)).forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.name;
-                    opt.text = c.name;
-                    // Simpan data client di dataset agar mudah diambil
-                    opt.dataset.address = c.address || '-';
-                    opt.dataset.npwp = c.npwp || '-';
-                    opt.dataset.phone = c.phone || '-';
-                    select.appendChild(opt);
-                });
-            }
-        }
-
-        // FUNGSI BARU: AUTO-FILL DETAIL CLIENT SAAT DIPILIH DI SJ
-        function fillStafSjClientDetails() {
-            const select = document.getElementById('staf-sj-client-select');
-            const selectedOption = select.options[select.selectedIndex];
-            
-            if(selectedOption && selectedOption.value) {
-                document.getElementById('staf-sj-client-address').innerText = selectedOption.dataset.address;
-                document.getElementById('staf-sj-client-npwp').innerText = selectedOption.dataset.npwp;
-                document.getElementById('staf-sj-client-phone').innerText = selectedOption.dataset.phone;
-            } else {
-                document.getElementById('staf-sj-client-address').innerText = '-';
-                document.getElementById('staf-sj-client-npwp').innerText = '-';
-                document.getElementById('staf-sj-client-phone').innerText = '-';
-            }
-        }
-
         function openAddClientModal() { document.getElementById('add-client-modal').classList.remove('hidden'); lucide.createIcons(); }
         function closeAddClientModal() { document.getElementById('add-client-modal').classList.add('hidden'); document.getElementById('add-client-form').reset(); }
         
@@ -835,7 +724,6 @@
                 
                 cachedClients.push({name: clientData.name, address: clientData.address, npwp: clientData.npwp, phone: clientData.phone, status: 'Aktif'});
                 populateClientDropdowns();
-                populateStafSjClientDropdown(); // Update dropdown SJ juga
                 document.getElementById('trx-vendor').value = clientData.name;
                 
                 closeAddClientModal();
@@ -1573,124 +1461,6 @@
 
         function showToast(msg, isError=false) { const toast=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; toast.className=`fixed bottom-6 left-1/2 -translate-x-1/2 ${isError?'bg-red-500 text-white border-red-600':'bg-slate-800 text-white border-slate-700'} px-5 py-3 rounded-full shadow-2xl text-xs font-medium z-50 flex items-center gap-2 transition-all duration-300 border`; toast.classList.remove('hidden'); setTimeout(()=>toast.classList.add('hidden'), 3000); }
         document.getElementById('trx-qty').addEventListener('input', calcTrxTotal); document.getElementById('trx-price').addEventListener('input', calcTrxTotal); document.getElementById('trx-item').addEventListener('change', autoFillPrice);
-
-        // ==========================================
-        // LOGIKA BARU: SURAT JALAN KHUSUS STAF
-        // ==========================================
-        function addStafSjItem() {
-            const container = document.getElementById('staf-sj-items-container');
-            const newRow = document.createElement('div');
-            newRow.className = 'sj-item-row grid grid-cols-12 gap-2 items-end mt-2';
-            newRow.innerHTML = `
-                <div class="col-span-7"><input type="text" placeholder="Nama Barang" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-name"></div>
-                <div class="col-span-3"><input type="number" step="0.1" placeholder="Berat (Kg)" required class="w-full border border-slate-200 rounded-lg p-2.5 text-xs sm:text-sm outline-none bg-white sj-item-weight"></div>
-                <div class="col-span-2"><button type="button" onclick="removeStafSjItem(this)" class="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-lg transition flex items-center justify-center"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>
-            `;
-            container.appendChild(newRow);
-        }
-
-        function removeStafSjItem(btn) {
-            const rows = document.querySelectorAll('.sj-item-row');
-            if (rows.length > 1) btn.closest('.sj-item-row').remove();
-            else showToast("Minimal harus ada 1 item!", true);
-        }
-
-        function toggleStafSjSignature() {
-            const type = document.querySelector('input[name="staf-sj-signature-type"]:checked').value;
-            document.getElementById('staf-sj-digital-sig').classList.toggle('hidden', type !== 'digital');
-            document.getElementById('staf-sj-manual-sig').classList.toggle('hidden', type !== 'manual');
-        }
-
-        // PERBAIKAN UTAMA: FUNGSI PREVIEW & PRINT SURAT JALAN YANG BENAR
-        function previewAndPrintStafSuratJalan() {
-            // Generate Nomor SJ Otomatis
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            const random = Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('staf-sj-number').value = `SJ-${yyyy}${mm}${dd}-${random}`;
-            document.getElementById('staf-sj-date').value = now.toISOString().split('T')[0];
-
-            const form = document.getElementById('staf-surat-jalan-form');
-            if (!form.checkValidity()) { form.reportValidity(); return; }
-
-            const sjNumber = document.getElementById('staf-sj-number').value;
-            const sjDate = new Date(document.getElementById('staf-sj-date').value).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            
-            // Ambil data client yang dipilih
-            const clientSelect = document.getElementById('staf-sj-client-select');
-            const clientName = clientSelect.value || 'UMUM / TANPA TUJUAN SPESIFIK';
-            const clientAddress = document.getElementById('staf-sj-client-address').innerText;
-            const clientNpwp = document.getElementById('staf-sj-client-npwp').innerText;
-            const clientPhone = document.getElementById('staf-sj-client-phone').innerText;
-            
-            const vehicle = document.getElementById('staf-sj-vehicle').value || '-';
-            
-            let totalWeight = 0;
-            let itemsHtml = '';
-            document.querySelectorAll('.sj-item-row').forEach((row, index) => {
-                const name = row.querySelector('.sj-item-name').value;
-                const weight = parseFloat(row.querySelector('.sj-item-weight').value) || 0;
-                totalWeight += weight;
-                itemsHtml += `<tr style="border-bottom: 1px solid #e2e8f0; visibility:visible !important;"><td style="padding: 10px 15px; text-align: center;">${index + 1}</td><td style="padding: 10px 15px;">${name.toUpperCase()}</td><td style="padding: 10px 15px; text-align: right; font-family: monospace;">${formatNumber(weight)} Kg</td></tr>`;
-            });
-
-            itemsHtml += `<tr style="background-color: #f8fafc; font-weight: bold; visibility:visible !important;"><td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 2px solid #cbd5e1;">TOTAL BERAT</td><td style="padding: 12px 15px; text-align: right; font-family: monospace; border-top: 2px solid #cbd5e1;">${formatNumber(totalWeight)} Kg</td></tr>`;
-
-            // Handle Signature
-            let signatureHtml = '';
-            const sigType = document.querySelector('input[name="staf-sj-signature-type"]:checked').value;
-            if (sigType === 'digital') {
-                signatureHtml = `<div style="text-align: center; margin-top: 40px; visibility:visible !important;"><p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Hormat Kami,</p><img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 50px; margin: 0 auto 5px; display: block; object-contain;"><p style="font-size: 13px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p><p style="font-size: 11px; color: #64748b; margin-top: 2px;">Direktur Utama</p></div>`;
-            } else {
-                const pjName = document.getElementById('staf-sj-pj-name').value || '...........................';
-                signatureHtml = `<div style="text-align: center; margin-top: 60px; visibility:visible !important;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
-            }
-
-            // Inject to Print Area
-            document.getElementById('kop-surat-container').style.display = 'none';
-            document.getElementById('document-content').innerHTML = `
-                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto; visibility:visible !important;">
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px; visibility:visible !important;">
-                        <img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
-                        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
-                        <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; visibility:visible !important;">
-                        <div><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">No. Dokumen</p><p style="font-size: 18px; font-weight: bold; font-family: monospace; margin: 5px 0;">${sjNumber}</p></div>
-                        <div style="text-align: right;"><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">Tanggal Terbit</p><p style="font-size: 14px; font-weight: 600; margin: 5px 0;">${sjDate}</p></div>
-                    </div>
-                    <div style="display: flex; gap: 30px; margin-bottom: 30px; font-size: 13px; visibility:visible !important;">
-                        <div style="flex: 1;">
-                            <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Dikirim Kepada</p>
-                            <p style="font-weight: 700; font-size: 16px; color: #0f172a;">${clientName.toUpperCase()}</p>
-                            <p style="color: #475569; margin-top: 5px; line-height: 1.4;">${clientAddress}</p>
-                            ${clientNpwp !== '-' ? `<p style="color: #64748b; margin-top: 3px; font-size: 11px;"><span style="font-weight:600;">NPWP:</span> ${clientNpwp}</p>` : ''}
-                            ${clientPhone !== '-' ? `<p style="color: #64748b; margin-top: 2px; font-size: 11px;"><span style="font-weight:600;">Telp:</span> ${clientPhone}</p>` : ''}
-                        </div>
-                        <div style="flex: 1;">
-                            <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Kendaraan / No. Polisi</p>
-                            <p style="font-weight: 600; font-size: 14px;">${vehicle.toUpperCase()}</p>
-                        </div>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; visibility:visible !important;">
-                        <thead><tr style="background-color: #10b981; color: white;"><th style="padding: 12px 15px; text-align: center; width: 50px;">NO</th><th style="padding: 12px 15px; text-align: left;">NAMA BARANG</th><th style="padding: 12px 15px; text-align: right; width: 120px;">BERAT (KG)</th></tr></thead>
-                        <tbody>${itemsHtml}</tbody>
-                    </table>
-                    ${signatureHtml}
-                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; visibility:visible !important;">Dokumen ini dicetak secara otomatis oleh Sistem Amanah Capital.</div>
-                </div>
-            `;
-            
-            document.getElementById('ttd-date').innerText = sjDate;
-            
-            // FIX: Tambahkan delay agar browser sempat render gambar sebelum modal muncul
-            setTimeout(() => {
-                document.getElementById('doc-preview-modal').classList.remove('hidden');
-                lucide.createIcons();
-            }, 300);
-        }
     </script>
 </body>
 </html>
