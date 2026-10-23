@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
+        /* Light Futuristic Palette */
         :root {
             --bg-base: #f8fafc;
             --glass-bg: rgba(255, 255, 255, 0.85);
@@ -43,20 +44,35 @@
         @keyframes ring { 0%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-15deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(5deg)}60%{transform:rotate(-5deg)}100%{transform:rotate(0)} }
         .animate-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
 
+        /* Sidebar Animation */
         .sidebar-overlay { transition: opacity 0.3s ease; }
         .sidebar-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* PERBAIKAN CSS PRINT AGAR TIDAK PUTIH */
+        /* PERBAIKAN CSS PRINT AGAR TIDAK PUTIH & KOP SURAT RAPI */
         @media print {
+            /* Sembunyikan SEMUA elemen UI kecuali area print */
             header, main, .no-print, #sidebar-overlay, #sidebar-menu,
-            #doc-preview-modal > div:first-child, 
-            #doc-preview-modal > div:last-child, 
+            #doc-preview-modal > div:first-child, /* Sembunyikan container scroll modal */
+            #doc-preview-modal > div:last-child,  /* Sembunyikan tombol preview/print */
             body > *:not(#print-modal) { display: none !important; visibility: hidden !important; }
             
-            #doc-preview-modal { position: static !important; inset: auto !important; background: white !important; padding: 0 !important; margin: 0 !important; height: auto !important; overflow: visible !important; display: block !important; visibility: visible !important; }
-            #doc-preview-modal > div:first-child { display: block !important; visibility: visible !important; background: white !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+            /* Pastikan modal print mengambil alih layar */
+            #doc-preview-modal { 
+                position: static !important; inset: auto !important; 
+                background: white !important; padding: 0 !important; margin: 0 !important; 
+                height: auto !important; overflow: visible !important; 
+                display: block !important; visibility: visible !important; 
+            }
             
-            #print-area { display: block !important; visibility: visible !important; position: static !important; width: 100% !important; max-width: 210mm !important; margin: 0 auto !important; padding: 15mm 20mm !important; box-shadow: none !important; background: white !important; min-height: auto !important; height: auto !important; overflow: visible !important; }
+            /* Area kertas A4 */
+            #print-area { 
+                display: block !important; visibility: visible !important; 
+                position: static !important; width: 100% !important; 
+                max-width: 210mm !important; margin: 0 auto !important; 
+                padding: 15mm 20mm !important; box-shadow: none !important; 
+                background: white !important; min-height: auto !important; 
+                height: auto !important; overflow: visible !important; 
+            }
             
             tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
             thead { display: table-header-group !important; }
@@ -126,7 +142,6 @@
             <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
-            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -147,7 +162,6 @@
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input')" id="tab-input" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input</button>
-            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan')" id="tab-surat-jalan" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice')" id="tab-invoice" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota')" id="tab-nota" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -482,6 +496,7 @@
     <!-- MODAL PREVIEW DOKUMEN (DIGUNAKAN UNTUK NOTA, INVOICE, DAN SURAT JALAN) -->
     <div id="doc-preview-modal" class="hidden fixed inset-0 z-[9999] bg-slate-900/95 flex flex-col items-center justify-start no-print">
         <div class="flex-1 w-full overflow-y-auto bg-white flex justify-center">
+            <!-- PERBAIKAN: ID print-area digunakan untuk menangkap semua konten saat print -->
             <div id="print-area" class="relative text-slate-900 my-8" style="width: 210mm; min-height: 297mm; padding: 15mm 20mm; box-sizing: border-box; font-family: sans-serif; display: flex; flex-direction: column;">
                 <div id="kop-surat-container" style="margin-bottom: 20px; text-align: center;"></div>
                 <div id="document-content" class="flex-grow"></div>
@@ -1563,6 +1578,7 @@
             document.getElementById('staf-sj-manual-sig').classList.toggle('hidden', type !== 'manual');
         }
 
+        // PERBAIKAN UTAMA: FUNGSI PREVIEW & PRINT SURAT JALAN YANG BENAR
         function previewAndPrintStafSuratJalan() {
             // Generate Nomor SJ Otomatis
             const now = new Date();
@@ -1609,12 +1625,14 @@
                 signatureHtml = `<div style="text-align: center; margin-top: 60px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
             }
 
+            // PERBAIKAN KOP SURAT: Hanya gambar, di tengah, memenuhi lebar
+            const kopHtml = `<img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="width: 100%; max-width: 800px; height: auto; object-fit: contain; margin-bottom: 20px;">`;
+
             // Inject to Print Area
-            document.getElementById('kop-surat-container').style.display = 'none';
+            document.getElementById('kop-surat-container').innerHTML = kopHtml;
             document.getElementById('document-content').innerHTML = `
-                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
-                        <img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
+                <div style="font-family: sans-serif; color: #0f172a; padding: 0; max-width: 100%; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 30px;">
                         <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
                         <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
                     </div>
