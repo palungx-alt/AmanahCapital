@@ -144,6 +144,7 @@
             <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
+            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -164,6 +165,7 @@
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input')" id="tab-input" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input</button>
+            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan')" id="tab-surat-jalan" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice')" id="tab-invoice" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota')" id="tab-nota" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -608,7 +610,15 @@
         function formatNumber(num) { return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(num || 0); }
         function formatIDR(v) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v || 0); }
 
-        document.addEventListener("DOMContentLoaded", () => { lucide.createIcons(); checkAuthAndInit(); });
+        document.addEventListener("DOMContentLoaded", () => { 
+            lucide.createIcons(); 
+            
+            // PERBAIKAN: Preload gambar agar tidak putih saat print
+            new Image().src = CONFIG.KOP_SURAT_URL; 
+            new Image().src = CONFIG.TTD_DIRUT_URL; 
+            
+            checkAuthAndInit(); 
+        });
 
         async function checkAuthAndInit() {
             const params = new URLSearchParams(window.location.search);
