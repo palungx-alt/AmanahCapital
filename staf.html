@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        /* Light Futuristic Palette */
         :root {
             --bg-base: #f8fafc;
             --glass-bg: rgba(255, 255, 255, 0.85);
@@ -44,10 +43,10 @@
         @keyframes ring { 0%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-15deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(5deg)}60%{transform:rotate(-5deg)}100%{transform:rotate(0)} }
         .animate-ring { animation: ring 2s ease-in-out infinite; transform-origin: top center; }
 
-        /* Sidebar Animation */
         .sidebar-overlay { transition: opacity 0.3s ease; }
         .sidebar-menu { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
+        /* PERBAIKAN CSS PRINT AGAR TIDAK PUTIH */
         @media print {
             header, main, .no-print, #sidebar-overlay, #sidebar-menu,
             #doc-preview-modal > div:first-child, 
@@ -99,7 +98,6 @@
     <!-- HEADER STAF -->
     <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
-            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
             <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -1114,7 +1112,6 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
-                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
@@ -1481,7 +1478,6 @@
             
             document.getElementById('document-content').innerHTML=generatePrintHTML(isInvoice, filteredData, clientData, docNum, true);
             document.getElementById('doc-preview-modal').classList.remove('hidden');
-            lucide.createIcons();
         }
 
         function generatePrintHTML(isInvoice, items, clientData, docNum, excludeTtd=false) {
@@ -1618,7 +1614,7 @@
             document.getElementById('document-content').innerHTML = `
                 <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
                     <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
-                        <img src="./RAJ-LOGO-BERSIH.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
+                        <img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
                         <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
                         <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
                     </div>
