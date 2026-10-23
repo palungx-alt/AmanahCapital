@@ -62,9 +62,10 @@
                 background: white !important; padding: 0 !important; margin: 0 !important; 
                 height: auto !important; overflow: visible !important; 
                 display: block !important; visibility: visible !important; 
+                z-index: 99999 !important;
             }
             
-            /* Area kertas A4 */
+            /* Area kertas A4 - PENTING: Force Visible */
             #print-area { 
                 display: block !important; visibility: visible !important; 
                 position: static !important; width: 100% !important; 
@@ -73,11 +74,20 @@
                 background: white !important; min-height: auto !important; 
                 height: auto !important; overflow: visible !important; 
             }
+
+            /* Force semua elemen di dalam print area untuk terlihat */
+            #print-area * {
+                visibility: visible !important;
+                display: block !important;
+                color: black !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             
             tbody tr { page-break-inside: avoid !important; break-inside: avoid !important; }
             thead { display: table-header-group !important; }
-            thead tr { background-color: var(--accent-primary) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            tfoot tr { background-color: #ecfdf5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            thead tr { background-color: #10b981 !important; color: white !important; }
+            tfoot tr { background-color: #ecfdf5 !important; }
             body, html { overflow: visible !important; height: auto !important; background: white !important; }
         }
     </style>
@@ -114,7 +124,6 @@
     <!-- HEADER STAF -->
     <header class="sticky top-0 z-40 px-4 py-3 glass-card border-b-0 rounded-b-2xl mx-2 mt-2 flex justify-between items-center no-print">
         <div class="flex items-center gap-3">
-            <!-- HAMBURGER MENU BUTTON (MOBILE ONLY) -->
             <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition text-slate-600">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -125,7 +134,6 @@
         <div class="flex items-center gap-2">
             <div class="relative cursor-pointer hover:bg-white/50 p-2 rounded-lg transition" onclick="switchTab('approval')"><i data-lucide="bell" class="w-5 h-5 text-emerald-600 animate-ring" id="notif-bell"></i><span id="notif-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span></div>
             <a href="index.html" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="home" class="w-4 h-4 text-slate-500"></i></a>
-            <!-- PERBAIKAN LOGOUT: ARAHKAN KE INDEX.HTML -->
             <button onclick="window.location.href='index.html'" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 flex items-center justify-center transition border border-slate-200"><i data-lucide="log-out" class="w-4 h-4 text-slate-500 hover:text-red-500"></i></button>
         </div>
     </header>
@@ -144,7 +152,6 @@
             <button onclick="switchTab('timbang'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input Transaksi</button>
-            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota'); toggleSidebar()" class="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium text-sm flex items-center gap-3"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -165,7 +172,6 @@
             <button onclick="switchTab('timbang')" id="tab-timbang" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="scale" class="w-4 h-4"></i> Timbang Ulang</button>
             <button onclick="switchTab('press')" id="tab-press" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="package" class="w-4 h-4"></i> Press / Pemadatan</button>
             <button onclick="switchTab('input')" id="tab-input" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="plus-circle" class="w-4 h-4"></i> Input</button>
-            <!-- TAB BARU: SURAT JALAN -->
             <button onclick="switchTab('surat-jalan')" id="tab-surat-jalan" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="truck" class="w-4 h-4"></i> Surat Jalan</button>
             <button onclick="switchTab('invoice')" id="tab-invoice" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="file-text" class="w-4 h-4"></i> Invoice</button>
             <button onclick="switchTab('nota')" id="tab-nota" class="tab-btn flex-1 bg-white text-slate-600 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2 whitespace-nowrap"><i data-lucide="receipt" class="w-4 h-4"></i> Nota Beli</button>
@@ -1504,7 +1510,12 @@
             kopContainer.innerHTML=`<img src="${CONFIG.KOP_SURAT_URL}" onerror="this.style.display='none'" style="max-width:100%; max-height:120px; object-fit:contain; margin-bottom:10px;"><div style="border-bottom:2px solid #10b981; margin-top:10px;"></div>`;
             
             document.getElementById('document-content').innerHTML=generatePrintHTML(isInvoice, filteredData, clientData, docNum, true);
-            document.getElementById('doc-preview-modal').classList.remove('hidden');
+            
+            // FIX: Tambahkan delay agar browser sempat render gambar sebelum modal muncul
+            setTimeout(() => {
+                document.getElementById('doc-preview-modal').classList.remove('hidden');
+                lucide.createIcons();
+            }, 300);
         }
 
         function generatePrintHTML(isInvoice, items, clientData, docNum, excludeTtd=false) {
@@ -1514,42 +1525,42 @@
             const rows=items.map(i => {
                 const qty=parseFloat(i.qty||i.Jumlah_Kg_Unit)||0; const unit=currentStock[i.item]?.unit||''; totalVol+=qty;
                 if(!totalVolUnit && unit) totalVolUnit=unit; else if(totalVolUnit && unit && totalVolUnit!==unit) totalVolUnit='Mix';
-                return `<tr style="page-break-inside:avoid;"><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px;">${i.item||i.Nama_Barang_Material}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:center;">${formatNumber(qty)} ${unit}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:right;">${formatNumber(i.price||i.Harga_Satuan)}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:right; font-weight:bold;">${formatIDR(i.total)}</td></tr>`;
+                return `<tr style="page-break-inside:avoid; visibility:visible !important;"><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px;">${i.item||i.Nama_Barang_Material}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:center;">${formatNumber(qty)} ${unit}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:right;">${formatNumber(i.price||i.Harga_Satuan)}</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; text-align:right; font-weight:bold;">${formatIDR(i.total)}</td></tr>`;
             }).join('');
 
             const totalRows=`
-                <tr style="background-color:#f8fafc; page-break-inside:avoid;"><td colspan="1" style="border:1px solid #cbd5e1; padding:8px; font-size:12px; font-weight:bold; text-align:right;">TOTAL VOLUME</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; font-weight:bold; text-align:center;">${formatNumber(totalVol)} ${totalVolUnit}</td><td colspan="2" style="border:1px solid #cbd5e1; padding:8px;"></td></tr>
-                <tr style="background-color:#ecfdf5; page-break-inside:avoid;"><td colspan="3" style="border:1px solid #a7f3d0; padding:12px; text-align:right; font-weight:bold; color:#047857; font-size:14px;">TOTAL TAGIHAN</td><td style="border:1px solid #a7f3d0; padding:12px; text-align:right; font-weight:bold; color:#047857; font-size:16px;">${formatIDR(items.reduce((s,i)=>s+(Number(i.total)||0),0))}</td></tr>
+                <tr style="background-color:#f8fafc; page-break-inside:avoid; visibility:visible !important;"><td colspan="1" style="border:1px solid #cbd5e1; padding:8px; font-size:12px; font-weight:bold; text-align:right;">TOTAL VOLUME</td><td style="border:1px solid #cbd5e1; padding:8px; font-size:12px; font-weight:bold; text-align:center;">${formatNumber(totalVol)} ${totalVolUnit}</td><td colspan="2" style="border:1px solid #cbd5e1; padding:8px;"></td></tr>
+                <tr style="background-color:#ecfdf5; page-break-inside:avoid; visibility:visible !important;"><td colspan="3" style="border:1px solid #a7f3d0; padding:12px; text-align:right; font-weight:bold; color:#047857; font-size:14px;">TOTAL TAGIHAN</td><td style="border:1px solid #a7f3d0; padding:12px; text-align:right; font-weight:bold; color:#047857; font-size:16px;">${formatIDR(items.reduce((s,i)=>s+(Number(i.total)||0),0))}</td></tr>
             `;
             
             if(excludeTtd) {
                 if(!isInvoice) {
-                    return `<div style="text-align:center; margin-bottom:30px; page-break-after:avoid;"><h2 style="font-size:28px; font-weight:bold; text-transform:uppercase; letter-spacing:2px; margin:0 0 5px 0; color:#0f172a;">NOTA PEMBELIAN</h2><p style="font-size:14px; color:#64748b; margin:0;">No: ${docNum}</p></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:30px; font-size:13px; border-bottom:1px dashed #cbd5e1; padding-bottom:20px; page-break-after:avoid;">
+                    return `<div style="text-align:center; margin-bottom:30px; page-break-after:avoid; visibility:visible !important;"><h2 style="font-size:28px; font-weight:bold; text-transform:uppercase; letter-spacing:2px; margin:0 0 5px 0; color:#0f172a;">NOTA PEMBELIAN</h2><p style="font-size:14px; color:#64748b; margin:0;">No: ${docNum}</p></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:30px; font-size:13px; border-bottom:1px dashed #cbd5e1; padding-bottom:20px; page-break-after:avoid; visibility:visible !important;">
                         <div><p style="font-weight:bold; color:#334155; margin:0 0 5px 0; font-size:11px; text-transform:uppercase;">Kepada Yth:</p><p style="font-weight:700; color:#0f172a; margin:0; font-size:16px;">${entity}</p></div>
                         <div style="text-align:right;"><p style="font-weight:bold; color:#334155; margin:0 0 5px 0; font-size:11px; text-transform:uppercase;">Tanggal Transaksi</p><p style="color:#0f172a; margin:0; font-size:16px;">${new Date(items[0].Tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}</p></div>
                     </div>
-                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px;">
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px; visibility:visible !important;">
                         <thead><tr style="background-color:#10b981; color:white; page-break-after:avoid;"><th style="border:1px solid #059669; padding:10px; text-align:left;">Uraian</th><th style="border:1px solid #059669; padding:10px; text-align:center; width:100px;">Vol</th><th style="border:1px solid #059669; padding:10px; text-align:right; width:120px;">Harga Satuan</th><th style="border:1px solid #059669; padding:10px; text-align:right; width:140px;">Total</th></tr></thead>
                         <tbody>${rows}${totalRows}</tbody>
                     </table>`;
                 }
-                return `<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px; border-bottom:1px dashed #cbd5e1; padding-bottom:20px; page-break-after:avoid;">
+                return `<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px; border-bottom:1px dashed #cbd5e1; padding-bottom:20px; page-break-after:avoid; visibility:visible !important;">
                     <div><h2 style="font-size:28px; font-weight:bold; color:#0f172a; margin:0;">INVOICE</h2><p style="font-size:11px; color:#64748b; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">Tagihan Resmi Perusahaan</p></div>
                     <div style="text-align:right; font-size:13px;"><div style="margin-bottom:8px;"><span style="font-weight:bold; display:block; color:#334155; font-size:10px; text-transform:uppercase;">No. Invoice</span><span style="font-family:monospace; font-size:16px; font-weight:600;">${docNum}</span></div><div><span style="font-weight:bold; display:block; color:#334155; font-size:10px; text-transform:uppercase;">Tanggal Terbit</span><span style="font-size:16px;">${new Date(items[0].Tanggal).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}</span></div></div>
                 </div>
-                <div style="background-color:#f8fafc; padding:20px; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:30px; page-break-inside:avoid;">
+                <div style="background-color:#f8fafc; padding:20px; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:30px; page-break-inside:avoid; visibility:visible !important;">
                     <p style="font-size:10px; font-weight:bold; color:#94a3b8; text-transform:uppercase; margin:0 0 8px 0; letter-spacing:1px;">Ditagihkan Kepada:</p>
                     <p style="font-weight:bold; color:#0f172a; font-size:18px; margin:0;">${clientData.name}</p>
                     <p style="font-size:12px; color:#475569; margin-top:8px; line-height:1.5;">${clientData.address}</p>
                     ${clientData.npwp!=='-'?`<p style="font-size:11px; color:#64748b; margin-top:8px;"><span style="font-weight:600;">NPWP:</span> ${clientData.npwp}</p>`:''}
                     ${clientData.phone!=='-'?`<p style="font-size:11px; color:#64748b;"><span style="font-weight:600;">Telp:</span> ${clientData.phone}</p>`:''}
                 </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px;">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:12px; visibility:visible !important;">
                     <thead><tr style="background-color:#10b981; color:white; page-break-after:avoid;"><th style="border:1px solid #059669; padding:12px; text-align:left;">Deskripsi Item</th><th style="border:1px solid #059669; padding:12px; text-align:center; width:100px;">Qty</th><th style="border:1px solid #059669; padding:12px; text-align:right; width:120px;">Harga Satuan</th><th style="border:1px solid #059669; padding:12px; text-align:right; width:140px;">Jumlah</th></tr></thead>
                     <tbody>${rows}${totalRows}</tbody>
                 </table>
-                <div style="font-size:11px; color:#475569; margin-bottom:40px; background-color:#f8fafc; padding:15px; border-radius:6px; border:1px solid #e2e8f0; margin-top:20px; page-break-inside:avoid;">
+                <div style="font-size:11px; color:#475569; margin-bottom:40px; background-color:#f8fafc; padding:15px; border-radius:6px; border:1px solid #e2e8f0; margin-top:20px; page-break-inside:avoid; visibility:visible !important;">
                     <p style="font-weight:bold; margin:0 0 8px 0; text-transform:uppercase; font-size:10px; letter-spacing:1px; color:#64748b;">Informasi Pembayaran</p>
                     <p style="margin:0; font-size:13px;"><span style="font-weight:600;">Bank Mandiri:</span> 1210014494995</p>
                     <p style="margin:5px 0 0 0; font-size:13px;"><span style="font-weight:600;">Atas Nama:</span> CV Rezeki Amanah Jaya Group</p>
@@ -1622,35 +1633,35 @@
                 const name = row.querySelector('.sj-item-name').value;
                 const weight = parseFloat(row.querySelector('.sj-item-weight').value) || 0;
                 totalWeight += weight;
-                itemsHtml += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 15px; text-align: center;">${index + 1}</td><td style="padding: 10px 15px;">${name.toUpperCase()}</td><td style="padding: 10px 15px; text-align: right; font-family: monospace;">${formatNumber(weight)} Kg</td></tr>`;
+                itemsHtml += `<tr style="border-bottom: 1px solid #e2e8f0; visibility:visible !important;"><td style="padding: 10px 15px; text-align: center;">${index + 1}</td><td style="padding: 10px 15px;">${name.toUpperCase()}</td><td style="padding: 10px 15px; text-align: right; font-family: monospace;">${formatNumber(weight)} Kg</td></tr>`;
             });
 
-            itemsHtml += `<tr style="background-color: #f8fafc; font-weight: bold;"><td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 2px solid #cbd5e1;">TOTAL BERAT</td><td style="padding: 12px 15px; text-align: right; font-family: monospace; border-top: 2px solid #cbd5e1;">${formatNumber(totalWeight)} Kg</td></tr>`;
+            itemsHtml += `<tr style="background-color: #f8fafc; font-weight: bold; visibility:visible !important;"><td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 2px solid #cbd5e1;">TOTAL BERAT</td><td style="padding: 12px 15px; text-align: right; font-family: monospace; border-top: 2px solid #cbd5e1;">${formatNumber(totalWeight)} Kg</td></tr>`;
 
             // Handle Signature
             let signatureHtml = '';
             const sigType = document.querySelector('input[name="staf-sj-signature-type"]:checked').value;
             if (sigType === 'digital') {
-                signatureHtml = `<div style="text-align: center; margin-top: 40px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Hormat Kami,</p><img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 50px; margin: 0 auto 5px; display: block; object-contain;"><p style="font-size: 13px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p><p style="font-size: 11px; color: #64748b; margin-top: 2px;">Direktur Utama</p></div>`;
+                signatureHtml = `<div style="text-align: center; margin-top: 40px; visibility:visible !important;"><p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Hormat Kami,</p><img src="./assets/TTD Raj Dirut.png" onerror="this.style.display='none'" style="height: 50px; margin: 0 auto 5px; display: block; object-contain;"><p style="font-size: 13px; font-weight: bold; color: #0f172a; text-decoration: underline; text-underline-offset: 4px;">SIDIK DWI KUNCAHYO</p><p style="font-size: 11px; color: #64748b; margin-top: 2px;">Direktur Utama</p></div>`;
             } else {
                 const pjName = document.getElementById('staf-sj-pj-name').value || '...........................';
-                signatureHtml = `<div style="text-align: center; margin-top: 60px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
+                signatureHtml = `<div style="text-align: center; margin-top: 60px; visibility:visible !important;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
             }
 
             // Inject to Print Area
             document.getElementById('kop-surat-container').style.display = 'none';
             document.getElementById('document-content').innerHTML = `
-                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto; visibility:visible !important;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px; visibility:visible !important;">
                         <img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
                         <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
                         <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; visibility:visible !important;">
                         <div><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">No. Dokumen</p><p style="font-size: 18px; font-weight: bold; font-family: monospace; margin: 5px 0;">${sjNumber}</p></div>
                         <div style="text-align: right;"><p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase;">Tanggal Terbit</p><p style="font-size: 14px; font-weight: 600; margin: 5px 0;">${sjDate}</p></div>
                     </div>
-                    <div style="display: flex; gap: 30px; margin-bottom: 30px; font-size: 13px;">
+                    <div style="display: flex; gap: 30px; margin-bottom: 30px; font-size: 13px; visibility:visible !important;">
                         <div style="flex: 1;">
                             <p style="font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Dikirim Kepada</p>
                             <p style="font-weight: 700; font-size: 16px; color: #0f172a;">${clientName.toUpperCase()}</p>
@@ -1663,18 +1674,22 @@
                             <p style="font-weight: 600; font-size: 14px;">${vehicle.toUpperCase()}</p>
                         </div>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; visibility:visible !important;">
                         <thead><tr style="background-color: #10b981; color: white;"><th style="padding: 12px 15px; text-align: center; width: 50px;">NO</th><th style="padding: 12px 15px; text-align: left;">NAMA BARANG</th><th style="padding: 12px 15px; text-align: right; width: 120px;">BERAT (KG)</th></tr></thead>
                         <tbody>${itemsHtml}</tbody>
                     </table>
                     ${signatureHtml}
-                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">Dokumen ini dicetak secara otomatis oleh Sistem Amanah Capital.</div>
+                    <div style="margin-top: 60px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; visibility:visible !important;">Dokumen ini dicetak secara otomatis oleh Sistem Amanah Capital.</div>
                 </div>
             `;
             
             document.getElementById('ttd-date').innerText = sjDate;
-            document.getElementById('doc-preview-modal').classList.remove('hidden');
-            lucide.createIcons();
+            
+            // FIX: Tambahkan delay agar browser sempat render gambar sebelum modal muncul
+            setTimeout(() => {
+                document.getElementById('doc-preview-modal').classList.remove('hidden');
+                lucide.createIcons();
+            }, 300);
         }
     </script>
 </body>
