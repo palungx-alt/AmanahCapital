@@ -1139,6 +1139,7 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
+                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
@@ -1637,14 +1638,12 @@
                 signatureHtml = `<div style="text-align: center; margin-top: 60px;"><p style="font-size: 12px; color: #64748b; margin-bottom: 40px;">Penanggung Jawab,</p><p style="font-size: 14px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #94a3b8; display: inline-block; padding-bottom: 2px; min-width: 200px;">${pjName}</p></div>`;
             }
 
-            // PERBAIKAN KOP SURAT: Hanya gambar, di tengah, memenuhi lebar
-            const kopHtml = `<img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="width: 100%; max-width: 800px; height: auto; object-fit: contain; margin-bottom: 20px;">`;
-
             // Inject to Print Area
-            document.getElementById('kop-surat-container').innerHTML = kopHtml;
+            document.getElementById('kop-surat-container').style.display = 'none';
             document.getElementById('document-content').innerHTML = `
-                <div style="font-family: sans-serif; color: #0f172a; padding: 0; max-width: 100%; margin: 0 auto;">
-                    <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-family: sans-serif; color: #0f172a; padding: 20px; max-width: 210mm; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #10b981; padding-bottom: 20px;">
+                        <img src="./assets/kop-surat.png" onerror="this.style.display='none'" style="max-width: 100px; margin-bottom: 10px;">
                         <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: 1px;">SURAT JALAN</h1>
                         <p style="font-size: 14px; color: #64748b; margin-top: 5px; font-weight: 500;">CV. REZEKI AMANAH JAYA</p>
                     </div>
