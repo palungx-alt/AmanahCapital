@@ -1139,7 +1139,6 @@
                         diffBadge = `<span class="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold border ${color}">${sign}${formatNumber(correction)}</span>`;
                     }
                     
-                    // Warna teks stok real berdasarkan selisih
                     const realColor = correction < 0 ? 'text-red-600' : (correction > 0 ? 'text-blue-600' : 'text-emerald-600');
 
                     html += `<tr class="hover:bg-slate-50 transition">
